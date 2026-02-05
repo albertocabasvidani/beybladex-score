@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+@theme {
+    /* Background colors */
+    --color-background: #1a1a2e;
+    --color-background-secondary: #16213e;
+    --color-background-card: #0f3460;
+
+    /* Accent colors for finish buttons */
+    --color-finish-burst: #e94560;
+    --color-finish-burst-hover: #ff6b6b;
+    --color-finish-over: #f39c12;
+    --color-finish-over-hover: #f1c40f;
+    --color-finish-xtreme: #9b59b6;
+    --color-finish-xtreme-hover: #be90d4;
+
+    /* Text colors */
+    --color-text-primary: #eaeaea;
+    --color-text-secondary: #a0a0a0;
+
+    /* Player colors */
+    --color-player-1: #3498db;
+    --color-player-2: #e74c3c;
+}
+
+/* Dark mode as default */
+html {
+    color-scheme: dark;
+}
+
+body {
+    @apply bg-background text-text-primary;
+    margin: 0;
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile */
+    font-family:
+        system-ui,
+        -apple-system,
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Safe area for phones with notch */
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Force landscape orientation */
+@media screen and (orientation: portrait) {
+    body::before {
+        content: "↻ Ruota il dispositivo";
+        position: fixed;
+        inset: 0;
+        background: #1a1a2e;
+        color: white;
+        font-size: 1.5rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+    #root {
+        display: none;
+    }
+}
+
+/* Modal animations */
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scale-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.4s ease-out;
+}
+
+.animate-scale-in {
+    animation: scale-in 0.4s ease-out;
+}

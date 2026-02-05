@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="#1a1a2e"/>
+
+  <!-- Outer ring -->
+  <circle cx="256" cy="256" r="200" fill="none" stroke="#3b82f6" stroke-width="20"/>
+
+  <!-- Inner design - Beyblade style -->
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#f59e0b" stroke-width="12"/>
+
+  <!-- X mark in center -->
+  <g stroke="#ef4444" stroke-width="24" stroke-linecap="round">
+    <line x1="200" y1="200" x2="312" y2="312"/>
+    <line x1="312" y1="200" x2="200" y2="312"/>
+  </g>
+
+  <!-- Center circle -->
+  <circle cx="256" cy="256" r="40" fill="#1a1a2e" stroke="#22c55e" stroke-width="8"/>
+
+  <!-- Spin lines -->
+  <g fill="none" stroke="#94a3b8" stroke-width="4" opacity="0.5">
+    <path d="M256 56 A200 200 0 0 1 400 120" stroke-dasharray="20 10"/>
+    <path d="M400 392 A200 200 0 0 1 256 456" stroke-dasharray="20 10"/>
+    <path d="M112 392 A200 200 0 0 1 112 120" stroke-dasharray="20 10"/>
+  </g>
+</svg>

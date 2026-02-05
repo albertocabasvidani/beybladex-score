@@ -1,0 +1,36 @@
+{
+  "app": {
+    "title": "Beyblade X Score"
+  },
+  "player": {
+    "player1": "Giocatore 1",
+    "player2": "Giocatore 2"
+  },
+  "finish": {
+    "spin": "Spin",
+    "burst": "Burst",
+    "over": "Over",
+    "xtreme": "Xtreme"
+  },
+  "game": {
+    "vs": "VS",
+    "winScore": "Vittoria a {{score}} punti",
+    "winner": "{{name}} vince!"
+  },
+  "buttons": {
+    "undo": "Annulla",
+    "reset": "Reset",
+    "share": "Condividi",
+    "newGame": "Nuova Partita"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "language": "Lingua",
+    "winScore": "Punti per vincere"
+  },
+  "confirm": {
+    "reset": "Sei sicuro di voler resettare la partita?",
+    "yes": "Conferma",
+    "no": "Annulla"
+  }
+}
