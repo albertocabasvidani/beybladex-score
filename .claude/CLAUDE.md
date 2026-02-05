@@ -11,9 +11,56 @@
 - **Shared**: modifiche shared richiedono test in web E mobile
 
 ## Testing
-- Web: `cd packages/web && npm run dev`
-- Mobile: `cd packages/mobile && expo start`
-- Mobile test 3 risoluzioni: `node scripts/test-emulators.js`
+
+### Web
+```bash
+cd packages/web
+npm run dev
+# Apri http://localhost:5173
+```
+
+### Mobile - Test Locale
+```bash
+cd packages/mobile
+expo start
+# Scansiona QR con Expo Go
+```
+
+### Mobile - Test Autonomo (Appetize.io)
+
+**Setup una tantum**:
+1. Account Expo: `npx eas-cli login`
+2. Account Appetize.io: https://appetize.io/ (free: 100 min/mese)
+3. API Token: Dashboard → Settings → API Token
+
+**Workflow test pre-commit**:
+```bash
+cd packages/mobile
+
+# 1. Build APK (5-10 min)
+npx eas-cli build --platform android --profile preview
+
+# 2. Download APK
+curl -L -o beybladex-mobile.apk "{LINK_DA_OUTPUT_BUILD}"
+
+# 3. Upload su Appetize.io
+# Opzione A: Manuale via https://appetize.io/upload
+# Opzione B: API
+curl https://api.appetize.io/v1/apps \
+  -u {API_TOKEN}: \
+  -F file=@beybladex-mobile.apk \
+  -F platform=android
+
+# 4. Test automatico via browser
+# Claude Code apre https://appetize.io/app/{publicKey}
+# Usa chrome-devtools MCP per tap e screenshot
+```
+
+**Documentazione completa**: `packages/mobile/docs/testing-setup.md`
+
+**Limiti Appetize.io free**:
+- 100 min/mese (~33 test da 3 min)
+- Per test frequenti: emulatore locale o Expo Go
 
 ## Convention Commits
 - `feat(web):` - nuova feature web

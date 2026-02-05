@@ -15,5 +15,9 @@
     "mobile:test-emulators": "yarn workspace @beybladex/mobile test:emulators",
     "shared:type-check": "yarn workspace @beybladex/shared type-check",
     "type-check": "yarn workspaces run type-check"
+  },
+  "resolutions": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   }
 }

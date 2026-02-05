@@ -1,13 +1,13 @@
 {
   "expo": {
     "name": "Beyblade X Score",
-    "slug": "beybladex-score",
+    "slug": "beybladex-score-mobile",
     "version": "1.0.0",
     "orientation": "landscape",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#1a1a2e"
     },
@@ -19,6 +19,14 @@
       "package": "com.beybladex.score",
       "versionCode": 1
     },
-    "plugins": ["expo-localization", "nativewind/metro"]
+    "plugins": [
+      "expo-localization"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "bda50771-3cf2-4465-96a9-e342d89dbeb3"
+      }
+    },
+    "owner": "albertocv"
   }
 }
