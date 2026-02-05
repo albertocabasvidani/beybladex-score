@@ -23,6 +23,9 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
+      devOptions: {
+        enabled: false, // Disabilita SW in dev
+      },
       includeAssets: ["icons/*.svg", "icons/*.png"],
       manifest: {
         name: "Beyblade X Score Tracker",
@@ -53,6 +56,8 @@ export default defineConfig({
         ],
       },
       workbox: {
+        skipWaiting: true, // Forza aggiornamento immediato SW
+        clientsClaim: true, // Prende controllo subito
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
         runtimeCaching: [
           {
