@@ -1,0 +1,19 @@
+{
+  "name": "@beybladex/monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "web:dev": "yarn workspace @beybladex/web dev",
+    "web:build": "yarn workspace @beybladex/web build",
+    "web:deploy": "yarn workspace @beybladex/web deploy",
+    "mobile:start": "yarn workspace @beybladex/mobile start",
+    "mobile:android": "yarn workspace @beybladex/mobile android",
+    "mobile:build": "yarn workspace @beybladex/mobile build:android",
+    "mobile:test-emulators": "yarn workspace @beybladex/mobile test:emulators",
+    "shared:type-check": "yarn workspace @beybladex/shared type-check",
+    "type-check": "yarn workspaces run type-check"
+  }
+}
