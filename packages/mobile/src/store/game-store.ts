@@ -6,6 +6,7 @@ import {
   undoLastAction,
   canUndo as canUndoFn,
   resetMatch,
+  setWinScore,
   DEFAULT_WIN_SCORE,
 } from '@beybladex/shared';
 
@@ -21,6 +22,7 @@ interface GameStore extends MatchState {
   reset: () => void;
   canUndo: () => boolean;
   clearAnimation: () => void;
+  setWinScoreValue: (value: number) => void;
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
@@ -67,5 +69,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
   // Clear animation overlay
   clearAnimation: () => {
     set({ currentAnimation: null });
+  },
+
+  // Set win score
+  setWinScoreValue: (value) => {
+    const state = get();
+    const newState = setWinScore(state, value);
+    set({ winScore: newState.winScore });
   },
 }));

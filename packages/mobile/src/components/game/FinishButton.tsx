@@ -86,14 +86,14 @@ export function FinishButton({ finishType, playerId }: Props) {
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       disabled={isDisabled}
+      style={{ flex: 1 }}
     >
       <Animated.View
         style={[
           {
-            minWidth: 100,
-            minHeight: 70,
-            paddingVertical: 10,
-            paddingHorizontal: 16,
+            flex: 1,
+            paddingVertical: 4,
+            paddingHorizontal: 8,
             borderRadius: 12,
             borderWidth: 3,
             borderColor: style.borderColor,
@@ -115,7 +115,7 @@ export function FinishButton({ finishType, playerId }: Props) {
         <Text
           style={{
             color: 'white',
-            fontSize: 12,
+            fontSize: 18,
             fontWeight: '800',
             letterSpacing: 2,
             textShadowColor: 'rgba(0,0,0,0.5)',
@@ -130,9 +130,9 @@ export function FinishButton({ finishType, playerId }: Props) {
         <Text
           style={{
             color: 'white',
-            fontSize: 32,
+            fontSize: 48,
             fontWeight: '900',
-            lineHeight: 36,
+            lineHeight: 52,
             textShadowColor: 'rgba(0,0,0,0.4)',
             textShadowOffset: { width: 2, height: 2 },
             textShadowRadius: 4,

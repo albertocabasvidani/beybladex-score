@@ -14,19 +14,19 @@ export function PlayerPanel({ playerId }: Props) {
   return (
     <View
       style={{
-        alignItems: 'center',
-        gap: 4,
-        paddingVertical: 4,
-        paddingHorizontal: 8,
+        flex: 1,
+        paddingHorizontal: 4,
+        paddingVertical: 2,
       }}
     >
       {/* Player Name */}
       <Text
         style={{
           color: '#e2e8f0',
-          fontSize: 16,
-          fontWeight: '700',
-          marginBottom: 4,
+          fontSize: 18,
+          fontWeight: '800',
+          textAlign: 'center',
+          paddingVertical: 2,
         }}
       >
         {player.name}
@@ -35,23 +35,26 @@ export function PlayerPanel({ playerId }: Props) {
       {/* Layout: [Spin/Burst] - SCORE - [Over/Xtreme] */}
       <View
         style={{
+          flex: 1,
           flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 12,
+          alignItems: 'stretch',
+          gap: 6,
+          paddingBottom: 2,
         }}
       >
         {/* Left buttons */}
-        <View style={{ gap: 8 }}>
+        <View style={{ flex: 2, gap: 4 }}>
           <FinishButton playerId={playerId} finishType="spin" />
           <FinishButton playerId={playerId} finishType="burst" />
         </View>
 
         {/* Center score */}
-        <ScoreDisplay playerId={playerId} />
+        <View style={{ flex: 3, justifyContent: 'center', alignItems: 'center' }}>
+          <ScoreDisplay playerId={playerId} />
+        </View>
 
         {/* Right buttons */}
-        <View style={{ gap: 8 }}>
+        <View style={{ flex: 2, gap: 4 }}>
           <FinishButton playerId={playerId} finishType="over" />
           <FinishButton playerId={playerId} finishType="xtreme" />
         </View>

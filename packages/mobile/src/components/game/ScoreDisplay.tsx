@@ -51,8 +51,8 @@ export function ScoreDisplay({ playerId }: Props) {
       style={{
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: 16,
-        minWidth: 100,
+        paddingHorizontal: 8,
+        minWidth: 80,
       }}
     >
       {/* Glow effect when close to winning */}
@@ -60,9 +60,9 @@ export function ScoreDisplay({ playerId }: Props) {
         <View
           style={{
             position: 'absolute',
-            width: 120,
-            height: 120,
-            borderRadius: 60,
+            width: 100,
+            height: 100,
+            borderRadius: 50,
             backgroundColor: 'rgba(251, 191, 36, 0.2)',
             opacity: progress - 0.5,
           }}
@@ -73,7 +73,7 @@ export function ScoreDisplay({ playerId }: Props) {
         style={[
           {
             color: getScoreColor(),
-            fontSize: 72,
+            fontSize: 120,
             fontWeight: '900',
             textShadowColor: 'rgba(0,0,0,0.3)',
             textShadowOffset: { width: 2, height: 2 },
