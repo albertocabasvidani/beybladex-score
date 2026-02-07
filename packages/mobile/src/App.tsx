@@ -1,10 +1,11 @@
-import { SafeAreaView, useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { RotateDeviceScreen } from './components/ui/RotateDeviceScreen';
 import { GameScreen } from './components/game/GameScreen';
 import './i18n/config';
 
-export default function App() {
+function AppContent() {
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
 
@@ -18,9 +19,17 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['top', 'bottom', 'left', 'right']}>
       <StatusBar hidden />
       <GameScreen />
     </SafeAreaView>
+  );
+}
+
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      <AppContent />
+    </SafeAreaProvider>
   );
 }
