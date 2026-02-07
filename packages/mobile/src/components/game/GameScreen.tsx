@@ -1,58 +1,84 @@
 import { View, TouchableOpacity, Text } from 'react-native';
-import { ScoreDisplay } from './ScoreDisplay';
-import { FinishButton } from './FinishButton';
+import { PlayerPanel } from './PlayerPanel';
 import { useGameStore } from '../../store/game-store';
 
 export function GameScreen() {
   const { undo, reset, canUndo } = useGameStore();
+  const canUndoValue = canUndo();
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#1a1a2e' }}>
-      <ScoreDisplay />
-
-      <View style={{ flex: 1, flexDirection: 'row', gap: 16, padding: 16 }}>
+    <View style={{ flex: 1, backgroundColor: '#0f172a' }}>
+      {/* Main content - two player panels side by side */}
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
         {/* Player 1 */}
-        <View style={{ flex: 1, gap: 8 }}>
-          <FinishButton finishType="spin" playerId="player1" />
-          <FinishButton finishType="burst" playerId="player1" />
-          <FinishButton finishType="over" playerId="player1" />
-          <FinishButton finishType="xtreme" playerId="player1" />
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <PlayerPanel playerId="player1" />
         </View>
 
         {/* Player 2 */}
-        <View style={{ flex: 1, gap: 8 }}>
-          <FinishButton finishType="spin" playerId="player2" />
-          <FinishButton finishType="burst" playerId="player2" />
-          <FinishButton finishType="over" playerId="player2" />
-          <FinishButton finishType="xtreme" playerId="player2" />
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <PlayerPanel playerId="player2" />
         </View>
       </View>
 
-      <View style={{ flexDirection: 'row', gap: 16, padding: 16 }}>
+      {/* Game Controls at bottom */}
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 12,
+          paddingVertical: 12,
+          paddingHorizontal: 16,
+        }}
+      >
+        {/* Undo button */}
         <TouchableOpacity
           onPress={undo}
-          disabled={!canUndo()}
+          disabled={!canUndoValue}
           style={{
-            flex: 1,
-            backgroundColor: canUndo() ? '#3b82f6' : '#6b7280',
-            padding: 16,
-            borderRadius: 8,
+            flexDirection: 'row',
             alignItems: 'center',
+            gap: 8,
+            paddingVertical: 10,
+            paddingHorizontal: 16,
+            backgroundColor: canUndoValue ? '#334155' : '#1e293b',
+            borderRadius: 8,
+            opacity: canUndoValue ? 1 : 0.4,
           }}
         >
-          <Text style={{ color: 'white', fontSize: 16 }}>Undo</Text>
+          {/* Undo icon */}
+          <Text style={{ color: '#e2e8f0', fontSize: 16 }}>↩</Text>
+          <Text style={{ color: '#e2e8f0', fontSize: 14, fontWeight: '600' }}>
+            Annulla
+          </Text>
         </TouchableOpacity>
+
+        {/* Reset button */}
         <TouchableOpacity
           onPress={reset}
           style={{
-            flex: 1,
-            backgroundColor: '#ef4444',
-            padding: 16,
-            borderRadius: 8,
+            flexDirection: 'row',
             alignItems: 'center',
+            gap: 8,
+            paddingVertical: 10,
+            paddingHorizontal: 16,
+            backgroundColor: 'rgba(127, 29, 29, 0.5)',
+            borderRadius: 8,
           }}
         >
-          <Text style={{ color: 'white', fontSize: 16 }}>Reset</Text>
+          {/* Reset icon */}
+          <Text style={{ color: '#fecaca', fontSize: 16 }}>↻</Text>
+          <Text style={{ color: '#fecaca', fontSize: 14, fontWeight: '600' }}>
+            Reset
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
