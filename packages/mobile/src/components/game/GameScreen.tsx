@@ -1,9 +1,14 @@
 import { View, TouchableOpacity, Text } from 'react-native';
 import { PlayerPanel } from './PlayerPanel';
+import { VictoryOverlay } from './VictoryOverlay';
+import { AnimationOverlay } from '../animations';
 import { useGameStore } from '../../store/game-store';
 
 export function GameScreen() {
   const { undo, reset, canUndo } = useGameStore();
+  const winner = useGameStore((state) => state.winner);
+  const currentAnimation = useGameStore((state) => state.currentAnimation);
+  const clearAnimation = useGameStore((state) => state.clearAnimation);
   const canUndoValue = canUndo();
 
   return (
@@ -81,6 +86,17 @@ export function GameScreen() {
           </Text>
         </TouchableOpacity>
       </View>
+
+      {/* Animation Overlay */}
+      {currentAnimation && (
+        <AnimationOverlay
+          animation={currentAnimation}
+          onComplete={clearAnimation}
+        />
+      )}
+
+      {/* Victory Overlay */}
+      {winner && <VictoryOverlay winnerId={winner} />}
     </View>
   );
 }

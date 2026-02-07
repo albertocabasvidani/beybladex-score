@@ -10,23 +10,33 @@ import {
 } from '@beybladex/shared';
 
 interface GameStore extends MatchState {
+  currentAnimation: {
+    type: FinishType;
+    playerId: PlayerId;
+  } | null;
+
   // Actions
   score: (playerId: PlayerId, finishType: FinishType) => void;
   undo: () => void;
   reset: () => void;
   canUndo: () => boolean;
+  clearAnimation: () => void;
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
   // Initial state
   ...createInitialMatchState(DEFAULT_WIN_SCORE),
+  currentAnimation: null,
 
   // Score a point
   score: (playerId, finishType) => {
     const state = get();
     if (state.winner) return;
     const newState = scorePoint(state, playerId, finishType);
-    set(newState);
+    set({
+      ...newState,
+      currentAnimation: { type: finishType, playerId },
+    });
   },
 
   // Undo last action
@@ -38,6 +48,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       player2: newState.player2,
       winner: newState.winner,
       history: newState.history,
+      currentAnimation: null,
     });
   },
 
@@ -45,11 +56,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
   reset: () => {
     const state = get();
     const newState = resetMatch(state);
-    set(newState);
+    set({ ...newState, currentAnimation: null });
   },
 
   // Check if undo is available
   canUndo: () => {
     return canUndoFn(get());
+  },
+
+  // Clear animation overlay
+  clearAnimation: () => {
+    set({ currentAnimation: null });
   },
 }));

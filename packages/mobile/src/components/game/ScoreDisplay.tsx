@@ -1,4 +1,10 @@
+import { useEffect, useRef } from 'react';
 import { View, Text } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 import { useGameStore } from '../../store/game-store';
 import type { PlayerId } from '@beybladex/shared';
 
@@ -9,6 +15,25 @@ interface Props {
 export function ScoreDisplay({ playerId }: Props) {
   const player = useGameStore((state) => state[playerId]);
   const winScore = useGameStore((state) => state.winScore);
+
+  const prevScoreRef = useRef(player.score);
+  const scaleValue = useSharedValue(1);
+
+  // Spring pop when score changes
+  useEffect(() => {
+    if (player.score !== prevScoreRef.current) {
+      prevScoreRef.current = player.score;
+      scaleValue.value = 1.5;
+      scaleValue.value = withSpring(1, {
+        stiffness: 500,
+        damping: 30,
+      });
+    }
+  }, [player.score]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scaleValue.value }],
+  }));
 
   // Calculate progress to winning
   const progress = Math.min(player.score / winScore, 1);
@@ -44,18 +69,21 @@ export function ScoreDisplay({ playerId }: Props) {
         />
       )}
 
-      <Text
-        style={{
-          color: getScoreColor(),
-          fontSize: 72,
-          fontWeight: '900',
-          textShadowColor: 'rgba(0,0,0,0.3)',
-          textShadowOffset: { width: 2, height: 2 },
-          textShadowRadius: 4,
-        }}
+      <Animated.Text
+        style={[
+          {
+            color: getScoreColor(),
+            fontSize: 72,
+            fontWeight: '900',
+            textShadowColor: 'rgba(0,0,0,0.3)',
+            textShadowOffset: { width: 2, height: 2 },
+            textShadowRadius: 4,
+          },
+          animatedStyle,
+        ]}
       >
         {player.score}
-      </Text>
+      </Animated.Text>
     </View>
   );
 }

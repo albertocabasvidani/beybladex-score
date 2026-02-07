@@ -1,4 +1,9 @@
-import { TouchableOpacity, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
 import type { FinishType, PlayerId } from '@beybladex/shared';
 import { FINISH_SCORES } from '@beybladex/shared';
 import { useGameStore } from '../../store/game-store';
@@ -49,6 +54,26 @@ export function FinishButton({ finishType, playerId }: Props) {
   const style = MANGA_STYLES[finishType];
   const isDisabled = winner !== null;
 
+  const scaleValue = useSharedValue(1);
+  const translateYValue = useSharedValue(0);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { scale: scaleValue.value },
+      { translateY: translateYValue.value },
+    ],
+  }));
+
+  const handlePressIn = () => {
+    scaleValue.value = withTiming(0.95, { duration: 150 });
+    translateYValue.value = withTiming(4, { duration: 150 });
+  };
+
+  const handlePressOut = () => {
+    scaleValue.value = withTiming(1, { duration: 150 });
+    translateYValue.value = withTiming(0, { duration: 150 });
+  };
+
   const handlePress = () => {
     if (!isDisabled) {
       score(playerId, finishType);
@@ -56,33 +81,35 @@ export function FinishButton({ finishType, playerId }: Props) {
   };
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={handlePress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
       disabled={isDisabled}
-      activeOpacity={0.8}
-      style={{
-        opacity: isDisabled ? 0.4 : 1,
-      }}
     >
-      <View
-        style={{
-          minWidth: 100,
-          minHeight: 70,
-          paddingVertical: 10,
-          paddingHorizontal: 16,
-          borderRadius: 12,
-          borderWidth: 3,
-          borderColor: style.borderColor,
-          backgroundColor: style.bgColor,
-          alignItems: 'center',
-          justifyContent: 'center',
-          // Shadow effect
-          shadowColor: style.shadowColor,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.8,
-          shadowRadius: 4,
-          elevation: 8,
-        }}
+      <Animated.View
+        style={[
+          {
+            minWidth: 100,
+            minHeight: 70,
+            paddingVertical: 10,
+            paddingHorizontal: 16,
+            borderRadius: 12,
+            borderWidth: 3,
+            borderColor: style.borderColor,
+            backgroundColor: style.bgColor,
+            alignItems: 'center',
+            justifyContent: 'center',
+            opacity: isDisabled ? 0.4 : 1,
+            // Shadow effect
+            shadowColor: style.shadowColor,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.8,
+            shadowRadius: 4,
+            elevation: 8,
+          },
+          animatedStyle,
+        ]}
       >
         {/* Label */}
         <Text
@@ -126,7 +153,7 @@ export function FinishButton({ finishType, playerId }: Props) {
             backgroundColor: 'rgba(255,255,255,0.3)',
           }}
         />
-      </View>
-    </TouchableOpacity>
+      </Animated.View>
+    </Pressable>
   );
 }
