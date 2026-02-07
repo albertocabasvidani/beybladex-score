@@ -164,20 +164,35 @@ Metro bundler configurato per monorepo:
 packages/mobile/
 ├── src/
 │   ├── components/
-│   │   ├── game/          # Game UI components
-│   │   └── ui/            # Generic UI components
+│   │   ├── game/           # Game UI components
+│   │   │   ├── GameScreen.tsx     # Layout con bottom bar
+│   │   │   ├── PlayerPanel.tsx    # Pannello giocatore
+│   │   │   ├── FinishButton.tsx   # Pulsanti finish animati
+│   │   │   ├── ScoreDisplay.tsx   # Punteggio con spring pop
+│   │   │   └── VictoryOverlay.tsx # Overlay vittoria
+│   │   ├── animations/     # Effetti finish (Reanimated v4)
+│   │   │   ├── SpinEffect.tsx
+│   │   │   ├── BurstEffect.tsx
+│   │   │   ├── OverEffect.tsx
+│   │   │   ├── XtremeEffect.tsx
+│   │   │   └── AnimationOverlay.tsx
+│   │   ├── modals/          # Modal settings/credits
+│   │   │   ├── SettingsModal.tsx   # Win score +/-
+│   │   │   └── CreditsModal.tsx    # Autore + email
+│   │   └── ui/              # Generic UI components
 │   ├── store/
-│   │   └── game-store.ts  # Zustand store
+│   │   └── game-store.ts    # Zustand store
 │   ├── hooks/
-│   │   └── useResponsive.ts  # Responsive hook
+│   │   └── useResponsive.ts # Responsive hook
 │   ├── i18n/
-│   │   └── config.ts      # i18next config
+│   │   └── config.ts        # i18next config
 │   ├── App.tsx
 │   └── index.tsx
 ├── scripts/
-│   └── test-emulators.js  # Test automatico
-├── android/               # Native code
-├── assets/                # Icone, splash screen
+│   ├── test-emulators.js    # Test 3 risoluzioni
+│   ├── install-and-test.sh  # Install APK + screenshot emulatore
+│   └── launch-and-screenshot.sh
+├── assets/                  # Icone, splash screen
 ├── app.json
 ├── eas.json
 ├── metro.config.js

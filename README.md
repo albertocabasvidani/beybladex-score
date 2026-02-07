@@ -124,7 +124,7 @@ eas submit --platform android                       # Submit a Play Store
 |---------|-------|
 | **shared** | TypeScript puro |
 | **web** | React 19, Vite, Tailwind CSS, Zustand |
-| **mobile** | React Native, Expo, NativeWind, Zustand, Reanimated |
+| **mobile** | React Native, Expo, NativeWind, Zustand, Reanimated v4, expo-dev-client |
 
 ## 📦 Yarn Workspaces
 
