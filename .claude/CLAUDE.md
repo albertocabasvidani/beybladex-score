@@ -25,34 +25,38 @@ npm run dev
 - AVD: `beybladex_test` (Pixel 6, Android 35, google_apis x86_64)
 - SDK: `C:\Users\cinqu\AppData\Local\Android\Sdk`
 
-**Workflow test**:
+**Build locale (PREFERITO, ~1 min)**:
 ```bash
-# 1. Avvia emulatore (se non già in esecuzione)
-emulator.exe -avd beybladex_test -no-snapshot -gpu swiftshader_indirect
+# PREREQUISITO: clonare in path SENZA SPAZI
+git clone https://github.com/albertocabasvidani/beybladex-score.git C:\projects\beybladex
+cd C:\projects\beybladex && yarn install
+cd packages/mobile && yarn expo prebuild --platform android --clean
 
-# 2. Build APK (5-10 min su EAS cloud)
-cd packages/mobile
-npx eas-cli build --platform android --profile preview --non-interactive
-
-# 3. Download + Install + Screenshot (tutto in uno script)
-bash packages/mobile/scripts/install-and-test.sh
+# Build APK (arm64 only)
+bash packages/mobile/scripts/build-apk.sh
+# Output: packages/mobile/beybladex-mobile.apk
 ```
 
-**Dev Client** (per iterazioni rapide senza rebuild):
+**Build EAS cloud (fallback, ~15 min)**:
 ```bash
-# Build dev client UNA VOLTA
-npx eas-cli build --platform android --profile development
+cd packages/mobile
+npx eas-cli build --platform android --profile preview --non-interactive
+```
 
-# Poi usa Metro per hot reload
-yarn mobile:start
-# Le modifiche JS si aggiornano in tempo reale
+**Emulatore test**:
+```bash
+# 1. Avvia emulatore
+bash packages/mobile/scripts/start-emulator.sh
+
+# 2. Install + Screenshot
+bash packages/mobile/scripts/install-and-test.sh
 ```
 
 **IMPORTANTE**: Tutti i comandi adb vanno in script `.sh` per evitare permission multiple. Usare `bash script.sh` (già autorizzato).
 
 ### Mobile - Device Fisico
-1. Apri pagina build su https://expo.dev dal browser del telefono
-2. Premi "Install" per scaricare APK
+1. Apri segnalibro: https://expo.dev/accounts/albertocv/projects/beybladex-score-mobile/builds
+2. Tap sull'ultima build → "Install"
 3. Abilita "Installa da origini sconosciute" se richiesto
 
 ### Mobile - Expo Go
