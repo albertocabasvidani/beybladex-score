@@ -59,6 +59,7 @@ export default defineConfig({
         skipWaiting: true, // Forza aggiornamento immediato SW
         clientsClaim: true, // Prende controllo subito
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+        navigateFallbackDenylist: [/\/privacy-policy\.html$/],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
