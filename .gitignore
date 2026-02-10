@@ -59,8 +59,19 @@ nul
 # Google Service Account
 google-service-account.json
 
-# Screenshots
+# Screenshots and test files
 screenshots/
+test-*.png
+test-*.sh
+test-*.txt
+test-*.js
+
+# APK build artifacts
+*.apk
+
+# Session logs
+sessions-index.md
+app-logs-*.jsonl
 
 # Old project directory (migrated to packages/web)
 beybladex-score/

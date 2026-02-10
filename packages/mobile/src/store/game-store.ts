@@ -7,8 +7,10 @@ import {
   canUndo as canUndoFn,
   resetMatch,
   setWinScore,
+  setPlayerName,
   DEFAULT_WIN_SCORE,
 } from '@beybladex/shared';
+import { logger } from '../utils/logger';
 
 interface GameStore extends MatchState {
   currentAnimation: {
@@ -23,6 +25,7 @@ interface GameStore extends MatchState {
   canUndo: () => boolean;
   clearAnimation: () => void;
   setWinScoreValue: (value: number) => void;
+  setPlayerNameValue: (playerId: PlayerId, name: string) => void;
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
@@ -32,33 +35,86 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   // Score a point
   score: (playerId, finishType) => {
-    const state = get();
-    if (state.winner) return;
-    const newState = scorePoint(state, playerId, finishType);
-    set({
-      ...newState,
-      currentAnimation: { type: finishType, playerId },
-    });
+    try {
+      const state = get();
+      if (state.winner) {
+        logger.warn('Score blocked: winner exists', { winner: state.winner });
+        return;
+      }
+      if (state.currentAnimation) {
+        logger.warn('Score blocked: animation in progress', { animation: state.currentAnimation.type });
+        return;
+      }
+      logger.info('Score', {
+        playerId,
+        finishType,
+        p1: state.player1.score,
+        p2: state.player2.score,
+      });
+      const newState = scorePoint(state, playerId, finishType);
+      set({
+        ...newState,
+        currentAnimation: { type: finishType, playerId },
+      });
+      logger.info('Score applied', {
+        p1: newState.player1.score,
+        p2: newState.player2.score,
+        winner: newState.winner,
+      });
+    } catch (e) {
+      logger.error('Score action CRASHED', {
+        error: (e as Error).message,
+        stack: (e as Error).stack?.split('\n').slice(0, 3).join('\n'),
+        playerId,
+        finishType,
+      });
+    }
   },
 
   // Undo last action
   undo: () => {
-    const state = get();
-    const newState = undoLastAction(state);
-    set({
-      player1: newState.player1,
-      player2: newState.player2,
-      winner: newState.winner,
-      history: newState.history,
-      currentAnimation: null,
-    });
+    try {
+      const state = get();
+      logger.info('Undo', {
+        historyLength: state.history.length,
+        p1: state.player1.score,
+        p2: state.player2.score,
+        currentAnimation: state.currentAnimation?.type ?? null,
+      });
+      const newState = undoLastAction(state);
+      set({
+        player1: newState.player1,
+        player2: newState.player2,
+        winner: newState.winner,
+        history: newState.history,
+        currentAnimation: null,
+      });
+    } catch (e) {
+      logger.error('Undo action CRASHED', {
+        error: (e as Error).message,
+        stack: (e as Error).stack?.split('\n').slice(0, 3).join('\n'),
+      });
+    }
   },
 
   // Reset match
   reset: () => {
-    const state = get();
-    const newState = resetMatch(state);
-    set({ ...newState, currentAnimation: null });
+    try {
+      const state = get();
+      logger.info('Reset match', {
+        winScore: state.winScore,
+        p1: state.player1.score,
+        p2: state.player2.score,
+        currentAnimation: state.currentAnimation?.type ?? null,
+      });
+      const newState = resetMatch(state);
+      set({ ...newState, currentAnimation: null });
+    } catch (e) {
+      logger.error('Reset action CRASHED', {
+        error: (e as Error).message,
+        stack: (e as Error).stack?.split('\n').slice(0, 3).join('\n'),
+      });
+    }
   },
 
   // Check if undo is available
@@ -68,13 +124,42 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   // Clear animation overlay
   clearAnimation: () => {
+    const state = get();
+    logger.info('Clear animation', {
+      type: state.currentAnimation?.type,
+      winner: state.winner,
+    });
     set({ currentAnimation: null });
   },
 
   // Set win score
   setWinScoreValue: (value) => {
-    const state = get();
-    const newState = setWinScore(state, value);
-    set({ winScore: newState.winScore });
+    try {
+      const state = get();
+      logger.info('Set win score', { value });
+      const newState = setWinScore(state, value);
+      set({ winScore: newState.winScore });
+    } catch (e) {
+      logger.error('SetWinScore CRASHED', {
+        error: (e as Error).message,
+        value,
+      });
+    }
+  },
+
+  // Set player name
+  setPlayerNameValue: (playerId, name) => {
+    try {
+      const state = get();
+      logger.info('Set player name', { playerId, name });
+      const newState = setPlayerName(state, playerId, name);
+      set({ [playerId]: newState[playerId] });
+    } catch (e) {
+      logger.error('SetPlayerName CRASHED', {
+        error: (e as Error).message,
+        playerId,
+        name,
+      });
+    }
   },
 }));

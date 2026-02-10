@@ -8,7 +8,9 @@ import Animated, {
   withSequence,
   withRepeat,
   Easing,
+  cancelAnimation,
 } from 'react-native-reanimated';
+import { logger } from '../../utils/logger';
 
 const { width, height } = Dimensions.get('window');
 
@@ -26,7 +28,6 @@ function XtremeParticle({ index, total }: { index: number; total: number }) {
   const distance = 120 + Math.random() * 180;
 
   useEffect(() => {
-    // Particles burst at 1100ms
     scale.value = withDelay(1100, withSequence(
       withTiming(1, { duration: 100 }),
       withTiming(0, { duration: 200 }),
@@ -43,6 +44,13 @@ function XtremeParticle({ index, total }: { index: number; total: number }) {
       1100,
       withTiming(Math.sin(angle) * distance, { duration: 300 }),
     );
+
+    return () => {
+      cancelAnimation(translateX);
+      cancelAnimation(translateY);
+      cancelAnimation(scale);
+      cancelAnimation(opacity);
+    };
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -72,31 +80,39 @@ function XtremeParticle({ index, total }: { index: number; total: number }) {
 }
 
 export function XtremeEffect({ onComplete }: Props) {
-  // Flash
   const flashOpacity = useSharedValue(0);
-  // Text
   const textScale = useSharedValue(0);
   const textOpacity = useSharedValue(0);
   const textTranslateX = useSharedValue(0);
-  // Glow
   const glowOpacity = useSharedValue(0);
   const glowScale = useSharedValue(1);
 
   useEffect(() => {
+    logger.debug('XtremeEffect mounted', { particles: 20 });
+
     // Phase 1: Flash white (0-100ms)
     flashOpacity.value = withSequence(
       withTiming(0.8, { duration: 50 }),
       withTiming(0, { duration: 50 }),
     );
 
-    // Phase 2: Text scale in (100-250ms)
-    textOpacity.value = withDelay(100, withTiming(1, { duration: 50 }));
-    textScale.value = withDelay(
-      100,
-      withTiming(1.3, { duration: 150, easing: Easing.out(Easing.back(2)) }),
+    // Phase 2+6: Text opacity - single withSequence to avoid overwrite
+    textOpacity.value = withSequence(
+      withTiming(0, { duration: 100 }),
+      withTiming(1, { duration: 50 }),
+      withTiming(1, { duration: 950 }),
+      withTiming(0, { duration: 200 }),
     );
 
-    // Phase 3: Shake (250-650ms) - 8 alternations decreasing
+    // Phase 2+6: Text scale - single withSequence to avoid overwrite
+    textScale.value = withSequence(
+      withTiming(0, { duration: 100 }),
+      withTiming(1.3, { duration: 150, easing: Easing.out(Easing.back(2)) }),
+      withTiming(1.3, { duration: 850 }),
+      withTiming(0.8, { duration: 200 }),
+    );
+
+    // Phase 3: Shake (250-650ms)
     textTranslateX.value = withDelay(250, withSequence(
       withTiming(15, { duration: 50 }),
       withTiming(-12, { duration: 50 }),
@@ -108,7 +124,7 @@ export function XtremeEffect({ onComplete }: Props) {
       withTiming(0, { duration: 50 }),
     ));
 
-    // Phase 4: Glow (650-1100ms) - pulsing glow behind text
+    // Phase 4: Glow (650-1100ms)
     glowOpacity.value = withDelay(650, withSequence(
       withTiming(0.8, { duration: 150 }),
       withTiming(0.3, { duration: 150 }),
@@ -122,12 +138,20 @@ export function XtremeEffect({ onComplete }: Props) {
       withTiming(1, { duration: 150 }),
     ));
 
-    // Phase 6: Fade out (1100-1300ms)
-    textOpacity.value = withDelay(1100, withTiming(0, { duration: 200 }));
-    textScale.value = withDelay(1100, withTiming(0.8, { duration: 200 }));
-
-    const timer = setTimeout(onComplete, 1300);
-    return () => clearTimeout(timer);
+    const timer = setTimeout(() => {
+      logger.debug('XtremeEffect timer fired');
+      onComplete();
+    }, 1300);
+    return () => {
+      logger.debug('XtremeEffect unmounting');
+      clearTimeout(timer);
+      cancelAnimation(flashOpacity);
+      cancelAnimation(textScale);
+      cancelAnimation(textOpacity);
+      cancelAnimation(textTranslateX);
+      cancelAnimation(glowOpacity);
+      cancelAnimation(glowScale);
+    };
   }, []);
 
   const flashStyle = useAnimatedStyle(() => ({

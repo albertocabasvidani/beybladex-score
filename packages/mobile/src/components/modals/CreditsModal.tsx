@@ -33,20 +33,20 @@ export function CreditsModal({ visible, onClose }: Props) {
           }}
           onPress={(e) => e.stopPropagation()}
         >
-          {/* Header */}
+          {/* Intestazione */}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             <Text style={{ color: 'white', fontSize: 20, fontWeight: '700' }}>
-              Credits
+              Crediti
             </Text>
             <TouchableOpacity onPress={onClose} style={{ padding: 4 }}>
               <Text style={{ color: '#94a3b8', fontSize: 20 }}>✕</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Content */}
+          {/* Contenuto */}
           <View style={{ alignItems: 'center' }}>
             <Text style={{ color: 'white', fontSize: 16, fontWeight: '600', marginBottom: 8 }}>
-              Made by Alberto Cabas Vidani
+              Creato da Alberto Cabas Vidani
             </Text>
             <Text style={{ color: '#94a3b8', fontSize: 13, marginBottom: 16, textAlign: 'center' }}>
               Contattami per idee, problemi e complimenti ;-)

@@ -45,7 +45,7 @@ export function SettingsModal({ visible, onClose }: Props) {
           {/* Header */}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             <Text style={{ color: 'white', fontSize: 20, fontWeight: '700' }}>
-              Impostazioni
+              Settings
             </Text>
             <TouchableOpacity onPress={onClose} style={{ padding: 4 }}>
               <Text style={{ color: '#94a3b8', fontSize: 20 }}>✕</Text>
@@ -54,7 +54,7 @@ export function SettingsModal({ visible, onClose }: Props) {
 
           {/* Win Score */}
           <Text style={{ color: '#cbd5e1', fontSize: 14, fontWeight: '600', marginBottom: 12 }}>
-            Punteggio Vittoria
+            Win Score
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
             <TouchableOpacity

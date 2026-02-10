@@ -1,4 +1,5 @@
-import { View, Text } from 'react-native';
+import { useState } from 'react';
+import { View, Text, TextInput, Pressable } from 'react-native';
 import type { PlayerId } from '@beybladex/shared';
 import { useGameStore } from '../../store/game-store';
 import { ScoreDisplay } from './ScoreDisplay';
@@ -10,6 +11,22 @@ interface Props {
 
 export function PlayerPanel({ playerId }: Props) {
   const player = useGameStore((state) => state[playerId]);
+  const setPlayerNameValue = useGameStore((state) => state.setPlayerNameValue);
+  const [editing, setEditing] = useState(false);
+  const [editName, setEditName] = useState(player.name);
+
+  const handleNamePress = () => {
+    setEditName(player.name);
+    setEditing(true);
+  };
+
+  const handleNameSubmit = () => {
+    const trimmed = editName.trim();
+    if (trimmed) {
+      setPlayerNameValue(playerId, trimmed);
+    }
+    setEditing(false);
+  };
 
   return (
     <View
@@ -19,18 +36,41 @@ export function PlayerPanel({ playerId }: Props) {
         paddingVertical: 2,
       }}
     >
-      {/* Player Name */}
-      <Text
-        style={{
-          color: '#e2e8f0',
-          fontSize: 18,
-          fontWeight: '800',
-          textAlign: 'center',
-          paddingVertical: 2,
-        }}
-      >
-        {player.name}
-      </Text>
+      {/* Player Name - tap to edit */}
+      {editing ? (
+        <TextInput
+          value={editName}
+          onChangeText={setEditName}
+          onBlur={handleNameSubmit}
+          onSubmitEditing={handleNameSubmit}
+          autoFocus
+          selectTextOnFocus
+          maxLength={20}
+          style={{
+            color: '#fbbf24',
+            fontSize: 18,
+            fontWeight: '800',
+            textAlign: 'center',
+            paddingVertical: 2,
+            borderBottomWidth: 2,
+            borderBottomColor: '#fbbf24',
+          }}
+        />
+      ) : (
+        <Pressable onPress={handleNamePress}>
+          <Text
+            style={{
+              color: '#e2e8f0',
+              fontSize: 18,
+              fontWeight: '800',
+              textAlign: 'center',
+              paddingVertical: 2,
+            }}
+          >
+            {player.name}
+          </Text>
+        </Pressable>
+      )}
 
       {/* Layout: [Spin/Burst] - SCORE - [Over/Xtreme] */}
       <View

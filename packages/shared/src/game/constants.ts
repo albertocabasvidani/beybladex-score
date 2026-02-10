@@ -65,7 +65,7 @@ export const FINISH_ORDER: FinishType[] = ['spin', 'burst', 'over', 'xtreme'];
 export function createInitialPlayer(id: 'player1' | 'player2'): Player {
   return {
     id,
-    name: id === 'player1' ? 'Giocatore 1' : 'Giocatore 2',
+    name: id === 'player1' ? 'Player 1' : 'Player 2',
     score: 0,
     finishCounts: {
       spin: 0,

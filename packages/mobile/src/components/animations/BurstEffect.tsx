@@ -7,7 +7,9 @@ import Animated, {
   withDelay,
   withSequence,
   Easing,
+  cancelAnimation,
 } from 'react-native-reanimated';
+import { logger } from '../../utils/logger';
 
 const { width, height } = Dimensions.get('window');
 
@@ -22,23 +24,28 @@ function AnimatedLetter({ char, index, total }: { char: string; index: number; t
   const rotate = useSharedValue(0);
   const opacity = useSharedValue(1);
 
-  // Random scatter direction
   const scatterX = useMemo(() => (Math.random() - 0.5) * 800, []);
   const scatterY = useMemo(() => (Math.random() - 0.5) * 600, []);
   const scatterRotate = useMemo(() => (Math.random() - 0.5) * 720, []);
 
   useEffect(() => {
-    // Scale in with stagger
     scale.value = withDelay(
       index * 40,
       withTiming(1.3, { duration: 200, easing: Easing.out(Easing.back(2)) }),
     );
 
-    // Hold then scatter at 320ms
     translateX.value = withDelay(320, withTiming(scatterX, { duration: 800 }));
     translateY.value = withDelay(320, withTiming(scatterY, { duration: 800 }));
     rotate.value = withDelay(320, withTiming(scatterRotate, { duration: 800 }));
     opacity.value = withDelay(600, withTiming(0, { duration: 600 }));
+
+    return () => {
+      cancelAnimation(scale);
+      cancelAnimation(translateX);
+      cancelAnimation(translateY);
+      cancelAnimation(rotate);
+      cancelAnimation(opacity);
+    };
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -51,7 +58,6 @@ function AnimatedLetter({ char, index, total }: { char: string; index: number; t
     opacity: opacity.value,
   }));
 
-  // Offset each letter horizontally
   const letterOffset = (index - (total - 1) / 2) * 40;
 
   return (
@@ -95,6 +101,13 @@ function Particle({ index }: { index: number }) {
     );
     scale.value = withDelay(200, withTiming(0, { duration: 800 }));
     opacity.value = withDelay(600, withTiming(0, { duration: 400 }));
+
+    return () => {
+      cancelAnimation(translateX);
+      cancelAnimation(translateY);
+      cancelAnimation(scale);
+      cancelAnimation(opacity);
+    };
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -127,8 +140,16 @@ export function BurstEffect({ onComplete }: Props) {
   const letters = 'BURST!'.split('');
 
   useEffect(() => {
-    const timer = setTimeout(onComplete, 1600);
-    return () => clearTimeout(timer);
+    logger.debug('BurstEffect mounted', { letters: letters.length, particles: 12 });
+
+    const timer = setTimeout(() => {
+      logger.debug('BurstEffect timer fired');
+      onComplete();
+    }, 1600);
+    return () => {
+      logger.debug('BurstEffect unmounting');
+      clearTimeout(timer);
+    };
   }, []);
 
   return (
@@ -141,12 +162,9 @@ export function BurstEffect({ onComplete }: Props) {
         height: 100,
       }}
     >
-      {/* Particles */}
       {Array.from({ length: 12 }).map((_, i) => (
         <Particle key={`p-${i}`} index={i} />
       ))}
-
-      {/* Letters */}
       {letters.map((char, i) => (
         <AnimatedLetter
           key={`l-${i}`}

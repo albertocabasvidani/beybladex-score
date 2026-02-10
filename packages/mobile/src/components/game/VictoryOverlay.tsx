@@ -10,6 +10,7 @@ import Animated, {
   withSpring,
   Easing,
   FadeIn,
+  cancelAnimation,
 } from 'react-native-reanimated';
 import type { PlayerId } from '@beybladex/shared';
 import { useGameStore } from '../../store/game-store';
@@ -47,6 +48,13 @@ function ConfettiParticle({ index }: { index: number }) {
       withTiming(rotate.value + 360 * (Math.random() > 0.5 ? 1 : -1), { duration: 3000 }),
     );
     opacity.value = withDelay(2500, withTiming(0, { duration: 500 }));
+
+    return () => {
+      cancelAnimation(translateX);
+      cancelAnimation(translateY);
+      cancelAnimation(rotate);
+      cancelAnimation(opacity);
+    };
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -79,10 +87,8 @@ function TrophyBounce() {
   const rotate = useSharedValue(0);
 
   useEffect(() => {
-    // Bounce in
     scale.value = withSpring(1, { stiffness: 300, damping: 15 });
 
-    // Continuous gentle wobble
     rotate.value = withDelay(
       500,
       withRepeat(
@@ -90,10 +96,15 @@ function TrophyBounce() {
           withTiming(5, { duration: 600 }),
           withTiming(-5, { duration: 600 }),
         ),
-        -1,
+        6,
         true,
       ),
     );
+
+    return () => {
+      cancelAnimation(scale);
+      cancelAnimation(rotate);
+    };
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -130,6 +141,11 @@ function SlideInView({ delay, children }: SlideInProps) {
   useEffect(() => {
     translateY.value = withDelay(delay, withTiming(0, { duration: 300 }));
     opacity.value = withDelay(delay, withTiming(1, { duration: 300 }));
+
+    return () => {
+      cancelAnimation(translateY);
+      cancelAnimation(opacity);
+    };
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -167,15 +183,13 @@ export function VictoryOverlay({ winnerId }: Props) {
         zIndex: 200,
       }}
     >
-      {/* Confetti */}
-      {Array.from({ length: 50 }).map((_, i) => (
+      {/* Confetti - reduced from 50 to 20 */}
+      {Array.from({ length: 20 }).map((_, i) => (
         <ConfettiParticle key={i} index={i} />
       ))}
 
-      {/* Trophy */}
       <TrophyBounce />
 
-      {/* Winner name */}
       <SlideInView delay={400}>
         <Text
           style={{
@@ -193,7 +207,6 @@ export function VictoryOverlay({ winnerId }: Props) {
         </Text>
       </SlideInView>
 
-      {/* "WINS!" text */}
       <SlideInView delay={500}>
         <Text
           style={{
@@ -204,11 +217,10 @@ export function VictoryOverlay({ winnerId }: Props) {
             marginTop: 4,
           }}
         >
-          VINCE!
+          WINS!
         </Text>
       </SlideInView>
 
-      {/* Score */}
       <SlideInView delay={500}>
         <Text
           style={{
@@ -218,11 +230,10 @@ export function VictoryOverlay({ winnerId }: Props) {
             marginTop: 8,
           }}
         >
-          Punteggio: {player.score}
+          Score: {player.score}
         </Text>
       </SlideInView>
 
-      {/* New Match button */}
       <SlideInView delay={600}>
         <Pressable
           onPress={reset}
@@ -246,7 +257,7 @@ export function VictoryOverlay({ winnerId }: Props) {
               fontWeight: '800',
             }}
           >
-            Nuova Partita
+            New Game
           </Text>
         </Pressable>
       </SlideInView>

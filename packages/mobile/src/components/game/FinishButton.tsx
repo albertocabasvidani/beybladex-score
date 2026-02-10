@@ -1,4 +1,5 @@
-import { Pressable, Text, View } from 'react-native';
+import { useState, useCallback } from 'react';
+import { Pressable, Text, type LayoutChangeEvent } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -13,7 +14,6 @@ interface Props {
   playerId: PlayerId;
 }
 
-// Stile manga vibrante per ogni tipo di finish
 const MANGA_STYLES: Record<FinishType, {
   bgColor: string;
   shadowColor: string;
@@ -54,6 +54,21 @@ export function FinishButton({ finishType, playerId }: Props) {
   const style = MANGA_STYLES[finishType];
   const isDisabled = winner !== null;
 
+  const [btnSize, setBtnSize] = useState({ w: 0, h: 0 });
+  const onLayout = useCallback((e: LayoutChangeEvent) => {
+    const { width, height } = e.nativeEvent.layout;
+    setBtnSize({ w: width, h: height });
+  }, []);
+
+  // Font e angolo calcolati sulla diagonale reale del pulsante
+  const diagonal = Math.sqrt(btnSize.w * btnSize.w + btnSize.h * btnSize.h);
+  const diagAngle = btnSize.w > 0
+    ? Math.atan2(btnSize.h, btnSize.w) * (180 / Math.PI)
+    : 45;
+  const labelFontSize = btnSize.w > 0
+    ? Math.floor(diagonal * 0.85 / (style.label.length * 0.6))
+    : 0;
+
   const scaleValue = useSharedValue(1);
   const translateYValue = useSharedValue(0);
 
@@ -89,11 +104,10 @@ export function FinishButton({ finishType, playerId }: Props) {
       style={{ flex: 1 }}
     >
       <Animated.View
+        onLayout={onLayout}
         style={[
           {
             flex: 1,
-            paddingVertical: 4,
-            paddingHorizontal: 8,
             borderRadius: 12,
             borderWidth: 3,
             borderColor: style.borderColor,
@@ -101,38 +115,40 @@ export function FinishButton({ finishType, playerId }: Props) {
             alignItems: 'center',
             justifyContent: 'center',
             opacity: isDisabled ? 0.4 : 1,
-            // Shadow effect
             shadowColor: style.shadowColor,
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.8,
             shadowRadius: 4,
             elevation: 8,
+            overflow: 'hidden',
           },
           animatedStyle,
         ]}
       >
-        {/* Label */}
-        <Text
-          style={{
-            color: 'white',
-            fontSize: 18,
-            fontWeight: '800',
-            letterSpacing: 2,
-            textShadowColor: 'rgba(0,0,0,0.5)',
-            textShadowOffset: { width: 1, height: 1 },
-            textShadowRadius: 2,
-          }}
-        >
-          {style.label}
-        </Text>
+        {/* Diagonal label background */}
+        {labelFontSize > 0 && (
+          <Text
+            style={{
+              position: 'absolute',
+              width: diagonal * 3,
+              textAlign: 'center',
+              fontSize: labelFontSize,
+              fontWeight: '900',
+              color: 'rgba(255,255,255,0.18)',
+              letterSpacing: labelFontSize * 0.05,
+              transform: [{ rotate: `${-diagAngle}deg` }],
+            }}
+          >
+            {style.label}
+          </Text>
+        )}
 
-        {/* Points */}
+        {/* Points foreground */}
         <Text
           style={{
             color: 'white',
-            fontSize: 48,
+            fontSize: 32,
             fontWeight: '900',
-            lineHeight: 52,
             textShadowColor: 'rgba(0,0,0,0.4)',
             textShadowOffset: { width: 2, height: 2 },
             textShadowRadius: 4,
@@ -140,19 +156,6 @@ export function FinishButton({ finishType, playerId }: Props) {
         >
           +{points}
         </Text>
-
-        {/* Decorative line */}
-        <View
-          style={{
-            position: 'absolute',
-            bottom: 4,
-            left: 8,
-            right: 8,
-            height: 2,
-            borderRadius: 1,
-            backgroundColor: 'rgba(255,255,255,0.3)',
-          }}
-        />
       </Animated.View>
     </Pressable>
   );

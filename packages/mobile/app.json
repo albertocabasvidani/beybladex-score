@@ -17,7 +17,8 @@
         "backgroundColor": "#1a1a2e"
       },
       "package": "com.beybladex.score",
-      "versionCode": 1
+      "versionCode": 1,
+      "permissions": []
     },
     "plugins": [
       "expo-localization"

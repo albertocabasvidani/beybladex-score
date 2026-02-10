@@ -137,7 +137,7 @@ export function setPlayerName(
     ...state,
     [playerId]: {
       ...state[playerId],
-      name: name.trim() || (playerId === 'player1' ? 'Giocatore 1' : 'Giocatore 2'),
+      name: name.trim() || (playerId === 'player1' ? 'Player 1' : 'Player 2'),
     },
   };
 }

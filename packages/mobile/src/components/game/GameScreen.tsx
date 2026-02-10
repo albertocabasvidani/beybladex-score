@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
 import { PlayerPanel } from './PlayerPanel';
 import { VictoryOverlay } from './VictoryOverlay';
@@ -6,6 +6,7 @@ import { AnimationOverlay } from '../animations';
 import { SettingsModal } from '../modals/SettingsModal';
 import { CreditsModal } from '../modals/CreditsModal';
 import { useGameStore } from '../../store/game-store';
+import { logger } from '../../utils/logger';
 
 export function GameScreen() {
   const { undo, reset, canUndo } = useGameStore();
@@ -17,6 +18,19 @@ export function GameScreen() {
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [creditsOpen, setCreditsOpen] = useState(false);
+
+  // Safety valve: force-clear stuck animations after 6 seconds
+  useEffect(() => {
+    if (!currentAnimation) return;
+    const timer = setTimeout(() => {
+      logger.error('Animation STUCK - force clearing after 6s', {
+        type: currentAnimation.type,
+        playerId: currentAnimation.playerId,
+      });
+      clearAnimation();
+    }, 6000);
+    return () => clearTimeout(timer);
+  }, [currentAnimation]);
 
   return (
     <View style={{ flex: 1, backgroundColor: '#0f172a' }}>
@@ -88,7 +102,7 @@ export function GameScreen() {
             }}
           >
             <Text style={{ color: '#e2e8f0', fontSize: 14 }}>↩</Text>
-            <Text style={{ color: '#e2e8f0', fontSize: 13, fontWeight: '600' }}>Annulla</Text>
+            <Text style={{ color: '#e2e8f0', fontSize: 13, fontWeight: '600' }}>Undo</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -108,36 +122,20 @@ export function GameScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Right: Info + Settings */}
-        <View style={{ flexDirection: 'row', gap: 8 }}>
-          <TouchableOpacity
-            onPress={() => setCreditsOpen(true)}
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 18,
-              backgroundColor: '#334155',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <Text style={{ color: '#94a3b8', fontSize: 18, fontWeight: '700' }}>i</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => setSettingsOpen(true)}
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 18,
-              backgroundColor: '#334155',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <Text style={{ color: '#94a3b8', fontSize: 16 }}>⚙</Text>
-          </TouchableOpacity>
-        </View>
+        {/* Right: Info */}
+        <TouchableOpacity
+          onPress={() => setCreditsOpen(true)}
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: 18,
+            backgroundColor: '#334155',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Text style={{ color: '#94a3b8', fontSize: 18, fontWeight: '700' }}>i</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Modals */}
@@ -152,8 +150,8 @@ export function GameScreen() {
         />
       )}
 
-      {/* Victory Overlay */}
-      {winner && <VictoryOverlay winnerId={winner} />}
+      {/* Victory Overlay - only after animation completes */}
+      {winner && !currentAnimation && <VictoryOverlay winnerId={winner} />}
     </View>
   );
 }

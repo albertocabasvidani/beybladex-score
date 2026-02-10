@@ -7,7 +7,9 @@ import Animated, {
   withDelay,
   withSequence,
   Easing,
+  cancelAnimation,
 } from 'react-native-reanimated';
+import { logger } from '../../utils/logger';
 
 const { width, height } = Dimensions.get('window');
 
@@ -23,10 +25,14 @@ export function OverEffect({ onComplete }: Props) {
   const opacity = useSharedValue(1);
 
   useEffect(() => {
-    // Scale in
-    scale.value = withTiming(1.2, { duration: 300, easing: Easing.out(Easing.back(1.5)) });
+    logger.debug('OverEffect mounted');
 
-    // Hold 50ms, then fly right with rotation
+    // FIX: single scale sequence (was previously overwritten by two separate assignments)
+    scale.value = withSequence(
+      withTiming(1.2, { duration: 300, easing: Easing.out(Easing.back(1.5)) }),
+      withDelay(50, withTiming(0.8, { duration: 1500 })),
+    );
+
     translateX.value = withDelay(
       350,
       withTiming(width + 200, { duration: 1500, easing: Easing.in(Easing.cubic) }),
@@ -39,19 +45,25 @@ export function OverEffect({ onComplete }: Props) {
       350,
       withTiming(45, { duration: 1500 }),
     );
-    scale.value = withSequence(
-      withTiming(1.2, { duration: 300 }),
-      withDelay(50, withTiming(0.8, { duration: 1500 })),
-    );
 
-    // Fade out
     opacity.value = withDelay(
       800,
       withTiming(0, { duration: 1000 }),
     );
 
-    const timer = setTimeout(onComplete, 2300);
-    return () => clearTimeout(timer);
+    const timer = setTimeout(() => {
+      logger.debug('OverEffect timer fired');
+      onComplete();
+    }, 2300);
+    return () => {
+      logger.debug('OverEffect unmounting');
+      clearTimeout(timer);
+      cancelAnimation(scale);
+      cancelAnimation(translateX);
+      cancelAnimation(translateY);
+      cancelAnimation(rotate);
+      cancelAnimation(opacity);
+    };
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({

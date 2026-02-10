@@ -5,8 +5,10 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   withSequence,
+  cancelAnimation,
   Easing,
 } from 'react-native-reanimated';
+import { logger } from '../../utils/logger';
 
 const { width, height } = Dimensions.get('window');
 
@@ -20,6 +22,8 @@ export function SpinEffect({ onComplete }: Props) {
   const opacity = useSharedValue(1);
 
   useEffect(() => {
+    logger.debug('SpinEffect mounted');
+
     // Scale: 0 → 1.3 → 1 → 0.8
     scale.value = withSequence(
       withTiming(1.3, { duration: 300, easing: Easing.out(Easing.back(1.5)) }),
@@ -36,8 +40,17 @@ export function SpinEffect({ onComplete }: Props) {
       withTiming(0, { duration: 300 }),
     );
 
-    const timer = setTimeout(onComplete, 1200);
-    return () => clearTimeout(timer);
+    const timer = setTimeout(() => {
+      logger.debug('SpinEffect timer fired');
+      onComplete();
+    }, 1200);
+    return () => {
+      logger.debug('SpinEffect unmounting');
+      clearTimeout(timer);
+      cancelAnimation(scale);
+      cancelAnimation(rotate);
+      cancelAnimation(opacity);
+    };
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
