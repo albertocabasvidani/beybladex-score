@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PlayerPanel } from './PlayerPanel';
 import { VictoryOverlay } from './VictoryOverlay';
 import { AnimationOverlay } from '../animations';
 import { SettingsModal } from '../modals/SettingsModal';
 import { CreditsModal } from '../modals/CreditsModal';
+import { GuideModal } from '../modals/GuideModal';
 import { useGameStore } from '../../store/game-store';
 import { logger } from '../../utils/logger';
 
@@ -18,6 +20,17 @@ export function GameScreen() {
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [creditsOpen, setCreditsOpen] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
+
+  // Show guide on first launch
+  useEffect(() => {
+    AsyncStorage.getItem('hasSeenGuide').then((value) => {
+      if (!value) {
+        setGuideOpen(true);
+        AsyncStorage.setItem('hasSeenGuide', 'true');
+      }
+    });
+  }, []);
 
   // Safety valve: force-clear stuck animations after 6 seconds
   useEffect(() => {
@@ -124,7 +137,7 @@ export function GameScreen() {
 
         {/* Right: Info */}
         <TouchableOpacity
-          onPress={() => setCreditsOpen(true)}
+          onPress={() => setGuideOpen(true)}
           style={{
             width: 36,
             height: 36,
@@ -140,6 +153,14 @@ export function GameScreen() {
 
       {/* Modals */}
       <SettingsModal visible={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <GuideModal
+        visible={guideOpen}
+        onClose={() => setGuideOpen(false)}
+        onOpenCredits={() => {
+          setGuideOpen(false);
+          setCreditsOpen(true);
+        }}
+      />
       <CreditsModal visible={creditsOpen} onClose={() => setCreditsOpen(false)} />
 
       {/* Animation Overlay */}

@@ -1,6 +1,7 @@
 import { useWindowDimensions } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import { useKeepAwake } from 'expo-keep-awake';
 import { RotateDeviceScreen } from './components/ui/RotateDeviceScreen';
 import { GameScreen } from './components/game/GameScreen';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -20,6 +21,7 @@ const originalHandler = (globalThis as any).ErrorUtils?.getGlobalHandler?.();
 logger.init().then(() => logger.info('App started'));
 
 function AppContent() {
+  useKeepAwake();
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
 
