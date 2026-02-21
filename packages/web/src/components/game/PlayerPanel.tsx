@@ -2,6 +2,7 @@ import type { PlayerId } from "@beybladex/shared";
 import NameInput from "./NameInput";
 import ScoreDisplay from "./ScoreDisplay";
 import FinishButton from "./FinishButton";
+import FoulCounter from "./FoulCounter";
 
 interface PlayerPanelProps {
   playerId: PlayerId;
@@ -13,6 +14,9 @@ export default function PlayerPanel({ playerId }: PlayerPanelProps) {
       <div className="mb-0.5">
         <NameInput playerId={playerId} />
       </div>
+
+      {/* Foul counter */}
+      <FoulCounter playerId={playerId} />
 
       {/* Layout orizzontale: [Spin][Burst] - PUNTEGGIO - [Over][Xtreme] */}
       <div className="flex items-center justify-center gap-1.5 w-full">

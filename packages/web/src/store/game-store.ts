@@ -12,7 +12,11 @@ import {
   resetMatch,
   setPlayerName,
   setWinScore,
+  setMaxFouls,
+  addFoul as addFoulFn,
+  removeFoul as removeFoulFn,
   DEFAULT_WIN_SCORE,
+  DEFAULT_MAX_FOULS,
 } from '@beybladex/shared';
 
 interface GameStore extends MatchState {
@@ -30,11 +34,14 @@ interface GameStore extends MatchState {
   setWinScoreValue: (winScore: number) => void;
   clearAnimation: () => void;
   canUndo: () => boolean;
+  addFoul: (playerId: PlayerId) => void;
+  removeFoul: (playerId: PlayerId) => void;
+  setMaxFoulsValue: (value: number) => void;
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
   // Initial state
-  ...createInitialMatchState(DEFAULT_WIN_SCORE),
+  ...createInitialMatchState(DEFAULT_WIN_SCORE, DEFAULT_MAX_FOULS),
   currentAnimation: null,
 
   // Score a point
@@ -100,5 +107,36 @@ export const useGameStore = create<GameStore>((set, get) => ({
   // Check if undo is available
   canUndo: () => {
     return canUndo(get());
+  },
+
+  // Add foul to a player
+  addFoul: (playerId) => {
+    const state = get();
+    if (state.winner) return;
+    const newState = addFoulFn(state, playerId);
+    set({
+      player1: newState.player1,
+      player2: newState.player2,
+      winner: newState.winner,
+      history: newState.history,
+    });
+  },
+
+  // Remove foul from a player
+  removeFoul: (playerId) => {
+    const state = get();
+    if (state[playerId].fouls <= 0) return;
+    const newState = removeFoulFn(state, playerId);
+    set({
+      [playerId]: newState[playerId],
+      history: newState.history,
+    });
+  },
+
+  // Set max fouls limit
+  setMaxFoulsValue: (value) => {
+    const state = get();
+    const newState = setMaxFouls(state, value);
+    set({ maxFouls: newState.maxFouls });
   },
 }));

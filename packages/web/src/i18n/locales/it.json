@@ -26,7 +26,8 @@
   "settings": {
     "title": "Impostazioni",
     "language": "Lingua",
-    "winScore": "Punti per vincere"
+    "winScore": "Punti per vincere",
+    "maxFouls": "Limite falli"
   },
   "confirm": {
     "reset": "Sei sicuro di voler resettare la partita?",

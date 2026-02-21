@@ -8,8 +8,7 @@ import CreditsModal from '../modals/CreditsModal';
 export default function GameControls() {
   const { t } = useTranslation();
   const undo = useGameStore((state) => state.undo);
-  const canUndoFn = useGameStore((state) => state.canUndo);
-  const canUndo = canUndoFn();
+  const canUndo = useGameStore((state) => state.history.length > 0);
   const winScore = useGameStore((state) => state.winScore);
 
   const [showResetModal, setShowResetModal] = useState(false);

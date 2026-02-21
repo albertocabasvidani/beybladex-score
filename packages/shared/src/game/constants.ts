@@ -20,6 +20,11 @@ export const DEFAULT_WIN_SCORE = 4;
 export const MIN_WIN_SCORE = 3;
 export const MAX_WIN_SCORE = 10;
 
+// Foul limits
+export const DEFAULT_MAX_FOULS = 2;
+export const MIN_MAX_FOULS = 0;  // 0 = disabled
+export const MAX_MAX_FOULS = 5;
+
 // Finish type display info
 export const FINISH_INFO: Record<FinishType, {
   label: string;
@@ -67,6 +72,7 @@ export function createInitialPlayer(id: 'player1' | 'player2'): Player {
     id,
     name: id === 'player1' ? 'Player 1' : 'Player 2',
     score: 0,
+    fouls: 0,
     finishCounts: {
       spin: 0,
       burst: 0,

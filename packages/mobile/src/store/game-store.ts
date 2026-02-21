@@ -8,8 +8,12 @@ import {
   canUndo as canUndoFn,
   resetMatch,
   setWinScore,
+  setMaxFouls,
   setPlayerName,
+  addFoul as addFoulFn,
+  removeFoul as removeFoulFn,
   DEFAULT_WIN_SCORE,
+  DEFAULT_MAX_FOULS,
 } from '@beybladex/shared';
 import { logger } from '../utils/logger';
 import { asyncStorage } from './async-storage';
@@ -28,10 +32,14 @@ interface GameStore extends MatchState {
   clearAnimation: () => void;
   setWinScoreValue: (value: number) => void;
   setPlayerNameValue: (playerId: PlayerId, name: string) => void;
+  addFoul: (playerId: PlayerId) => void;
+  removeFoul: (playerId: PlayerId) => void;
+  setMaxFoulsValue: (value: number) => void;
 }
 
 interface PersistedState {
   winScore: number;
+  maxFouls: number;
   _persistedNames: { player1: string; player2: string };
 }
 
@@ -39,7 +47,7 @@ export const useGameStore = create<GameStore>()(
   persist(
     (set, get) => ({
       // Initial state
-      ...createInitialMatchState(DEFAULT_WIN_SCORE),
+      ...createInitialMatchState(DEFAULT_WIN_SCORE, DEFAULT_MAX_FOULS),
       currentAnimation: null,
 
       // Score a point
@@ -178,12 +186,85 @@ export const useGameStore = create<GameStore>()(
           });
         }
       },
+
+      // Add foul to a player
+      addFoul: (playerId) => {
+        try {
+          const state = get();
+          if (state.winner) {
+            logger.warn('Foul blocked: winner exists', { winner: state.winner });
+            return;
+          }
+          logger.info('Add foul', {
+            playerId,
+            currentFouls: state[playerId].fouls,
+            maxFouls: state.maxFouls,
+          });
+          const newState = addFoulFn(state, playerId);
+          set({
+            player1: newState.player1,
+            player2: newState.player2,
+            winner: newState.winner,
+            history: newState.history,
+          });
+          logger.info('Foul applied', {
+            fouls: newState[playerId].fouls,
+            p1Score: newState.player1.score,
+            p2Score: newState.player2.score,
+            winner: newState.winner,
+          });
+        } catch (e) {
+          logger.error('AddFoul CRASHED', {
+            error: (e as Error).message,
+            stack: (e as Error).stack?.split('\n').slice(0, 3).join('\n'),
+            playerId,
+          });
+        }
+      },
+
+      // Remove foul from a player
+      removeFoul: (playerId) => {
+        try {
+          const state = get();
+          if (state[playerId].fouls <= 0) return;
+          logger.info('Remove foul', {
+            playerId,
+            currentFouls: state[playerId].fouls,
+          });
+          const newState = removeFoulFn(state, playerId);
+          set({
+            [playerId]: newState[playerId],
+            history: newState.history,
+          });
+        } catch (e) {
+          logger.error('RemoveFoul CRASHED', {
+            error: (e as Error).message,
+            playerId,
+          });
+        }
+      },
+
+      // Set max fouls limit
+      setMaxFoulsValue: (value) => {
+        try {
+          logger.info('Set max fouls', { value });
+          const state = get();
+          const newState = setMaxFouls(state, value);
+          set({ maxFouls: newState.maxFouls });
+        } catch (e) {
+          logger.error('SetMaxFouls CRASHED', {
+            error: (e as Error).message,
+            value,
+          });
+        }
+      },
     }),
     {
       name: 'beybladex-game',
       storage: createJSONStorage(() => asyncStorage),
       partialize: (state): PersistedState => ({
         winScore: state.winScore,
+        maxFouls: state.maxFouls,
         _persistedNames: {
           player1: state.player1.name,
           player2: state.player2.name,
@@ -195,6 +276,7 @@ export const useGameStore = create<GameStore>()(
         return {
           ...(current as GameStore),
           winScore: p.winScore ?? (current as GameStore).winScore,
+          maxFouls: p.maxFouls ?? (current as GameStore).maxFouls,
           player1: {
             ...(current as GameStore).player1,
             name: p._persistedNames?.player1 ?? (current as GameStore).player1.name,

@@ -29,10 +29,17 @@ export const translations = {
       share: 'Condividi',
       newGame: 'Nuova Partita'
     },
+    foul: {
+      label: 'Falli',
+      short: 'F',
+      maxFouls: 'Limite falli',
+      disabled: 'OFF'
+    },
     settings: {
       title: 'Impostazioni',
       language: 'Lingua',
-      winScore: 'Punti per vincere'
+      winScore: 'Punti per vincere',
+      maxFouls: 'Limite falli'
     },
     confirm: {
       reset: 'Sei sicuro di voler resettare la partita?',
@@ -65,10 +72,17 @@ export const translations = {
       share: 'Share',
       newGame: 'New Game'
     },
+    foul: {
+      label: 'Fouls',
+      short: 'F',
+      maxFouls: 'Foul limit',
+      disabled: 'OFF'
+    },
     settings: {
       title: 'Settings',
       language: 'Language',
-      winScore: 'Points to win'
+      winScore: 'Points to win',
+      maxFouls: 'Foul limit'
     },
     confirm: {
       reset: 'Are you sure you want to reset the game?',

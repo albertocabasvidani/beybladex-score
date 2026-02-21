@@ -88,9 +88,45 @@ yarn type-check     # TypeScript check
 import { FINISH_SCORES, scorePoint, MatchState, setWinScore, MIN_WIN_SCORE, MAX_WIN_SCORE } from '@beybladex/shared';
 ```
 
+## Build & Signing Android
+
+### Signing Key (CRITICO)
+La prima release su Play Store è stata caricata con la keystore gestita da EAS (Expo).
+Per le build locali (Gradle) **BISOGNA usare la stessa upload keystore**, altrimenti Play Store rifiuta l'AAB.
+
+- **Keystore**: `packages/mobile/android/app/upload.keystore` (scaricata da EAS API)
+- **Password/alias**: configurati in `build.gradle` → `signingConfigs.release`
+- **MAI usare `signingConfigs.debug` per release** destinate a Play Store
+- Se `upload.keystore` non esiste, scaricarla dall'API Expo GraphQL (vedi script `download-keystore.sh`)
+
+### Build AAB locale (Play Store)
+```bash
+# PREREQUISITO: upload.keystore deve essere in android/app/
+# build.gradle deve avere signingConfigs.release con upload keystore
+bash packages/mobile/scripts/build-aab.sh
+# Output: packages/mobile/beybladex-mobile.aab
+```
+
+### Build APK locale (test emulatore)
+```bash
+bash packages/mobile/scripts/build-apk.sh
+# Output: packages/mobile/beybladex-mobile.apk
+```
+
+### EAS Cloud (fallback)
+```bash
+# Attenzione: piano gratuito ha limite mensile di build
+bash packages/mobile/scripts/eas-build-production.sh
+```
+
+### Upload Play Store
+1. Google Play Console → Beyblade X Score → Closed testing (alpha) → Create new release
+2. Upload AAB (`beybladex-mobile.aab`)
+3. Compilare release notes e pubblicare
+
 ## Deploy
 - **Web**: `cd packages/web && npm run deploy` (GitHub Pages)
-- **Mobile**: `cd packages/mobile && eas build --platform android --profile production` (Play Store)
+- **Mobile**: build locale AAB + upload manuale su Play Console
 
 ## Componenti Mobile Principali
 

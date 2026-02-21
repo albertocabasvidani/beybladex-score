@@ -26,7 +26,8 @@
   "settings": {
     "title": "Settings",
     "language": "Language",
-    "winScore": "Points to win"
+    "winScore": "Points to win",
+    "maxFouls": "Foul limit"
   },
   "confirm": {
     "reset": "Are you sure you want to reset the game?",

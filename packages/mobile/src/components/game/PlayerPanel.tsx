@@ -4,6 +4,7 @@ import type { PlayerId } from '@beybladex/shared';
 import { useGameStore } from '../../store/game-store';
 import { ScoreDisplay } from './ScoreDisplay';
 import { FinishButton } from './FinishButton';
+import { FoulCounter } from './FoulCounter';
 
 interface Props {
   playerId: PlayerId;
@@ -71,6 +72,9 @@ export function PlayerPanel({ playerId }: Props) {
           </Text>
         </Pressable>
       )}
+
+      {/* Foul counter */}
+      <FoulCounter playerId={playerId} />
 
       {/* Layout: [Spin/Burst] - SCORE - [Over/Xtreme] */}
       <View

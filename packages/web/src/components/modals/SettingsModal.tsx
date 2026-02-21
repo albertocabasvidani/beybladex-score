@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSettingsStore, type Language } from '../../store/settings-store';
 import { useGameStore } from '../../store/game-store';
-import { MIN_WIN_SCORE, MAX_WIN_SCORE } from '@beybladex/shared';
+import { MIN_WIN_SCORE, MAX_WIN_SCORE, MIN_MAX_FOULS, MAX_MAX_FOULS } from '@beybladex/shared';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -12,7 +12,7 @@ interface SettingsModalProps {
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const { t, i18n } = useTranslation();
   const { language, setLanguage, setDefaultWinScore } = useSettingsStore();
-  const { winScore, setWinScoreValue } = useGameStore();
+  const { winScore, setWinScoreValue, maxFouls, setMaxFoulsValue } = useGameStore();
 
   const handleLanguageChange = (lang: Language) => {
     setLanguage(lang);
@@ -114,6 +114,29 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               </div>
               <p className="mt-1 text-xs text-slate-500">
                 {MIN_WIN_SCORE} - {MAX_WIN_SCORE}
+              </p>
+            </div>
+
+            {/* Foul Limit */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                {t('settings.maxFouls')}
+              </label>
+              <div className="flex items-center gap-4">
+                <input
+                  type="range"
+                  min={MIN_MAX_FOULS}
+                  max={MAX_MAX_FOULS}
+                  value={maxFouls}
+                  onChange={(e) => setMaxFoulsValue(Number(e.target.value))}
+                  className="flex-1 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                />
+                <span className={`w-8 text-center text-xl font-bold ${maxFouls === 0 ? 'text-slate-500' : 'text-white'}`}>
+                  {maxFouls === 0 ? 'OFF' : maxFouls}
+                </span>
+              </div>
+              <p className="mt-1 text-xs text-slate-500">
+                OFF - {MAX_MAX_FOULS}
               </p>
             </div>
           </motion.div>
