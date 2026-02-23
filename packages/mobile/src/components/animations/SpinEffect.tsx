@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Dimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -10,13 +10,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import { logger } from '../../utils/logger';
 
-const { width, height } = Dimensions.get('window');
-
 interface Props {
   onComplete: () => void;
 }
 
 export function SpinEffect({ onComplete }: Props) {
+  const { height } = useWindowDimensions();
   const scale = useSharedValue(0);
   const rotate = useSharedValue(0);
   const opacity = useSharedValue(1);

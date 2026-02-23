@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { View, Dimensions } from 'react-native';
+import { View, useWindowDimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -11,13 +11,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import { logger } from '../../utils/logger';
 
-const { width, height } = Dimensions.get('window');
-
 interface Props {
   onComplete: () => void;
 }
 
 function AnimatedLetter({ char, index, total }: { char: string; index: number; total: number }) {
+  const { width } = useWindowDimensions();
   const scale = useSharedValue(0);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
@@ -82,6 +81,7 @@ function AnimatedLetter({ char, index, total }: { char: string; index: number; t
 }
 
 function Particle({ index }: { index: number }) {
+  const { width } = useWindowDimensions();
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const scale = useSharedValue(1);
@@ -137,6 +137,7 @@ function Particle({ index }: { index: number }) {
 }
 
 export function BurstEffect({ onComplete }: Props) {
+  const { height } = useWindowDimensions();
   const letters = 'BURST!'.split('');
 
   useEffect(() => {

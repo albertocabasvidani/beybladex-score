@@ -61,9 +61,15 @@ export function AnimationOverlay({ animation, onComplete }: Props) {
     }, 300);
   };
 
-  const bgStyle = useAnimatedStyle(() => ({
-    backgroundColor: `rgba(0, 0, 0, ${bgOpacity.value})`,
-  }));
+  const bgStyle = useAnimatedStyle(() => {
+    'worklet';
+    // Round to 3 decimals to avoid scientific notation (e.g. 7.87e-8)
+    // which crashes Reanimated's color parser on Android
+    const alpha = Math.round(bgOpacity.value * 1000) / 1000;
+    return {
+      backgroundColor: `rgba(0, 0, 0, ${alpha})`,
+    };
+  });
 
   const renderEffect = () => {
     switch (animation.type) {

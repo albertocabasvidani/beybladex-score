@@ -23,6 +23,7 @@ interface GameStore extends MatchState {
     type: FinishType;
     playerId: PlayerId;
   } | null;
+  isSwapped: boolean;
 
   // Actions
   score: (playerId: PlayerId, finishType: FinishType) => void;
@@ -35,6 +36,7 @@ interface GameStore extends MatchState {
   addFoul: (playerId: PlayerId) => void;
   removeFoul: (playerId: PlayerId) => void;
   setMaxFoulsValue: (value: number) => void;
+  swapSides: () => void;
 }
 
 interface PersistedState {
@@ -49,6 +51,7 @@ export const useGameStore = create<GameStore>()(
       // Initial state
       ...createInitialMatchState(DEFAULT_WIN_SCORE, DEFAULT_MAX_FOULS),
       currentAnimation: null,
+      isSwapped: false,
 
       // Score a point
       score: (playerId, finishType) => {
@@ -242,6 +245,13 @@ export const useGameStore = create<GameStore>()(
             playerId,
           });
         }
+      },
+
+      // Swap sides (cambio campo)
+      swapSides: () => {
+        const state = get();
+        logger.info('Swap sides', { isSwapped: !state.isSwapped });
+        set({ isSwapped: !state.isSwapped });
       },
 
       // Set max fouls limit

@@ -16,7 +16,12 @@ export function GameScreen() {
   const winScore = useGameStore((state) => state.winScore);
   const currentAnimation = useGameStore((state) => state.currentAnimation);
   const clearAnimation = useGameStore((state) => state.clearAnimation);
+  const isSwapped = useGameStore((state) => state.isSwapped);
+  const swapSides = useGameStore((state) => state.swapSides);
   const canUndoValue = canUndo();
+
+  const leftPlayer = isSwapped ? 'player2' : 'player1';
+  const rightPlayer = isSwapped ? 'player1' : 'player2';
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [creditsOpen, setCreditsOpen] = useState(false);
@@ -54,52 +59,66 @@ export function GameScreen() {
           flexDirection: 'row',
         }}
       >
-        {/* Player 1 */}
+        {/* Left player */}
         <View style={{ flex: 1 }}>
-          <PlayerPanel playerId="player1" />
+          <PlayerPanel playerId={leftPlayer} />
         </View>
 
-        {/* Divider */}
-        <View style={{ width: 24, justifyContent: 'center', alignItems: 'center' }}>
-          <View style={{ width: 1, flex: 1, backgroundColor: '#334155', marginVertical: 8 }} />
+        {/* Divider with swap button */}
+        <View style={{ width: 48, alignItems: 'center' }}>
+          {/* Swap button */}
+          <TouchableOpacity
+            onPress={swapSides}
+            style={{
+              paddingVertical: 2,
+            }}
+          >
+            <Text style={{ color: '#64748b', fontSize: 28 }}>⇄</Text>
+          </TouchableOpacity>
+          {/* Divider line */}
+          <View style={{ width: 1, flex: 1, backgroundColor: '#334155' }} />
         </View>
 
-        {/* Player 2 */}
+        {/* Right player */}
         <View style={{ flex: 1 }}>
-          <PlayerPanel playerId="player2" />
+          <PlayerPanel playerId={rightPlayer} />
         </View>
       </View>
 
-      {/* Bottom bar */}
+      {/* Bottom bar - mirroring top layout for alignment */}
       <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          paddingVertical: 6,
+          paddingTop: 10,
+          paddingBottom: 6,
           paddingHorizontal: 12,
         }}
       >
-        {/* Left: Trophy + win score */}
-        <TouchableOpacity
-          onPress={() => setSettingsOpen(true)}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 4,
-            paddingVertical: 6,
-            paddingHorizontal: 10,
-            backgroundColor: '#334155',
-            borderRadius: 8,
-          }}
-        >
-          <Text style={{ fontSize: 16 }}>🏆</Text>
-          <Text style={{ color: '#fbbf24', fontSize: 16, fontWeight: '800' }}>
-            {winScore}
-          </Text>
-        </TouchableOpacity>
+        {/* Left half */}
+        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+          {/* Trophy + win score */}
+          <TouchableOpacity
+            onPress={() => setSettingsOpen(true)}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 4,
+              paddingVertical: 6,
+              paddingHorizontal: 10,
+              backgroundColor: '#334155',
+              borderRadius: 8,
+            }}
+          >
+            <Text style={{ fontSize: 16 }}>🏆</Text>
+            <Text style={{ color: '#fbbf24', fontSize: 16, fontWeight: '800' }}>
+              {winScore}
+            </Text>
+          </TouchableOpacity>
 
-        {/* Center: Undo + Reset */}
-        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', gap: 12 }}>
+          <View style={{ flex: 1 }} />
+
+          {/* Undo */}
           <TouchableOpacity
             onPress={undo}
             disabled={!canUndoValue}
@@ -117,7 +136,14 @@ export function GameScreen() {
             <Text style={{ color: '#e2e8f0', fontSize: 14 }}>↩</Text>
             <Text style={{ color: '#e2e8f0', fontSize: 13, fontWeight: '600' }}>Undo</Text>
           </TouchableOpacity>
+        </View>
 
+        {/* Center spacer - matches divider width */}
+        <View style={{ width: 48 }} />
+
+        {/* Right half */}
+        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+          {/* Reset */}
           <TouchableOpacity
             onPress={reset}
             style={{
@@ -133,22 +159,24 @@ export function GameScreen() {
             <Text style={{ color: '#fecaca', fontSize: 14 }}>↻</Text>
             <Text style={{ color: '#fecaca', fontSize: 13, fontWeight: '600' }}>Reset</Text>
           </TouchableOpacity>
-        </View>
 
-        {/* Right: Info */}
-        <TouchableOpacity
-          onPress={() => setGuideOpen(true)}
-          style={{
-            width: 36,
-            height: 36,
-            borderRadius: 18,
-            backgroundColor: '#334155',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <Text style={{ color: '#94a3b8', fontSize: 18, fontWeight: '700' }}>i</Text>
-        </TouchableOpacity>
+          <View style={{ flex: 1 }} />
+
+          {/* Info */}
+          <TouchableOpacity
+            onPress={() => setGuideOpen(true)}
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 18,
+              backgroundColor: '#334155',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Text style={{ color: '#94a3b8', fontSize: 18, fontWeight: '700' }}>i</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Modals */}

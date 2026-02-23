@@ -35,7 +35,7 @@ function AppContent() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['top', 'bottom', 'left', 'right']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['left', 'right']}>
       <StatusBar hidden />
       <GameScreen />
     </SafeAreaView>

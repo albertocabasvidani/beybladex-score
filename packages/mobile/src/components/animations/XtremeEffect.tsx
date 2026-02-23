@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { View, Dimensions } from 'react-native';
+import { View, useWindowDimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -12,13 +12,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import { logger } from '../../utils/logger';
 
-const { width, height } = Dimensions.get('window');
-
 interface Props {
   onComplete: () => void;
 }
 
 function XtremeParticle({ index, total }: { index: number; total: number }) {
+  const { width } = useWindowDimensions();
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const scale = useSharedValue(0);
@@ -80,6 +79,7 @@ function XtremeParticle({ index, total }: { index: number; total: number }) {
 }
 
 export function XtremeEffect({ onComplete }: Props) {
+  const { width, height } = useWindowDimensions();
   const flashOpacity = useSharedValue(0);
   const textScale = useSharedValue(0);
   const textOpacity = useSharedValue(0);

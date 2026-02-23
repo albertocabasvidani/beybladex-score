@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Dimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -11,13 +11,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import { logger } from '../../utils/logger';
 
-const { width, height } = Dimensions.get('window');
-
 interface Props {
   onComplete: () => void;
 }
 
 export function OverEffect({ onComplete }: Props) {
+  const { width, height } = useWindowDimensions();
   const scale = useSharedValue(0);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
