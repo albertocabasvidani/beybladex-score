@@ -95,6 +95,10 @@ export const useGameStore = create<GameStore>()(
       undo: () => {
         try {
           const state = get();
+          if (state.currentAnimation) {
+            logger.warn('Undo blocked: animation in progress', { animation: state.currentAnimation.type });
+            return;
+          }
           logger.info('Undo', {
             historyLength: state.history.length,
             p1: state.player1.score,

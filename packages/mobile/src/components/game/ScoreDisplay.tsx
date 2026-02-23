@@ -19,6 +19,11 @@ export function ScoreDisplay({ playerId }: Props) {
   const prevScoreRef = useRef(player.score);
   const scaleValue = useSharedValue(1);
 
+  // Reset ref when player changes (swap sides)
+  useEffect(() => {
+    prevScoreRef.current = player.score;
+  }, [playerId]);
+
   // Spring pop when score changes
   useEffect(() => {
     if (player.score !== prevScoreRef.current) {
@@ -70,6 +75,7 @@ export function ScoreDisplay({ playerId }: Props) {
       )}
 
       <Animated.Text
+        allowFontScaling={false}
         style={[
           {
             color: getScoreColor(),

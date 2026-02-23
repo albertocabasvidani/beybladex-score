@@ -60,6 +60,7 @@ export function PlayerPanel({ playerId }: Props) {
       ) : (
         <Pressable onPress={handleNamePress}>
           <Text
+            allowFontScaling={false}
             style={{
               color: '#e2e8f0',
               fontSize: 18,

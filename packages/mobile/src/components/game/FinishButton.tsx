@@ -49,10 +49,11 @@ const MANGA_STYLES: Record<FinishType, {
 export function FinishButton({ finishType, playerId }: Props) {
   const score = useGameStore((state) => state.score);
   const winner = useGameStore((state) => state.winner);
+  const currentAnimation = useGameStore((state) => state.currentAnimation);
 
   const points = FINISH_SCORES[finishType];
   const style = MANGA_STYLES[finishType];
-  const isDisabled = winner !== null;
+  const isDisabled = winner !== null || currentAnimation !== null;
 
   const [btnSize, setBtnSize] = useState({ w: 0, h: 0 });
   const onLayout = useCallback((e: LayoutChangeEvent) => {
@@ -128,6 +129,7 @@ export function FinishButton({ finishType, playerId }: Props) {
         {/* Diagonal label background */}
         {labelFontSize > 0 && (
           <Text
+            allowFontScaling={false}
             style={{
               position: 'absolute',
               width: diagonal * 3,
@@ -145,6 +147,7 @@ export function FinishButton({ finishType, playerId }: Props) {
 
         {/* Points foreground */}
         <Text
+          allowFontScaling={false}
           style={{
             color: 'white',
             fontSize: 32,

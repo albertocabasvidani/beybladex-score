@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { View, TouchableOpacity, Text } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, TouchableOpacity, Text, BackHandler } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PlayerPanel } from './PlayerPanel';
 import { VictoryOverlay } from './VictoryOverlay';
@@ -29,13 +29,28 @@ export function GameScreen() {
 
   // Show guide on first launch
   useEffect(() => {
+    let isMounted = true;
     AsyncStorage.getItem('hasSeenGuide').then((value) => {
-      if (!value) {
+      if (isMounted && !value) {
         setGuideOpen(true);
         AsyncStorage.setItem('hasSeenGuide', 'true');
       }
     });
+    return () => { isMounted = false; };
   }, []);
+
+  // Android back button: close modals instead of exiting app
+  useEffect(() => {
+    const anyModalOpen = settingsOpen || creditsOpen || guideOpen;
+    if (!anyModalOpen) return;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (creditsOpen) { setCreditsOpen(false); return true; }
+      if (guideOpen) { setGuideOpen(false); return true; }
+      if (settingsOpen) { setSettingsOpen(false); return true; }
+      return false;
+    });
+    return () => sub.remove();
+  }, [settingsOpen, creditsOpen, guideOpen]);
 
   // Safety valve: force-clear stuck animations after 6 seconds
   useEffect(() => {
@@ -73,7 +88,7 @@ export function GameScreen() {
               paddingVertical: 2,
             }}
           >
-            <Text style={{ color: '#64748b', fontSize: 28 }}>⇄</Text>
+            <Text allowFontScaling={false} style={{ color: '#64748b', fontSize: 28 }}>⇄</Text>
           </TouchableOpacity>
           {/* Divider line */}
           <View style={{ width: 1, flex: 1, backgroundColor: '#334155' }} />
@@ -110,8 +125,8 @@ export function GameScreen() {
               borderRadius: 8,
             }}
           >
-            <Text style={{ fontSize: 16 }}>🏆</Text>
-            <Text style={{ color: '#fbbf24', fontSize: 16, fontWeight: '800' }}>
+            <Text allowFontScaling={false} style={{ fontSize: 16 }}>🏆</Text>
+            <Text allowFontScaling={false} style={{ color: '#fbbf24', fontSize: 16, fontWeight: '800' }}>
               {winScore}
             </Text>
           </TouchableOpacity>
@@ -133,8 +148,8 @@ export function GameScreen() {
               opacity: canUndoValue ? 1 : 0.4,
             }}
           >
-            <Text style={{ color: '#e2e8f0', fontSize: 14 }}>↩</Text>
-            <Text style={{ color: '#e2e8f0', fontSize: 13, fontWeight: '600' }}>Undo</Text>
+            <Text allowFontScaling={false} style={{ color: '#e2e8f0', fontSize: 14 }}>↩</Text>
+            <Text allowFontScaling={false} style={{ color: '#e2e8f0', fontSize: 13, fontWeight: '600' }}>Undo</Text>
           </TouchableOpacity>
         </View>
 
@@ -156,8 +171,8 @@ export function GameScreen() {
               borderRadius: 8,
             }}
           >
-            <Text style={{ color: '#fecaca', fontSize: 14 }}>↻</Text>
-            <Text style={{ color: '#fecaca', fontSize: 13, fontWeight: '600' }}>Reset</Text>
+            <Text allowFontScaling={false} style={{ color: '#fecaca', fontSize: 14 }}>↻</Text>
+            <Text allowFontScaling={false} style={{ color: '#fecaca', fontSize: 13, fontWeight: '600' }}>Reset</Text>
           </TouchableOpacity>
 
           <View style={{ flex: 1 }} />
@@ -174,7 +189,7 @@ export function GameScreen() {
               alignItems: 'center',
             }}
           >
-            <Text style={{ color: '#94a3b8', fontSize: 18, fontWeight: '700' }}>i</Text>
+            <Text allowFontScaling={false} style={{ color: '#94a3b8', fontSize: 18, fontWeight: '700' }}>i</Text>
           </TouchableOpacity>
         </View>
       </View>

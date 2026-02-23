@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { View, Text, Pressable, Dimensions } from 'react-native';
+import { View, Text, Pressable, useWindowDimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -15,11 +15,10 @@ import Animated, {
 import type { PlayerId } from '@beybladex/shared';
 import { useGameStore } from '../../store/game-store';
 
-const { width, height } = Dimensions.get('window');
-
 const CONFETTI_COLORS = ['#ef4444', '#22c55e', '#3b82f6', '#f59e0b', '#a855f7'];
 
 function ConfettiParticle({ index }: { index: number }) {
+  const { width, height } = useWindowDimensions();
   const translateX = useSharedValue(Math.random() * width);
   const translateY = useSharedValue(-20 - Math.random() * 100);
   const rotate = useSharedValue(Math.random() * 360);

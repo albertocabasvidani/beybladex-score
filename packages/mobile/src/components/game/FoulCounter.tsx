@@ -35,6 +35,7 @@ export function FoulCounter({ playerId }: Props) {
       <TouchableOpacity
         onPress={() => removeFoul(playerId)}
         disabled={!canRemove}
+        hitSlop={{ top: 11, bottom: 11, left: 11, right: 11 }}
         style={{
           width: 22,
           height: 22,
@@ -45,10 +46,11 @@ export function FoulCounter({ playerId }: Props) {
           opacity: canRemove ? 1 : 0.3,
         }}
       >
-        <Text style={{ color: '#e2e8f0', fontSize: 14, fontWeight: '700', marginTop: -1 }}>-</Text>
+        <Text allowFontScaling={false} style={{ color: '#e2e8f0', fontSize: 14, fontWeight: '700', marginTop: -1 }}>-</Text>
       </TouchableOpacity>
 
       <Text
+        allowFontScaling={false}
         style={{
           color: countColor,
           fontSize: 13,
@@ -63,6 +65,7 @@ export function FoulCounter({ playerId }: Props) {
       <TouchableOpacity
         onPress={() => addFoul(playerId)}
         disabled={!canAdd}
+        hitSlop={{ top: 11, bottom: 11, left: 11, right: 11 }}
         style={{
           width: 22,
           height: 22,
@@ -73,7 +76,7 @@ export function FoulCounter({ playerId }: Props) {
           opacity: canAdd ? 1 : 0.3,
         }}
       >
-        <Text style={{ color: '#e2e8f0', fontSize: 14, fontWeight: '700', marginTop: -1 }}>+</Text>
+        <Text allowFontScaling={false} style={{ color: '#e2e8f0', fontSize: 14, fontWeight: '700', marginTop: -1 }}>+</Text>
       </TouchableOpacity>
     </View>
   );
