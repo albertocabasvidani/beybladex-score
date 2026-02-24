@@ -34,9 +34,9 @@ if ! grep -q 'upload.keystore' "$GRADLE_FILE"; then
             /}/a\
         release {\
             storeFile file("upload.keystore")\
-            storePassword "beybladex2024"\
-            keyAlias "upload"\
-            keyPassword "beybladex2024"\
+            storePassword "ef7c0f4131a3b915d09c839ebc2bbe6f"\
+            keyAlias "a16449744129cc886ed0e016387e022d"\
+            keyPassword "5edec2072fbfa7997c27c33a643e2d42"\
         }
         }
     }' "$GRADLE_FILE"
