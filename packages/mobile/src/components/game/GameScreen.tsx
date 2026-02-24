@@ -39,15 +39,13 @@ export function GameScreen() {
     return () => { isMounted = false; };
   }, []);
 
-  // Android back button: close modals instead of exiting app
+  // Android back button: close modals or do nothing (never exit app)
   useEffect(() => {
-    const anyModalOpen = settingsOpen || creditsOpen || guideOpen;
-    if (!anyModalOpen) return;
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
       if (creditsOpen) { setCreditsOpen(false); return true; }
       if (guideOpen) { setGuideOpen(false); return true; }
       if (settingsOpen) { setSettingsOpen(false); return true; }
-      return false;
+      return true; // Block back when no modal open (don't exit app)
     });
     return () => sub.remove();
   }, [settingsOpen, creditsOpen, guideOpen]);

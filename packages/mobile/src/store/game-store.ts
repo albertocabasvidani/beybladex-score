@@ -24,6 +24,7 @@ interface GameStore extends MatchState {
     playerId: PlayerId;
   } | null;
   isSwapped: boolean;
+  wins: { player1: number; player2: number };
 
   // Actions
   score: (playerId: PlayerId, finishType: FinishType) => void;
@@ -37,11 +38,13 @@ interface GameStore extends MatchState {
   removeFoul: (playerId: PlayerId) => void;
   setMaxFoulsValue: (value: number) => void;
   swapSides: () => void;
+  resetWins: () => void;
 }
 
 interface PersistedState {
   winScore: number;
   maxFouls: number;
+  wins: { player1: number; player2: number };
   _persistedNames: { player1: string; player2: string };
 }
 
@@ -52,6 +55,7 @@ export const useGameStore = create<GameStore>()(
       ...createInitialMatchState(DEFAULT_WIN_SCORE, DEFAULT_MAX_FOULS),
       currentAnimation: null,
       isSwapped: false,
+      wins: { player1: 0, player2: 0 },
 
       // Score a point
       score: (playerId, finishType) => {
@@ -72,10 +76,14 @@ export const useGameStore = create<GameStore>()(
             p2: state.player2.score,
           });
           const newState = scorePoint(state, playerId, finishType);
-          set({
+          const updates: Partial<GameStore> = {
             ...newState,
             currentAnimation: { type: finishType, playerId },
-          });
+          };
+          if (newState.winner && !state.winner) {
+            updates.wins = { ...state.wins, [newState.winner]: state.wins[newState.winner] + 1 };
+          }
+          set(updates);
           logger.info('Score applied', {
             p1: newState.player1.score,
             p2: newState.player2.score,
@@ -208,12 +216,16 @@ export const useGameStore = create<GameStore>()(
             maxFouls: state.maxFouls,
           });
           const newState = addFoulFn(state, playerId);
-          set({
+          const updates: Partial<GameStore> = {
             player1: newState.player1,
             player2: newState.player2,
             winner: newState.winner,
             history: newState.history,
-          });
+          };
+          if (newState.winner && !state.winner) {
+            updates.wins = { ...state.wins, [newState.winner]: state.wins[newState.winner] + 1 };
+          }
+          set(updates);
           logger.info('Foul applied', {
             fouls: newState[playerId].fouls,
             p1Score: newState.player1.score,
@@ -258,6 +270,12 @@ export const useGameStore = create<GameStore>()(
         set({ isSwapped: !state.isSwapped });
       },
 
+      // Reset wins counter for both players
+      resetWins: () => {
+        logger.info('Reset wins');
+        set({ wins: { player1: 0, player2: 0 } });
+      },
+
       // Set max fouls limit
       setMaxFoulsValue: (value) => {
         try {
@@ -279,6 +297,7 @@ export const useGameStore = create<GameStore>()(
       partialize: (state): PersistedState => ({
         winScore: state.winScore,
         maxFouls: state.maxFouls,
+        wins: state.wins,
         _persistedNames: {
           player1: state.player1.name,
           player2: state.player2.name,
@@ -291,6 +310,7 @@ export const useGameStore = create<GameStore>()(
           ...(current as GameStore),
           winScore: p.winScore ?? (current as GameStore).winScore,
           maxFouls: p.maxFouls ?? (current as GameStore).maxFouls,
+          wins: p.wins ?? (current as GameStore).wins,
           player1: {
             ...(current as GameStore).player1,
             name: p._persistedNames?.player1 ?? (current as GameStore).player1.name,

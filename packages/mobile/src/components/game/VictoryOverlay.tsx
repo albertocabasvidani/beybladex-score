@@ -166,6 +166,7 @@ interface Props {
 export function VictoryOverlay({ winnerId }: Props) {
   const player = useGameStore((state) => state[winnerId]);
   const reset = useGameStore((state) => state.reset);
+  const wins = useGameStore((state) => state.wins[winnerId]);
 
   return (
     <Animated.View
@@ -230,6 +231,20 @@ export function VictoryOverlay({ winnerId }: Props) {
           }}
         >
           Score: {player.score}
+        </Text>
+      </SlideInView>
+
+      <SlideInView delay={550}>
+        <Text
+          style={{
+            color: '#fbbf24',
+            fontSize: 18,
+            fontWeight: '700',
+            textAlign: 'center',
+            marginTop: 4,
+          }}
+        >
+          🏆 {wins} {wins === 1 ? 'victory' : 'victories'}
         </Text>
       </SlideInView>
 

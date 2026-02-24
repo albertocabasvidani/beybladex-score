@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -15,6 +15,8 @@ interface Props {
 export function ScoreDisplay({ playerId }: Props) {
   const player = useGameStore((state) => state[playerId]);
   const winScore = useGameStore((state) => state.winScore);
+  const resetWins = useGameStore((state) => state.resetWins);
+  const myWins = useGameStore((state) => state.wins[playerId]);
 
   const prevScoreRef = useRef(player.score);
   const scaleValue = useSharedValue(1);
@@ -60,6 +62,43 @@ export function ScoreDisplay({ playerId }: Props) {
         minWidth: 80,
       }}
     >
+      {/* Wins trophy - always visible */}
+      <Pressable
+          onLongPress={resetWins}
+          delayLongPress={800}
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <View style={{ position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
+            <Text
+              allowFontScaling={false}
+              style={{
+                fontSize: 22,
+                opacity: myWins > 0 ? 1 : 0.3,
+              }}
+            >
+              🏆
+            </Text>
+            <Text
+              allowFontScaling={false}
+              style={{
+                position: 'absolute',
+                top: 1,
+                fontSize: 11,
+                fontWeight: '900',
+                color: myWins > 0 ? '#ffffff' : '#64748b',
+                textShadowColor: 'rgba(0,0,0,0.8)',
+                textShadowOffset: { width: 1, height: 1 },
+                textShadowRadius: 2,
+              }}
+            >
+              {myWins}
+            </Text>
+          </View>
+      </Pressable>
+
       {/* Glow effect when close to winning */}
       {progress >= 0.75 && (
         <View
