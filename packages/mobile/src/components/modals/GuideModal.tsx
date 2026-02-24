@@ -50,16 +50,27 @@ export function GuideModal({ visible, onClose, onOpenCredits }: Props) {
           </View>
 
           <ScrollView showsVerticalScrollIndicator={false}>
-            {/* Names */}
-            <Text style={{ color: '#e2e8f0', fontSize: 14, marginBottom: 12, lineHeight: 20 }}>
-              Tocca il nome del giocatore per modificarlo.
+            {/* Player panel */}
+            <Text style={{ color: '#94a3b8', fontSize: 12, fontWeight: '600', textTransform: 'uppercase', marginBottom: 8 }}>
+              Pannello giocatore
             </Text>
+            <View style={{ gap: 6, marginBottom: 14 }}>
+              <Text style={{ color: '#e2e8f0', fontSize: 13, lineHeight: 18 }}>
+                <Text style={{ fontWeight: '700' }}>Nome</Text> — tocca per modificarlo
+              </Text>
+              <Text style={{ color: '#e2e8f0', fontSize: 13, lineHeight: 18 }}>
+                <Text style={{ fontWeight: '700' }}>F: 0/2</Text> — contatore falli. Usa +/- per aggiungere o togliere. Al limite, il punto va all'avversario
+              </Text>
+              <Text style={{ color: '#e2e8f0', fontSize: 13, lineHeight: 18 }}>
+                <Text style={{ fontWeight: '700' }}>🏆 sopra il punteggio</Text> — vittorie nella sessione. Tieni premuto per azzerare entrambi
+              </Text>
+            </View>
 
             {/* Finish types */}
             <Text style={{ color: '#94a3b8', fontSize: 12, fontWeight: '600', textTransform: 'uppercase', marginBottom: 8 }}>
               Punteggi
             </Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
               {finishTypes.map((ft) => (
                 <View
                   key={ft.name}
@@ -80,24 +91,35 @@ export function GuideModal({ visible, onClose, onOpenCredits }: Props) {
               ))}
             </View>
 
-            {/* How to win */}
-            <Text style={{ color: '#e2e8f0', fontSize: 14, marginBottom: 12, lineHeight: 20 }}>
-              Premi i pulsanti per assegnare punti. Il primo giocatore a raggiungere il punteggio vittoria vince!
-            </Text>
-
-            {/* Controls */}
+            {/* Bottom bar controls */}
             <Text style={{ color: '#94a3b8', fontSize: 12, fontWeight: '600', textTransform: 'uppercase', marginBottom: 8 }}>
-              Controlli
+              Barra inferiore
             </Text>
-            <View style={{ gap: 4, marginBottom: 16 }}>
+            <View style={{ gap: 6, marginBottom: 14 }}>
               <Text style={{ color: '#e2e8f0', fontSize: 13, lineHeight: 18 }}>
-                🏆  Tocca per cambiare il punteggio vittoria
+                🏆 <Text style={{ color: '#fbbf24', fontWeight: '700' }}>5</Text> — apre le impostazioni (punteggio vittoria e limite falli)
               </Text>
               <Text style={{ color: '#e2e8f0', fontSize: 13, lineHeight: 18 }}>
-                ↩  Annulla l'ultima azione
+                ↩ <Text style={{ fontWeight: '700' }}>Undo</Text> — annulla l'ultima azione
               </Text>
               <Text style={{ color: '#e2e8f0', fontSize: 13, lineHeight: 18 }}>
-                ↻  Nuova partita
+                ↻ <Text style={{ fontWeight: '700' }}>Reset</Text> — nuova partita (le vittorie restano)
+              </Text>
+              <Text style={{ color: '#e2e8f0', fontSize: 13, lineHeight: 18 }}>
+                <Text style={{ fontWeight: '700' }}>i</Text> — questa guida
+              </Text>
+            </View>
+
+            {/* Other */}
+            <Text style={{ color: '#94a3b8', fontSize: 12, fontWeight: '600', textTransform: 'uppercase', marginBottom: 8 }}>
+              Altro
+            </Text>
+            <View style={{ gap: 6, marginBottom: 16 }}>
+              <Text style={{ color: '#e2e8f0', fontSize: 13, lineHeight: 18 }}>
+                <Text style={{ fontWeight: '700' }}>⇄</Text> — scambia i lati dei giocatori
+              </Text>
+              <Text style={{ color: '#e2e8f0', fontSize: 13, lineHeight: 18 }}>
+                Quando un giocatore vince, tocca <Text style={{ fontWeight: '700' }}>New Game</Text> per ricominciare
               </Text>
             </View>
           </ScrollView>

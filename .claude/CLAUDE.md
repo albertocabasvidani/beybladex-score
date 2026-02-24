@@ -25,14 +25,18 @@ npm run dev
 - AVD: `beybladex_test` (Pixel 6, Android 35, google_apis x86_64)
 - SDK: `C:\Users\cinqu\AppData\Local\Android\Sdk`
 
-**Build locale (PREFERITO, ~1 min)**:
+**Build locale - Pipeline completo (PREFERITO)**:
 ```bash
 # PREREQUISITO: clonare in path SENZA SPAZI
 git clone https://github.com/albertocabasvidani/beybladex-score.git C:\projects\beybladex
-cd C:\projects\beybladex && yarn install
-cd packages/mobile && yarn expo prebuild --platform android --clean
 
-# Build APK (arm64 only)
+# Build completa (copia sorgenti → install → prebuild → patch → gradle)
+bash packages/mobile/scripts/full-build-apk.sh
+# Output: packages/mobile/beybladex-mobile.apk
+```
+
+**Build locale - Solo Gradle (se android/ già esiste e patchato)**:
+```bash
 bash packages/mobile/scripts/build-apk.sh
 # Output: packages/mobile/beybladex-mobile.apk
 ```
@@ -109,9 +113,26 @@ bash packages/mobile/scripts/build-aab.sh
 
 ### Build APK locale (test emulatore)
 ```bash
+# Pipeline completo (se hai modificato app.json/package.json/dipendenze):
+bash packages/mobile/scripts/full-build-apk.sh
+
+# Solo gradle (se android/ è già pronto e patchato):
 bash packages/mobile/scripts/build-apk.sh
 # Output: packages/mobile/beybladex-mobile.apk
 ```
+
+### Problemi noti build locale e soluzioni automatiche
+
+`expo prebuild --clean` rigenera android/ da zero e **DISTRUGGE** le customizzazioni:
+1. **cliFile**: sovrascrive con `@expo/cli` → deve essere `metro-bundle.js` (bundler monorepo)
+2. **signingConfigs**: rimuove `release` con upload keystore → serve per Play Store
+3. **gradle.properties**: resetta architetture a tutte → deve essere solo `arm64-v8a`
+
+Lo script `patch-build-gradle.sh` corregge tutti e 3 i problemi automaticamente.
+Lo script `full-build-apk.sh` esegue l'intero pipeline con patch inclusa.
+
+**REGOLA**: MAI usare `build-apk.sh` dopo `expo prebuild --clean` senza prima eseguire `patch-build-gradle.sh`.
+**REGOLA**: Sempre stoppare Gradle daemons prima di una nuova build (`gradlew --stop`).
 
 ### EAS Cloud (fallback)
 ```bash
@@ -146,7 +167,7 @@ bash packages/mobile/scripts/eas-build-production.sh
 - `CreditsModal.tsx` - Crediti autore + link email
 
 ### Store (`packages/mobile/src/store/`)
-- `game-store.ts` - Zustand store con score, undo, reset, setWinScoreValue, currentAnimation
+- `game-store.ts` - Zustand store con score, wins, undo, reset, resetWins, setWinScoreValue, currentAnimation
 
 ## Regole Monorepo
 - SEMPRE testare modifiche a `shared` sia in web che in mobile

@@ -21,7 +21,13 @@
       "permissions": []
     },
     "plugins": [
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "LANDSCAPE"
+        }
+      ]
     ],
     "extra": {
       "eas": {
