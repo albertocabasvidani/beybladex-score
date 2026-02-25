@@ -22,9 +22,12 @@ export PATH="$JAVA_HOME/bin:$ANDROID_HOME/platform-tools:$PATH"
 
 SRC="c:/claude-code/Personale/app segnapunti beybladex"
 BUILD="C:/projects/beybladex"
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-ANDROID_DIR="$PROJECT_DIR/android"
+
+# IMPORTANT: All build paths must use BUILD dir (no spaces in path)
+# SCRIPT_DIR from $0 may point to source dir which has spaces → Gradle fails
+BUILD_PROJECT="$BUILD/packages/mobile"
+BUILD_ANDROID="$BUILD_PROJECT/android"
+BUILD_SCRIPTS="$BUILD_PROJECT/scripts"
 
 echo "============================================"
 echo "  Beyblade X Score - Full AAB Build"
@@ -33,8 +36,8 @@ echo ""
 
 # ---- STEP 0: Stop Gradle daemons to prevent lock conflicts ----
 echo "=== STEP 0: Stop Gradle daemons ==="
-if [ -f "$ANDROID_DIR/gradlew" ]; then
-    cd "$ANDROID_DIR"
+if [ -f "$BUILD_ANDROID/gradlew" ]; then
+    cd "$BUILD_ANDROID"
     ./gradlew --stop 2>/dev/null || true
     echo "  [OK] Daemons stopped"
 else
@@ -93,17 +96,18 @@ echo "  [OK] Dependencies installed"
 # ---- STEP 3: Expo prebuild ----
 echo ""
 echo "=== STEP 3: Expo prebuild ==="
-cd "$BUILD/packages/mobile"
+cd "$BUILD_PROJECT"
 yarn expo prebuild --platform android --clean
 echo "  [OK] Prebuild complete"
 
 # ---- STEP 4: Patch build.gradle (WITHOUT architecture restriction for AAB) ----
 echo ""
 echo "=== STEP 4: Patch build config ==="
-bash "$SCRIPT_DIR/patch-build-gradle.sh"
+# Run patch script from BUILD dir (not source dir)
+bash "$BUILD_SCRIPTS/patch-build-gradle.sh"
 
 # Override: restore ALL architectures for AAB (Play Store needs all)
-GRADLE_PROPS="$ANDROID_DIR/gradle.properties"
+GRADLE_PROPS="$BUILD_ANDROID/gradle.properties"
 if [ -f "$GRADLE_PROPS" ]; then
     sed -i 's/reactNativeArchitectures=arm64-v8a/reactNativeArchitectures=armeabi-v7a,arm64-v8a,x86,x86_64/' "$GRADLE_PROPS"
     echo "  [OK] Restored ALL architectures for AAB"
@@ -112,19 +116,19 @@ fi
 # ---- STEP 5: Gradle bundleRelease ----
 echo ""
 echo "=== STEP 5: Gradle bundleRelease ==="
-cd "$ANDROID_DIR"
+cd "$BUILD_ANDROID"
 ./gradlew bundleRelease --console=plain --no-build-cache -x lintVitalAnalyzeRelease -x lintVitalRelease
 
 # ---- Result ----
 echo ""
-AAB_PATH="$ANDROID_DIR/app/build/outputs/bundle/release/app-release.aab"
+AAB_PATH="$BUILD_ANDROID/app/build/outputs/bundle/release/app-release.aab"
 if [ -f "$AAB_PATH" ]; then
     echo "============================================"
     echo "  BUILD OK!"
     echo "============================================"
-    cp "$AAB_PATH" "$PROJECT_DIR/beybladex-mobile.aab"
-    echo "AAB: $PROJECT_DIR/beybladex-mobile.aab"
-    ls -lh "$PROJECT_DIR/beybladex-mobile.aab"
+    cp "$AAB_PATH" "$BUILD_PROJECT/beybladex-mobile.aab"
+    echo "AAB: $BUILD_PROJECT/beybladex-mobile.aab"
+    ls -lh "$BUILD_PROJECT/beybladex-mobile.aab"
 else
     echo "============================================"
     echo "  BUILD FAILED - AAB non trovato"

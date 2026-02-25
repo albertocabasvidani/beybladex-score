@@ -30,9 +30,12 @@ export PATH="$JAVA_HOME/bin:$ANDROID_HOME/platform-tools:$PATH"
 
 SRC="c:/claude-code/Personale/app segnapunti beybladex"
 BUILD="C:/projects/beybladex"
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-ANDROID_DIR="$PROJECT_DIR/android"
+
+# IMPORTANT: All build paths must use BUILD dir (no spaces in path)
+# SCRIPT_DIR from $0 may point to source dir which has spaces → Gradle fails
+BUILD_PROJECT="$BUILD/packages/mobile"
+BUILD_ANDROID="$BUILD_PROJECT/android"
+BUILD_SCRIPTS="$BUILD_PROJECT/scripts"
 
 echo "============================================"
 echo "  Beyblade X Score - Full APK Build"
@@ -41,8 +44,8 @@ echo ""
 
 # ---- STEP 0: Stop Gradle daemons to prevent lock conflicts ----
 echo "=== STEP 0: Stop Gradle daemons ==="
-if [ -f "$ANDROID_DIR/gradlew" ]; then
-    cd "$ANDROID_DIR"
+if [ -f "$BUILD_ANDROID/gradlew" ]; then
+    cd "$BUILD_ANDROID"
     ./gradlew --stop 2>/dev/null || true
     echo "  [OK] Daemons stopped"
 else
@@ -71,12 +74,19 @@ for f in RotateDeviceScreen.tsx; do
     fi
 done
 
+# Modals
+for f in SettingsModal.tsx CreditsModal.tsx GuideModal.tsx; do
+    if [ -f "$SRC/packages/mobile/src/components/modals/$f" ]; then
+        cp "$SRC/packages/mobile/src/components/modals/$f" "$BUILD/packages/mobile/src/components/modals/$f"
+    fi
+done
+
 # Config files
 cp "$SRC/packages/mobile/app.json" "$BUILD/packages/mobile/app.json"
 cp "$SRC/packages/mobile/package.json" "$BUILD/packages/mobile/package.json"
 
 # Scripts (copy build scripts themselves so build dir stays in sync)
-for f in patch-build-gradle.sh build-apk.sh metro-bundle.js full-build-apk.sh; do
+for f in patch-build-gradle.sh build-apk.sh build-aab.sh metro-bundle.js full-build-apk.sh full-build-aab.sh; do
     if [ -f "$SRC/packages/mobile/scripts/$f" ]; then
         cp "$SRC/packages/mobile/scripts/$f" "$BUILD/packages/mobile/scripts/$f"
     fi
@@ -94,30 +104,31 @@ echo "  [OK] Dependencies installed"
 # ---- STEP 3: Expo prebuild ----
 echo ""
 echo "=== STEP 3: Expo prebuild ==="
-cd "$BUILD/packages/mobile"
+cd "$BUILD_PROJECT"
 yarn expo prebuild --platform android --clean
 echo "  [OK] Prebuild complete"
 
 # ---- STEP 4: Patch build.gradle + gradle.properties ----
 echo ""
 echo "=== STEP 4: Patch build config ==="
-bash "$SCRIPT_DIR/patch-build-gradle.sh"
+# Run patch script from BUILD dir (not source dir)
+bash "$BUILD_SCRIPTS/patch-build-gradle.sh"
 
 # ---- STEP 5: Gradle build ----
 echo ""
 echo "=== STEP 5: Gradle assembleRelease ==="
-cd "$ANDROID_DIR"
+cd "$BUILD_ANDROID"
 ./gradlew assembleRelease --console=plain --no-build-cache -x lintVitalAnalyzeRelease -x lintVitalRelease
 
 # ---- Result ----
 echo ""
-APK_PATH="$ANDROID_DIR/app/build/outputs/apk/release/app-release.apk"
+APK_PATH="$BUILD_ANDROID/app/build/outputs/apk/release/app-release.apk"
 if [ -f "$APK_PATH" ]; then
     echo "============================================"
     echo "  BUILD OK!"
     echo "============================================"
-    cp "$APK_PATH" "$PROJECT_DIR/beybladex-mobile.apk"
-    echo "APK: $PROJECT_DIR/beybladex-mobile.apk"
+    cp "$APK_PATH" "$BUILD_PROJECT/beybladex-mobile.apk"
+    echo "APK: $BUILD_PROJECT/beybladex-mobile.apk"
 else
     echo "============================================"
     echo "  BUILD FAILED - APK non trovato"
