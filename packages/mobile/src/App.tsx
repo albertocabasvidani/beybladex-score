@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useWindowDimensions } from 'react-native';
+import { useWindowDimensions, StatusBar as RNStatusBar, AppState } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useKeepAwake } from 'expo-keep-awake';
@@ -27,6 +27,19 @@ function AppContent() {
 
   useEffect(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+  }, []);
+
+  // Re-hide status bar when returning from notification shade
+  useEffect(() => {
+    RNStatusBar.setHidden(true);
+
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        RNStatusBar.setHidden(true);
+      }
+    });
+
+    return () => subscription.remove();
   }, []);
 
   const { width, height } = useWindowDimensions();

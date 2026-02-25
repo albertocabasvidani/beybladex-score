@@ -1,26 +1,18 @@
 #!/bin/bash
 # ============================================================================
-# Full APK build pipeline for Beyblade X Score (monorepo)
+# Full AAB build pipeline for Beyblade X Score (monorepo)
 # ============================================================================
 #
-# This script handles the ENTIRE pipeline from source to APK:
-#   1. Stop any running Gradle daemons (prevent lock conflicts)
-#   2. Copy source files from dev dir → build dir
-#   3. Install dependencies (yarn)
-#   4. Expo prebuild (regenerates android/)
-#   5. Patch build.gradle + gradle.properties (monorepo fixes)
-#   6. Gradle assembleRelease
-#
-# WHY THIS EXISTS:
-#   - Dev dir has spaces in path ("app segnapunti beybladex") → Gradle fails
-#   - Expo prebuild --clean WIPES custom build.gradle changes every time
-#   - Must patch: cliFile (metro-bundle.js), signingConfigs, architectures
+# Same as full-build-apk.sh but builds AAB for Play Store:
+#   - ALL architectures (armeabi-v7a, arm64-v8a, x86, x86_64)
+#   - bundleRelease instead of assembleRelease
+#   - Release signing with upload.keystore
 #
 # USAGE:
-#   bash packages/mobile/scripts/full-build-apk.sh
+#   bash packages/mobile/scripts/full-build-aab.sh
 #
 # OUTPUT:
-#   C:/projects/beybladex/packages/mobile/beybladex-mobile.apk
+#   C:/projects/beybladex/packages/mobile/beybladex-mobile.aab
 # ============================================================================
 set -e
 
@@ -35,7 +27,7 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 ANDROID_DIR="$PROJECT_DIR/android"
 
 echo "============================================"
-echo "  Beyblade X Score - Full APK Build"
+echo "  Beyblade X Score - Full AAB Build"
 echo "============================================"
 echo ""
 
@@ -71,12 +63,19 @@ for f in RotateDeviceScreen.tsx; do
     fi
 done
 
+# Modals
+for f in SettingsModal.tsx CreditsModal.tsx GuideModal.tsx; do
+    if [ -f "$SRC/packages/mobile/src/components/modals/$f" ]; then
+        cp "$SRC/packages/mobile/src/components/modals/$f" "$BUILD/packages/mobile/src/components/modals/$f"
+    fi
+done
+
 # Config files
 cp "$SRC/packages/mobile/app.json" "$BUILD/packages/mobile/app.json"
 cp "$SRC/packages/mobile/package.json" "$BUILD/packages/mobile/package.json"
 
-# Scripts (copy build scripts themselves so build dir stays in sync)
-for f in patch-build-gradle.sh build-apk.sh metro-bundle.js full-build-apk.sh; do
+# Scripts
+for f in patch-build-gradle.sh build-apk.sh build-aab.sh metro-bundle.js full-build-apk.sh full-build-aab.sh; do
     if [ -f "$SRC/packages/mobile/scripts/$f" ]; then
         cp "$SRC/packages/mobile/scripts/$f" "$BUILD/packages/mobile/scripts/$f"
     fi
@@ -98,29 +97,37 @@ cd "$BUILD/packages/mobile"
 yarn expo prebuild --platform android --clean
 echo "  [OK] Prebuild complete"
 
-# ---- STEP 4: Patch build.gradle + gradle.properties ----
+# ---- STEP 4: Patch build.gradle (WITHOUT architecture restriction for AAB) ----
 echo ""
 echo "=== STEP 4: Patch build config ==="
 bash "$SCRIPT_DIR/patch-build-gradle.sh"
 
-# ---- STEP 5: Gradle build ----
+# Override: restore ALL architectures for AAB (Play Store needs all)
+GRADLE_PROPS="$ANDROID_DIR/gradle.properties"
+if [ -f "$GRADLE_PROPS" ]; then
+    sed -i 's/reactNativeArchitectures=arm64-v8a/reactNativeArchitectures=armeabi-v7a,arm64-v8a,x86,x86_64/' "$GRADLE_PROPS"
+    echo "  [OK] Restored ALL architectures for AAB"
+fi
+
+# ---- STEP 5: Gradle bundleRelease ----
 echo ""
-echo "=== STEP 5: Gradle assembleRelease ==="
+echo "=== STEP 5: Gradle bundleRelease ==="
 cd "$ANDROID_DIR"
-./gradlew assembleRelease --console=plain --no-build-cache -x lintVitalAnalyzeRelease -x lintVitalRelease
+./gradlew bundleRelease --console=plain --no-build-cache -x lintVitalAnalyzeRelease -x lintVitalRelease
 
 # ---- Result ----
 echo ""
-APK_PATH="$ANDROID_DIR/app/build/outputs/apk/release/app-release.apk"
-if [ -f "$APK_PATH" ]; then
+AAB_PATH="$ANDROID_DIR/app/build/outputs/bundle/release/app-release.aab"
+if [ -f "$AAB_PATH" ]; then
     echo "============================================"
     echo "  BUILD OK!"
     echo "============================================"
-    cp "$APK_PATH" "$PROJECT_DIR/beybladex-mobile.apk"
-    echo "APK: $PROJECT_DIR/beybladex-mobile.apk"
+    cp "$AAB_PATH" "$PROJECT_DIR/beybladex-mobile.aab"
+    echo "AAB: $PROJECT_DIR/beybladex-mobile.aab"
+    ls -lh "$PROJECT_DIR/beybladex-mobile.aab"
 else
     echo "============================================"
-    echo "  BUILD FAILED - APK non trovato"
+    echo "  BUILD FAILED - AAB non trovato"
     echo "============================================"
     exit 1
 fi

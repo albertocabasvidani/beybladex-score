@@ -75,7 +75,7 @@ export function ScoreDisplay({ playerId }: Props) {
             <Text
               allowFontScaling={false}
               style={{
-                fontSize: 22,
+                fontSize: 44,
                 opacity: myWins > 0 ? 1 : 0.3,
               }}
             >
@@ -85,13 +85,13 @@ export function ScoreDisplay({ playerId }: Props) {
               allowFontScaling={false}
               style={{
                 position: 'absolute',
-                top: 1,
-                fontSize: 11,
+                top: 2,
+                fontSize: 22,
                 fontWeight: '900',
                 color: myWins > 0 ? '#ffffff' : '#64748b',
                 textShadowColor: 'rgba(0,0,0,0.8)',
-                textShadowOffset: { width: 1, height: 1 },
-                textShadowRadius: 2,
+                textShadowOffset: { width: 1.5, height: 1.5 },
+                textShadowRadius: 3,
               }}
             >
               {myWins}

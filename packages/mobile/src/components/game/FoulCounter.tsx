@@ -13,6 +13,9 @@ export function FoulCounter({ playerId }: Props) {
   const addFoul = useGameStore((state) => state.addFoul);
   const removeFoul = useGameStore((state) => state.removeFoul);
 
+  // Hide completely when fouls are disabled
+  if (maxFouls === 0) return null;
+
   const canAdd = !winner;
   const canRemove = fouls > 0;
 

@@ -1,5 +1,34 @@
 {
   "expo": {
+    "name": "Beyblade X Score",
+    "slug": "beybladex-score-mobile",
+    "version": "1.0.0",
+    "orientation": "landscape",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1a1a2e"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1a1a2e"
+      },
+      "package": "com.beybladex.score",
+      "versionCode": 7,
+      "permissions": []
+    },
+    "plugins": [
+      "expo-localization",
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "LANDSCAPE"
+        }
+      ]
+    ],
     "extra": {
       "eas": {
         "projectId": "bda50771-3cf2-4465-96a9-e342d89dbeb3"
