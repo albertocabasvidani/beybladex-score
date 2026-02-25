@@ -78,7 +78,7 @@ cp "$SRC/packages/mobile/app.json" "$BUILD/packages/mobile/app.json"
 cp "$SRC/packages/mobile/package.json" "$BUILD/packages/mobile/package.json"
 
 # Scripts
-for f in patch-build-gradle.sh build-apk.sh build-aab.sh metro-bundle.js full-build-apk.sh full-build-aab.sh; do
+for f in patch-build-gradle.sh build-apk.sh build-aab.sh metro-bundle.js full-build-apk.sh full-build-aab.sh download-keystore.js; do
     if [ -f "$SRC/packages/mobile/scripts/$f" ]; then
         cp "$SRC/packages/mobile/scripts/$f" "$BUILD/packages/mobile/scripts/$f"
     fi
@@ -99,6 +99,16 @@ echo "=== STEP 3: Expo prebuild ==="
 cd "$BUILD_PROJECT"
 yarn expo prebuild --platform android --clean
 echo "  [OK] Prebuild complete"
+
+# ---- STEP 3.5: Download upload keystore (BEFORE patching) ----
+echo ""
+echo "=== STEP 3.5: Download upload keystore ==="
+if [ ! -f "$BUILD_ANDROID/app/upload.keystore" ]; then
+    node "$BUILD_SCRIPTS/download-keystore.js"
+    echo "  [OK] Keystore downloaded"
+else
+    echo "  [SKIP] Keystore already present"
+fi
 
 # ---- STEP 4: Patch build.gradle (WITHOUT architecture restriction for AAB) ----
 echo ""

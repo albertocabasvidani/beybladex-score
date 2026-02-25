@@ -86,7 +86,7 @@ cp "$SRC/packages/mobile/app.json" "$BUILD/packages/mobile/app.json"
 cp "$SRC/packages/mobile/package.json" "$BUILD/packages/mobile/package.json"
 
 # Scripts (copy build scripts themselves so build dir stays in sync)
-for f in patch-build-gradle.sh build-apk.sh build-aab.sh metro-bundle.js full-build-apk.sh full-build-aab.sh; do
+for f in patch-build-gradle.sh build-apk.sh build-aab.sh metro-bundle.js full-build-apk.sh full-build-aab.sh download-keystore.js; do
     if [ -f "$SRC/packages/mobile/scripts/$f" ]; then
         cp "$SRC/packages/mobile/scripts/$f" "$BUILD/packages/mobile/scripts/$f"
     fi
