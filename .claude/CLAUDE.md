@@ -141,11 +141,19 @@ bash packages/mobile/scripts/eas-build-production.sh
 ```
 
 ### Upload Play Store
-1. Google Play Console → Beyblade X Score → Closed testing (alpha) → Create new release
+1. Google Play Console → BeyScore → **Production** → Create new release
 2. Upload AAB (`beybladex-mobile.aab`)
 3. Compilare release notes e pubblicare
 
+**REGOLA**: SEMPRE usare il track **Production** (non Closed testing/Alpha).
 **REGOLA**: Controllare sempre lo stato delle review/rejection su Play Console via Chrome DevTools, non via email.
+
+### Checklist Pre-Release (OBBLIGATORIA prima di buildare AAB)
+- [ ] Nome app in `app.json` → corrisponde al titolo sullo store listing?
+- [ ] Icona `icon.png` e `adaptive-icon.png` → corrisponde all'icona dello store listing?
+- [ ] `versionCode` in `app.json` → incrementato rispetto all'ultima release su Play Store?
+- [ ] Store listing (titolo, descrizione, screenshot) → aggiornati se necessario?
+- [ ] Nessuna modifica pending ai sorgenti che non è stata inclusa nella build?
 
 ### Icona App
 - L'icona launcher (`icon.png` e `adaptive-icon.png`) DEVE corrispondere all'icona dello store listing
