@@ -1,14 +1,14 @@
 # Google Play Store Listing - Italiano
 
 ## Titolo (max 30 char)
-Beyblade X Score
+BeyScore
 
 ## Descrizione breve (max 80 char)
-Segnapunti per partite Beyblade X. Spin, Burst, Over, Xtreme!
+Segnapunti per battle di trottole. Spin, Burst, Over, Xtreme!
 
 ## Descrizione completa (max 4000 char)
 
-Beyblade X Score è il segnapunti definitivo per le tue partite di Beyblade X!
+BeyScore è il segnapunti definitivo per le tue battle di trottole!
 
 Tieni traccia del punteggio durante le battle con un'interfaccia semplice e intuitiva, progettata per essere usata in landscape durante il gioco.
 
@@ -29,7 +29,7 @@ PERFETTO PER:
 
 L'app funziona completamente offline, non richiede account e non raccoglie dati personali. Gratuita, senza pubblicità e senza acquisti in-app.
 
-Sviluppato con passione da un fan di Beyblade X.
+Sviluppato con passione da un fan delle battle di trottole.
 
 ## Categoria
 Strumenti > Utilità
