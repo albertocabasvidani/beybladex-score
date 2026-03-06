@@ -1,38 +1,47 @@
 # Google Play Store Listing - English
 
 ## Title (max 30 char)
-Beyblade X Score
+BeyScore
 
 ## Short description (max 80 char)
-Score tracker for Beyblade X battles. Spin, Burst, Over, Xtreme!
+Beyblade X score tracker: track Spin, Burst, Over & Xtreme Finish!
 
 ## Full description (max 4000 char)
 
-Beyblade X Score is the ultimate score tracker for your Beyblade X battles!
+BeyScore is the ultimate score tracker for your Beyblade X battles!
 
-Keep track of scores during battles with a simple and intuitive interface, designed to be used in landscape mode during gameplay.
+Keep track of scores during Beyblade X battles with a simple and intuitive interface, designed to be used in landscape mode during gameplay.
 
-FEATURES:
-- 4 finish types: Spin Finish (+1), Burst Finish (+2), Over Finish (+2), Xtreme Finish (+3)
-- 2-player support with separate panels
-- Customizable win score (3 to 10 points)
-- Editable player names
-- Animations for each finish type
-- Victory overlay with celebration effects
-- Undo button to correct mistakes
-- Quick reset for new games
+🎯 KEY FEATURES:
+• 4 Beyblade X finish types: Spin Finish (+1), Burst Finish (+2), Over Finish (+2), Xtreme Finish (+3)
+• 2-player support with separate panels
+• Customizable win score (3 to 10 points)
+• Editable player names
+• Dedicated animations for each finish type
+• Victory overlay with celebration effects
+• Undo button to correct mistakes
+• Quick reset for new games
 
-PERFECT FOR:
-- Tournaments with friends
-- Casual matches
-- Local events and competitions
+🏆 PERFECT FOR:
+• Beyblade X tournaments with friends
+• Casual matches and 1v1 challenges
+• Local events and competitions
+• Amateur Beyblade X championships
 
-The app works completely offline, requires no account, and collects no personal data. Free, no ads, no in-app purchases.
+📱 MADE FOR BLADERS:
+BeyScore was created by a Beyblade X fan for fellow bladers. The landscape interface lets you keep the score tracker always visible next to the stadium, without interrupting your game.
 
-Developed with passion by a Beyblade X fan.
+✅ PRIVACY & SIMPLICITY:
+• Works completely offline
+• No account or sign-up required
+• No personal data collected
+• Free, no ads
+• No in-app purchases
+
+Download BeyScore and take your Beyblade X battles to the next level!
 
 ## Category
 Tools > Utilities
 
 ## Tags (max 5)
-beyblade, scorekeeper, score, tracker, battle
+beyblade, scorekeeper, score tracker, battle, beyblade x
