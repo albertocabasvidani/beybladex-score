@@ -145,6 +145,12 @@ bash packages/mobile/scripts/eas-build-production.sh
 2. Upload AAB (`beybladex-mobile.aab`)
 3. Compilare release notes e pubblicare
 
+**REGOLA**: Controllare sempre lo stato delle review/rejection su Play Console via Chrome DevTools, non via email.
+
+### Icona App
+- L'icona launcher (`icon.png` e `adaptive-icon.png`) DEVE corrispondere all'icona dello store listing
+- MAI lasciare placeholder Expo come icona — causa rejection "Misleading Claims"
+
 ## Deploy
 - **Web**: `cd packages/web && npm run deploy` (GitHub Pages)
 - **Mobile**: build locale AAB + upload manuale su Play Console
