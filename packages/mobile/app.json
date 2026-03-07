@@ -17,7 +17,7 @@
         "backgroundColor": "#1a1a2e"
       },
       "package": "com.beybladex.score",
-      "versionCode": 9,
+      "versionCode": 10,
       "permissions": []
     },
     "plugins": [

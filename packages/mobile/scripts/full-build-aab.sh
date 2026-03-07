@@ -84,6 +84,13 @@ for f in patch-build-gradle.sh build-apk.sh build-aab.sh metro-bundle.js full-bu
     fi
 done
 
+# Assets (icons, splash - CRITICAL: must be copied BEFORE expo prebuild)
+for f in icon.png adaptive-icon.png splash-icon.png favicon.png; do
+    if [ -f "$SRC/packages/mobile/assets/$f" ]; then
+        cp "$SRC/packages/mobile/assets/$f" "$BUILD/packages/mobile/assets/$f"
+    fi
+done
+
 echo "  [OK] Source files copied"
 
 # ---- STEP 2: Install dependencies ----
