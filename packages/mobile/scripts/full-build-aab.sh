@@ -44,54 +44,22 @@ else
     echo "  [SKIP] No gradlew yet (first build)"
 fi
 
-# ---- STEP 1: Copy ALL source files ----
+# ---- STEP 1: Sync ALL source files (entire directories) ----
 echo ""
-echo "=== STEP 1: Copy source files ==="
+echo "=== STEP 1: Sync source files ==="
 
-# Core source files
-cp "$SRC/packages/mobile/src/App.tsx" "$BUILD/packages/mobile/src/App.tsx"
-cp "$SRC/packages/mobile/src/store/game-store.ts" "$BUILD/packages/mobile/src/store/game-store.ts"
-
-# Game components
-for f in GameScreen.tsx ScoreDisplay.tsx VictoryOverlay.tsx PlayerPanel.tsx FinishButton.tsx FoulCounter.tsx; do
-    if [ -f "$SRC/packages/mobile/src/components/game/$f" ]; then
-        cp "$SRC/packages/mobile/src/components/game/$f" "$BUILD/packages/mobile/src/components/game/$f"
-    fi
-done
-
-# UI components
-for f in RotateDeviceScreen.tsx; do
-    if [ -f "$SRC/packages/mobile/src/components/ui/$f" ]; then
-        cp "$SRC/packages/mobile/src/components/ui/$f" "$BUILD/packages/mobile/src/components/ui/$f"
-    fi
-done
-
-# Modals
-for f in SettingsModal.tsx CreditsModal.tsx GuideModal.tsx; do
-    if [ -f "$SRC/packages/mobile/src/components/modals/$f" ]; then
-        cp "$SRC/packages/mobile/src/components/modals/$f" "$BUILD/packages/mobile/src/components/modals/$f"
-    fi
-done
+# Sync entire directories — no more per-file lists to maintain
+cp -r "$SRC/packages/mobile/src/"* "$BUILD/packages/mobile/src/"
+cp -r "$SRC/packages/mobile/assets/"* "$BUILD/packages/mobile/assets/"
+cp -r "$SRC/packages/mobile/scripts/"* "$BUILD/packages/mobile/scripts/"
+cp -r "$SRC/packages/shared/src/"* "$BUILD/packages/shared/src/"
 
 # Config files
 cp "$SRC/packages/mobile/app.json" "$BUILD/packages/mobile/app.json"
 cp "$SRC/packages/mobile/package.json" "$BUILD/packages/mobile/package.json"
+cp "$SRC/packages/shared/package.json" "$BUILD/packages/shared/package.json"
 
-# Scripts
-for f in patch-build-gradle.sh build-apk.sh build-aab.sh metro-bundle.js full-build-apk.sh full-build-aab.sh download-keystore.js; do
-    if [ -f "$SRC/packages/mobile/scripts/$f" ]; then
-        cp "$SRC/packages/mobile/scripts/$f" "$BUILD/packages/mobile/scripts/$f"
-    fi
-done
-
-# Assets (icons, splash - CRITICAL: must be copied BEFORE expo prebuild)
-for f in icon.png adaptive-icon.png splash-icon.png favicon.png; do
-    if [ -f "$SRC/packages/mobile/assets/$f" ]; then
-        cp "$SRC/packages/mobile/assets/$f" "$BUILD/packages/mobile/assets/$f"
-    fi
-done
-
-echo "  [OK] Source files copied"
+echo "  [OK] Source files synced"
 
 # ---- STEP 2: Install dependencies ----
 echo ""

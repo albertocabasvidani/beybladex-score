@@ -134,6 +134,17 @@ Lo script `full-build-apk.sh` esegue l'intero pipeline con patch inclusa.
 **REGOLA**: MAI usare `build-apk.sh` dopo `expo prebuild --clean` senza prima eseguire `patch-build-gradle.sh`.
 **REGOLA**: Sempre stoppare Gradle daemons prima di una nuova build (`gradlew --stop`).
 
+### Copia sorgenti (directory sync)
+
+Gli script `full-build-*.sh` copiano **intere directory** (`cp -r`) dalla source dir alla build dir:
+- `packages/mobile/src/` — tutto il codice sorgente
+- `packages/mobile/assets/` — icone, splash (usate da `expo prebuild` per generare le icone Android)
+- `packages/mobile/scripts/` — script di build
+- `packages/shared/src/` — logica di gioco condivisa
+- Config: `app.json`, `package.json` (mobile + shared)
+
+**NON serve aggiungere file singoli alla lista** — qualsiasi nuovo file nelle directory viene copiato automaticamente.
+
 ### EAS Cloud (fallback)
 ```bash
 # Attenzione: piano gratuito ha limite mensile di build
