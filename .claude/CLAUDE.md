@@ -152,7 +152,7 @@ bash packages/mobile/scripts/eas-build-production.sh
 ```
 
 ### Upload Play Store
-1. Google Play Console → BeyScore → **Production** → Create new release
+1. Google Play Console → Beyblade Score → **Production** → Create new release
 2. Upload AAB (`beybladex-mobile.aab`)
 3. Compilare release notes e pubblicare
 

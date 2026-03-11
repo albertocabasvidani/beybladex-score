@@ -29,7 +29,7 @@ export default defineConfig({
       includeAssets: ["icons/*.svg", "icons/*.png"],
       manifest: {
         name: "Beyblade X Score Tracker",
-        short_name: "BeyScore",
+        short_name: "Beyblade Score",
         description: "Track your Beyblade X matches with style",
         theme_color: "#1a1a2e",
         background_color: "#1a1a2e",

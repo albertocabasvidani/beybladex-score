@@ -1,14 +1,14 @@
 # Google Play Store Listing - Italiano
 
 ## Titolo (max 30 char)
-BeyScore
+Beyblade Score
 
 ## Descrizione breve (max 80 char)
 Segnapunti Beyblade X: traccia Spin, Burst, Over e Xtreme Finish!
 
 ## Descrizione completa (max 4000 char)
 
-BeyScore è il segnapunti definitivo per le tue partite di Beyblade X!
+Beyblade Score è il segnapunti definitivo per le tue partite di Beyblade X!
 
 Tieni traccia del punteggio durante le battle di Beyblade X con un'interfaccia semplice e intuitiva, progettata per essere usata in landscape durante il gioco.
 
@@ -29,7 +29,7 @@ Tieni traccia del punteggio durante le battle di Beyblade X con un'interfaccia s
 • Campionati Beyblade X amatoriali
 
 📱 PENSATO PER I BLADER:
-BeyScore è stato creato da un appassionato di Beyblade X per altri blader. L'interfaccia landscape ti permette di tenere il segnapunti sempre visibile accanto allo stadio, senza interrompere il gioco.
+Beyblade Score è stato creato da un appassionato di Beyblade X per altri blader. L'interfaccia landscape ti permette di tenere il segnapunti sempre visibile accanto allo stadio, senza interrompere il gioco.
 
 ✅ PRIVACY E SEMPLICITÀ:
 • Funziona completamente offline
@@ -38,7 +38,7 @@ BeyScore è stato creato da un appassionato di Beyblade X per altri blader. L'in
 • Gratuita, senza pubblicità
 • Nessun acquisto in-app
 
-Scarica BeyScore e porta le tue battle Beyblade X al livello successivo!
+Scarica Beyblade Score e porta le tue battle Beyblade X al livello successivo!
 
 ## Categoria
 Strumenti > Utilità

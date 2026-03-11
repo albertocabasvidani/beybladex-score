@@ -6,7 +6,7 @@
 export const translations = {
   it: {
     app: {
-      title: 'BeyScore'
+      title: 'Beyblade Score'
     },
     player: {
       player1: 'Giocatore 1',
@@ -49,7 +49,7 @@ export const translations = {
   },
   en: {
     app: {
-      title: 'BeyScore'
+      title: 'Beyblade Score'
     },
     player: {
       player1: 'Player 1',

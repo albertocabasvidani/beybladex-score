@@ -1,14 +1,14 @@
 # Google Play Store Listing - English
 
 ## Title (max 30 char)
-BeyScore
+Beyblade Score
 
 ## Short description (max 80 char)
 Beyblade X score tracker: track Spin, Burst, Over & Xtreme Finish!
 
 ## Full description (max 4000 char)
 
-BeyScore is the ultimate score tracker for your Beyblade X battles!
+Beyblade Score is the ultimate score tracker for your Beyblade X battles!
 
 Keep track of scores during Beyblade X battles with a simple and intuitive interface, designed to be used in landscape mode during gameplay.
 
@@ -29,7 +29,7 @@ Keep track of scores during Beyblade X battles with a simple and intuitive inter
 • Amateur Beyblade X championships
 
 📱 MADE FOR BLADERS:
-BeyScore was created by a Beyblade X fan for fellow bladers. The landscape interface lets you keep the score tracker always visible next to the stadium, without interrupting your game.
+Beyblade Score was created by a Beyblade X fan for fellow bladers. The landscape interface lets you keep the score tracker always visible next to the stadium, without interrupting your game.
 
 ✅ PRIVACY & SIMPLICITY:
 • Works completely offline
@@ -38,7 +38,7 @@ BeyScore was created by a Beyblade X fan for fellow bladers. The landscape inter
 • Free, no ads
 • No in-app purchases
 
-Download BeyScore and take your Beyblade X battles to the next level!
+Download Beyblade Score and take your Beyblade X battles to the next level!
 
 ## Category
 Tools > Utilities

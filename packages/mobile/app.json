@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "BeyScore",
+    "name": "Beyblade Score",
     "slug": "beybladex-score-mobile",
     "version": "1.0.0",
     "orientation": "landscape",
@@ -17,7 +17,7 @@
         "backgroundColor": "#1a1a2e"
       },
       "package": "com.beybladex.score",
-      "versionCode": 10,
+      "versionCode": 11,
       "permissions": []
     },
     "plugins": [
