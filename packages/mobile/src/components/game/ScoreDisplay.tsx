@@ -115,6 +115,8 @@ export function ScoreDisplay({ playerId }: Props) {
 
       <Animated.Text
         allowFontScaling={false}
+        numberOfLines={1}
+        adjustsFontSizeToFit
         style={[
           {
             color: getScoreColor(),

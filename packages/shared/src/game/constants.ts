@@ -18,7 +18,7 @@ export const DEFAULT_WIN_SCORE = 4;
 
 // Min/max win score for settings
 export const MIN_WIN_SCORE = 3;
-export const MAX_WIN_SCORE = 10;
+export const MAX_WIN_SCORE = 999;
 
 // Foul limits
 export const DEFAULT_MAX_FOULS = 2;

@@ -82,7 +82,7 @@ export function SettingsModal({ visible, onClose }: Props) {
               <Text style={{ color: 'white', fontSize: 24, fontWeight: '700' }}>-</Text>
             </TouchableOpacity>
 
-            <Text style={{ color: 'white', fontSize: 48, fontWeight: '900', minWidth: 60, textAlign: 'center' }}>
+            <Text numberOfLines={1} adjustsFontSizeToFit style={{ color: 'white', fontSize: 48, fontWeight: '900', minWidth: 80, textAlign: 'center' }}>
               {winScore}
             </Text>
 
