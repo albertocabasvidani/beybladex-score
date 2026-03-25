@@ -30,15 +30,13 @@ SoLoaderDSONotFoundError: couldn't find DSO to load: libreactnative.so
 
 Il sistema Android 36.1 usa Berberis per tradurre arm64→x86_64, ma SoLoader non riesce a trovare `libreactnative.so` nella directory arm64 tradotta.
 
-**Soluzione**: compilare con entrambe le architetture per il test su emulatore. Modificare temporaneamente `packages/mobile/scripts/patch-build-gradle.sh`:
+**Soluzione**: usare il flag `--emulator` nello script di build, che include automaticamente x86_64:
 
 ```bash
-# Per test emulatore (TEMPORANEO):
-sed -i 's/reactNativeArchitectures=.*/reactNativeArchitectures=arm64-v8a,x86_64/' "$GRADLE_PROPS"
-
-# Per Play Store (RIPRISTINARE dopo il test):
-sed -i 's/reactNativeArchitectures=.*/reactNativeArchitectures=arm64-v8a/' "$GRADLE_PROPS"
+bash packages/mobile/scripts/full-build-apk.sh --emulator
 ```
+
+Non serve modificare manualmente `patch-build-gradle.sh`. Il flag imposta `BUILD_FOR_EMULATOR=1` che il patch script legge per scegliere l'architettura.
 
 L'APK con 2 architetture pesa ~60MB (vs ~35MB con arm64 only).
 
@@ -72,13 +70,11 @@ Dopo la creazione, abilitare GPU nel config:
 
 ### Pipeline completo
 
-1. Modificare temporaneamente `patch-build-gradle.sh` per `arm64-v8a,x86_64`
-2. Eseguire la build:
+1. Eseguire la build con `--emulator`:
 ```bash
-bash "c:/claude-code/Personale/app segnapunti beybladex/packages/mobile/scripts/full-build-apk.sh"
+bash packages/mobile/scripts/full-build-apk.sh --emulator
 ```
-3. Output: `C:/projects/beybladex/packages/mobile/beybladex-mobile.apk`
-4. **RIPRISTINARE** `patch-build-gradle.sh` a `arm64-v8a` dopo il test
+2. Output: `C:/projects/beybladex/packages/mobile/beybladex-mobile.apk`
 
 ### Tempo di build
 - ~4-5 minuti con 2 architetture (arm64-v8a + x86_64)

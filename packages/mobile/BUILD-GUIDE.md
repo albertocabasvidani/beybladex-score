@@ -23,22 +23,17 @@ Gradle non supporta path con spazi. Gli script `full-build-*.sh` gestiscono auto
 **Quando**: Test su emulatore Android.
 **Signing**: Debug (non va su Play Store).
 
-**IMPORTANTE — Architettura**: La build standard produce APK solo `arm64-v8a`, che **CRASHA sull'emulatore x86_64** con `SoLoaderDSONotFoundError: libreactnative.so`. Per l'emulatore servono entrambe le architetture.
+**IMPORTANTE — Architettura**: La build standard produce APK solo `arm64-v8a`, che **CRASHA sull'emulatore x86_64** con `SoLoaderDSONotFoundError: libreactnative.so`. Usare il flag `--emulator` per includere x86_64 automaticamente.
 
 ### Procedura
 
-1. Modificare **temporaneamente** `packages/mobile/scripts/patch-build-gradle.sh`:
-   ```bash
-   # Cambiare questa riga:
-   sed -i 's/reactNativeArchitectures=.*/reactNativeArchitectures=arm64-v8a/' "$GRADLE_PROPS"
-   # In:
-   sed -i 's/reactNativeArchitectures=.*/reactNativeArchitectures=arm64-v8a,x86_64/' "$GRADLE_PROPS"
-   ```
-2. Eseguire la build:
-   ```bash
-   bash packages/mobile/scripts/full-build-apk.sh
-   ```
-3. **RIPRISTINARE** a `arm64-v8a` dopo il test (prima di build Play Store)
+```bash
+# Emulatore (arm64-v8a + x86_64, ~4-5 min)
+bash packages/mobile/scripts/full-build-apk.sh --emulator
+
+# Device fisico o test generico (arm64-v8a only, ~3 min)
+bash packages/mobile/scripts/full-build-apk.sh
+```
 
 **Output**: `C:\projects\beybladex\packages\mobile\beybladex-mobile.apk`
 **Tempo**: ~4-5 min con 2 architetture
@@ -113,7 +108,7 @@ bash packages/mobile/scripts/full-build-aab.sh
 - [ ] `versionCode` in `packages/mobile/app.json` → incrementato? (non serve toccare `build.gradle`, expo prebuild lo genera)
 - [ ] Store listing (titolo, descrizione, screenshot) → aggiornati se necessario?
 - [ ] Nessuna modifica pending ai sorgenti che non è stata inclusa nella build?
-- [ ] `patch-build-gradle.sh` ripristinato a `arm64-v8a` (non deve avere x86_64)?
+- [ ] Build AAB con `full-build-aab.sh` (usa sempre arm64-v8a, non serve `--emulator`)?
 
 ### Icona App
 - L'icona launcher DEVE corrispondere all'icona dello store listing

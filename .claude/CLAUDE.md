@@ -25,10 +25,9 @@ Guida completa build + emulatore: **`packages/mobile/BUILD-GUIDE.md`**
 Troubleshooting emulatore: **`packages/mobile/EMULATOR-GUIDE.md`**
 
 **REGOLA CRITICA — Architettura APK per emulatore**:
-La build standard produce APK solo `arm64-v8a`, che **CRASHA sull'emulatore x86_64** (`SoLoaderDSONotFoundError`). Per testare sull'emulatore:
-1. In `patch-build-gradle.sh`: cambiare a `arm64-v8a,x86_64`
-2. `bash packages/mobile/scripts/full-build-apk.sh`
-3. **RIPRISTINARE** a `arm64-v8a` dopo il test
+La build standard produce APK solo `arm64-v8a`, che **CRASHA sull'emulatore x86_64** (`SoLoaderDSONotFoundError`).
+- **Emulatore**: `bash packages/mobile/scripts/full-build-apk.sh --emulator` (aggiunge x86_64 automaticamente)
+- **Device/Play Store**: `bash packages/mobile/scripts/full-build-apk.sh` (arm64-v8a only)
 
 **IMPORTANTE**: Tutti i comandi adb vanno in script `.sh` per evitare permission multiple.
 
@@ -42,8 +41,8 @@ Dettagli completi in **`packages/mobile/BUILD-GUIDE.md`**.
 
 Comandi rapidi:
 ```bash
-# APK test emulatore (ricordarsi architettura x86_64!)
-bash packages/mobile/scripts/full-build-apk.sh
+# APK test emulatore (include x86_64 automaticamente)
+bash packages/mobile/scripts/full-build-apk.sh --emulator
 
 # AAB Play Store
 bash packages/mobile/scripts/full-build-aab.sh
