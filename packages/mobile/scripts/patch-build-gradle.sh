@@ -59,12 +59,33 @@ else
     echo "  [INFO] upload.keystore not found, keeping debug signing (OK for APK test)"
 fi
 
-# 4. Fix gradle.properties: arm64-v8a only for APK builds
-if [ -f "$GRADLE_PROPS" ] && grep -q 'reactNativeArchitectures=armeabi-v7a' "$GRADLE_PROPS"; then
-    sed -i 's/reactNativeArchitectures=.*/reactNativeArchitectures=arm64-v8a/' "$GRADLE_PROPS"
-    echo "  [OK] gradle.properties → arm64-v8a only"
+# 4. Fix gradle.properties: set architecture based on BUILD_FOR_EMULATOR env var
+if [ -f "$GRADLE_PROPS" ] && grep -q 'reactNativeArchitectures=' "$GRADLE_PROPS"; then
+    if [ "${BUILD_FOR_EMULATOR:-0}" = "1" ]; then
+        ARCH="x86_64"
+    else
+        ARCH="arm64-v8a"
+    fi
+    sed -i "s/reactNativeArchitectures=.*/reactNativeArchitectures=$ARCH/" "$GRADLE_PROPS"
+    echo "  [OK] gradle.properties → $ARCH"
+fi
+
+# 5. Remove deprecated android:statusBarColor from styles.xml
+STYLES_FILE="$SCRIPT_DIR/../android/app/src/main/res/values/styles.xml"
+if [ -f "$STYLES_FILE" ] && grep -q 'android:statusBarColor' "$STYLES_FILE"; then
+    sed -i '/android:statusBarColor/d' "$STYLES_FILE"
+    echo "  [OK] Removed deprecated android:statusBarColor from styles.xml"
 else
-    echo "  [SKIP] gradle.properties already arm64-v8a"
+    echo "  [SKIP] No android:statusBarColor found in styles.xml"
+fi
+
+# 6. Add resizeableActivity="true" to MainActivity in AndroidManifest.xml
+MANIFEST_FILE="$SCRIPT_DIR/../android/app/src/main/AndroidManifest.xml"
+if [ -f "$MANIFEST_FILE" ] && ! grep -q 'android:resizeableActivity' "$MANIFEST_FILE"; then
+    sed -i 's/android:name=".MainActivity"/android:name=".MainActivity"\n        android:resizeableActivity="true"/' "$MANIFEST_FILE"
+    echo "  [OK] Added android:resizeableActivity=true to MainActivity"
+else
+    echo "  [SKIP] resizeableActivity already present in manifest"
 fi
 
 echo "=== Patch complete ==="

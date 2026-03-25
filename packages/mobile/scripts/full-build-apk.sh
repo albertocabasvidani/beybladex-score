@@ -17,12 +17,21 @@
 #   - Must patch: cliFile (metro-bundle.js), signingConfigs, architectures
 #
 # USAGE:
-#   bash packages/mobile/scripts/full-build-apk.sh
+#   bash packages/mobile/scripts/full-build-apk.sh              # arm64-v8a only (device/Play Store)
+#   bash packages/mobile/scripts/full-build-apk.sh --emulator   # arm64-v8a + x86_64 (emulatore)
 #
 # OUTPUT:
 #   C:/projects/beybladex/packages/mobile/beybladex-mobile.apk
 # ============================================================================
 set -e
+
+# Parse --emulator flag
+export BUILD_FOR_EMULATOR=0
+for arg in "$@"; do
+    if [ "$arg" = "--emulator" ]; then
+        BUILD_FOR_EMULATOR=1
+    fi
+done
 
 export JAVA_HOME="C:/Program Files/Android/Android Studio/jbr"
 export ANDROID_HOME="C:/Users/cinqu/AppData/Local/Android/Sdk"

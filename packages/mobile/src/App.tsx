@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import { useWindowDimensions, StatusBar as RNStatusBar, AppState } from 'react-native';
+import { useWindowDimensions, AppState } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { StatusBar } from 'expo-status-bar';
+import { SystemBars } from 'react-native-edge-to-edge';
 import { useKeepAwake } from 'expo-keep-awake';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { RotateDeviceScreen } from './components/ui/RotateDeviceScreen';
@@ -31,11 +31,11 @@ function AppContent() {
 
   // Re-hide status bar when returning from notification shade
   useEffect(() => {
-    RNStatusBar.setHidden(true);
+    SystemBars.setHidden({ statusBar: true });
 
     const subscription = AppState.addEventListener('change', (state) => {
       if (state === 'active') {
-        RNStatusBar.setHidden(true);
+        SystemBars.setHidden({ statusBar: true });
       }
     });
 
@@ -48,7 +48,7 @@ function AppContent() {
   if (!isLandscape) {
     return (
       <>
-        <StatusBar hidden />
+        <SystemBars hidden={{ statusBar: true }} />
         <RotateDeviceScreen />
       </>
     );
@@ -56,7 +56,7 @@ function AppContent() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['left', 'right']}>
-      <StatusBar hidden />
+      <SystemBars hidden={{ statusBar: true }} />
       <GameScreen />
     </SafeAreaView>
   );
