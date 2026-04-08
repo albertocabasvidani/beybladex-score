@@ -73,5 +73,22 @@ test-*.js
 sessions-index.md
 app-logs-*.jsonl
 
+# Build artifacts
+*.aab
+android/
+
+# Claude / MCP local config
+.claude/settings.json
+.mcp.json
+.playwright-cli/
+
+# Plans (generati automaticamente)
+plans/
+
+# File temporanei di test/debug
+uidump.xml
+transcript-export.md
+mockup-layout-banner.html
+
 # Old project directory (migrated to packages/web)
 beybladex-score/
