@@ -54,6 +54,20 @@ bash packages/mobile/scripts/full-build-aab.sh
 - Upload Play Store: SEMPRE track **Production** (MAI Closed testing/Alpha)
 - Controllare review/rejection su Play Console via Chrome DevTools
 
+## Monetizzazione (AdMob + RevenueCat)
+
+- **AdMob**: banner nella VictoryOverlay, SDK `react-native-google-mobile-ads`
+- **RevenueCat**: acquisto one-time "rimuovi pubblicità", SDK `react-native-purchases`
+- **Config**: `packages/mobile/src/config/ads.ts` (ad unit IDs, `isAdsRemoved()`)
+- **Store acquisti**: `packages/mobile/src/store/purchases-store.ts`
+
+**REGOLA CRITICA — Plugin AdMob in app.json**: i parametri usano **camelCase** (`androidAppId`), NON snake_case (`android_app_id`). Verificare SEMPRE i nomi parametri nel sorgente del plugin (`node_modules/react-native-google-mobile-ads/plugin/src/index.ts`) prima di configurare.
+
+**ID test** (da sostituire prima del rilascio):
+- App ID AdMob: `ca-app-pub-3940256099942544~3347511713` (in `app.json`)
+- Ad unit ID: `TestIds.ADAPTIVE_BANNER` in dev (in `src/config/ads.ts`)
+- RevenueCat API key: `goog_XXXX` placeholder (in `src/store/purchases-store.ts`)
+
 ## Deploy
 - **Web**: `cd packages/web && npm run deploy` (GitHub Pages)
 - **Mobile**: build locale AAB + upload manuale su Play Console

@@ -14,6 +14,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import type { PlayerId } from '@beybladex/shared';
 import { useGameStore } from '../../store/game-store';
+import { usePurchasesStore } from '../../store/purchases-store';
+import { BannerAdView } from '../ads/banner-ad';
+import { BANNER_HEIGHT, isAdsRemoved } from '../../config/ads';
 
 const CONFETTI_COLORS = ['#ef4444', '#22c55e', '#3b82f6', '#f59e0b', '#a855f7'];
 
@@ -81,7 +84,7 @@ function ConfettiParticle({ index }: { index: number }) {
   );
 }
 
-function TrophyBounce() {
+function TrophyBounce({ size }: { size: number }) {
   const scale = useSharedValue(0);
   const rotate = useSharedValue(0);
 
@@ -117,7 +120,7 @@ function TrophyBounce() {
     <Animated.Text
       style={[
         {
-          fontSize: 80,
+          fontSize: size,
           textAlign: 'center',
         },
         animatedStyle,
@@ -167,6 +170,21 @@ export function VictoryOverlay({ winnerId }: Props) {
   const player = useGameStore((state) => state[winnerId]);
   const reset = useGameStore((state) => state.reset);
   const wins = useGameStore((state) => state.wins[winnerId]);
+  const purchaseRemoveAds = usePurchasesStore((state) => state.purchaseRemoveAds);
+  const adsRemoved = usePurchasesStore((state) => state.adsRemoved);
+
+  const { height } = useWindowDimensions();
+  const showAds = !adsRemoved;
+  const bannerSpace = showAds ? BANNER_HEIGHT : 0;
+  const available = height - bannerSpace;
+
+  // Dynamic sizes proportional to available height
+  const trophySize = Math.round(available * 0.18);
+  const nameSize = Math.round(available * 0.09);
+  const detailSize = Math.round(available * 0.055);
+  const buttonMargin = Math.round(available * 0.06);
+  const buttonPaddingV = Math.round(available * 0.035);
+  const buttonFontSize = Math.round(available * 0.05);
 
   return (
     <Animated.View
@@ -178,103 +196,94 @@ export function VictoryOverlay({ winnerId }: Props) {
         right: 0,
         bottom: 0,
         backgroundColor: 'rgba(0, 0, 0, 0.85)',
-        justifyContent: 'center',
-        alignItems: 'center',
         zIndex: 200,
       }}
     >
-      {/* Confetti - reduced from 50 to 20 */}
+      {/* Confetti */}
       {Array.from({ length: 20 }).map((_, i) => (
         <ConfettiParticle key={i} index={i} />
       ))}
 
-      <TrophyBounce />
+      {/* Content zone */}
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <TrophyBounce size={trophySize} />
 
-      <SlideInView delay={400}>
-        <Text
-          style={{
-            color: '#fbbf24',
-            fontSize: 36,
-            fontWeight: '900',
-            textAlign: 'center',
-            marginTop: 16,
-            textShadowColor: 'rgba(251, 191, 36, 0.5)',
-            textShadowOffset: { width: 0, height: 0 },
-            textShadowRadius: 15,
-          }}
-        >
-          {player.name}
-        </Text>
-      </SlideInView>
-
-      <SlideInView delay={500}>
-        <Text
-          style={{
-            color: '#e2e8f0',
-            fontSize: 24,
-            fontWeight: '700',
-            textAlign: 'center',
-            marginTop: 4,
-          }}
-        >
-          WINS!
-        </Text>
-      </SlideInView>
-
-      <SlideInView delay={500}>
-        <Text
-          style={{
-            color: '#94a3b8',
-            fontSize: 20,
-            textAlign: 'center',
-            marginTop: 8,
-          }}
-        >
-          Score: {player.score}
-        </Text>
-      </SlideInView>
-
-      <SlideInView delay={550}>
-        <Text
-          style={{
-            color: '#fbbf24',
-            fontSize: 18,
-            fontWeight: '700',
-            textAlign: 'center',
-            marginTop: 4,
-          }}
-        >
-          🏆 {wins} {wins === 1 ? 'victory' : 'victories'}
-        </Text>
-      </SlideInView>
-
-      <SlideInView delay={600}>
-        <Pressable
-          onPress={reset}
-          style={{
-            marginTop: 32,
-            paddingVertical: 14,
-            paddingHorizontal: 32,
-            backgroundColor: '#f59e0b',
-            borderRadius: 12,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.3,
-            shadowRadius: 8,
-            elevation: 8,
-          }}
-        >
+        <SlideInView delay={400}>
           <Text
             style={{
-              color: '#0f172a',
-              fontSize: 18,
-              fontWeight: '800',
+              color: '#fbbf24',
+              fontSize: nameSize,
+              fontWeight: '900',
+              textAlign: 'center',
+              marginTop: Math.round(available * 0.02),
+              textShadowColor: 'rgba(251, 191, 36, 0.5)',
+              textShadowOffset: { width: 0, height: 0 },
+              textShadowRadius: 15,
             }}
           >
-            New Game
+            {player.name} WINS!
           </Text>
-        </Pressable>
-      </SlideInView>
+        </SlideInView>
+
+        <SlideInView delay={500}>
+          <Text
+            style={{
+              color: '#94a3b8',
+              fontSize: detailSize,
+              textAlign: 'center',
+              marginTop: Math.round(available * 0.015),
+            }}
+          >
+            Score: {player.score}  ·  🏆 {wins} {wins === 1 ? 'victory' : 'victories'}
+          </Text>
+        </SlideInView>
+
+        <SlideInView delay={600}>
+          <Pressable
+            onPress={reset}
+            style={{
+              marginTop: buttonMargin,
+              paddingVertical: buttonPaddingV,
+              paddingHorizontal: 32,
+              backgroundColor: '#f59e0b',
+              borderRadius: 12,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 8,
+              elevation: 8,
+            }}
+          >
+            <Text
+              style={{
+                color: '#0f172a',
+                fontSize: buttonFontSize,
+                fontWeight: '800',
+              }}
+            >
+              New Game
+            </Text>
+          </Pressable>
+        </SlideInView>
+      </View>
+
+      {/* Ad zone */}
+      {showAds && (
+        <View style={{ alignItems: 'center', paddingBottom: 4 }}>
+          <BannerAdView />
+          <Pressable onPress={purchaseRemoveAds} style={{ marginTop: 4 }}>
+            <Text
+              style={{
+                color: '#64748b',
+                fontSize: 11,
+                textDecorationLine: 'underline',
+              }}
+            >
+              Rimuovi pubblicità
+            </Text>
+          </Pressable>
+        </View>
+      )}
     </Animated.View>
   );
 }

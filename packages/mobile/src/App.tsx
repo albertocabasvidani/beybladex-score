@@ -7,7 +7,9 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { RotateDeviceScreen } from './components/ui/RotateDeviceScreen';
 import { GameScreen } from './components/game/GameScreen';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import mobileAds from 'react-native-google-mobile-ads';
 import { logger } from './utils/logger';
+import { usePurchasesStore } from './store/purchases-store';
 import './i18n/config';
 
 // Global error handler for uncaught JS errors
@@ -21,6 +23,13 @@ const originalHandler = (globalThis as any).ErrorUtils?.getGlobalHandler?.();
 });
 
 logger.init().then(() => logger.info('App started'));
+
+mobileAds()
+  .initialize()
+  .then(() => logger.info('AdMob initialized'))
+  .catch((err: Error) => logger.warn('AdMob init failed', { message: err.message }));
+
+usePurchasesStore.getState().init();
 
 function AppContent() {
   useKeepAwake();

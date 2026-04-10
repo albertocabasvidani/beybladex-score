@@ -17,7 +17,7 @@
         "backgroundColor": "#1a1a2e"
       },
       "package": "com.beybladex.score",
-      "versionCode": 12,
+      "versionCode": 13,
       "permissions": []
     },
     "plugins": [
@@ -26,6 +26,12 @@
         "expo-screen-orientation",
         {
           "initialOrientation": "LANDSCAPE"
+        }
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-7303361297226779~8070710716"
         }
       ]
     ],
