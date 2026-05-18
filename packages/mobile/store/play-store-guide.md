@@ -1,5 +1,8 @@
 # Guida: Pubblicare Beyblade X Score su Google Play Store
 
+> 📚 **Best practice ASO 2026**: prima di compilare la listing leggi **`aso-best-practices-2026.md`** — contiene il razionale per titolo, short description, categoria, draft di Custom Store Listing e le fonti aggiornate.
+> 📝 **Testi listing**: copy ottimizzato in **`listing-it.md`** (default IT) e **`listing-en.md`** (EN).
+
 ## Prerequisiti
 
 - Account Google (Gmail)
@@ -25,7 +28,7 @@
 3. Compila:
    - **Nome app**: `Beyblade X Score`
    - **Lingua predefinita**: Italiano
-   - **App o gioco**: App
+   - **App o gioco**: Gioco
    - **Gratuita o a pagamento**: Gratuita
    - **Dichiarazioni**: accetta tutte
 4. Clicca **"Crea app"**
@@ -35,9 +38,9 @@
 ## Step 3: Compilare la Scheda dello Store
 
 ### 3.1 Dettagli app (Grow > Store listing)
-Copia i testi dal file `listing-it.md`:
-- **Titolo**: Beyblade X Score
-- **Descrizione breve**: Segnapunti per partite Beyblade X. Spin, Burst, Over, Xtreme!
+Copia i testi dal file `listing-it.md` (default IT) e da `listing-en.md` (EN):
+- **Titolo**: `Beyblade X: Segnapunti` (IT) / `Beyblade X Score Tracker` (EN)
+- **Descrizione breve**: vedi `listing-it.md` / `listing-en.md`
 - **Descrizione completa**: copia dal file
 
 ### 3.2 Immagini
@@ -47,8 +50,9 @@ Carica dalla cartella `store/`:
 - **Screenshot** (minimo 4, 1920x1080): cattura dall'app in landscape
 
 ### 3.3 Categoria
-- **Categoria**: Strumenti > Utilità
-- **Tag**: beyblade, segnapunti, punteggio, score, battaglia
+- **Tipo app**: **Gioco** (non App) — 5 su 6 competitor Beyblade sul Play Store sono in Games
+- **Categoria**: **Sports**
+- **Tag**: scegli dalla lista predefinita Google in Play Console (max 5). Concetti target: Sports, 2 Player, Casual, Local Multiplayer, Score
 
 ---
 
@@ -56,28 +60,40 @@ Carica dalla cartella `store/`:
 
 1. Vai su **Policy > App content > Content rating**
 2. Clicca **"Start questionnaire"**
-3. **Tipo**: Utilità (non gioco)
-4. Rispondi **NO** a tutte le domande:
-   - Violenza? No
+3. **Tipo**: **Gioco** (non più "Utilità")
+4. Rispondi **NO** a tutte le domande sui contenuti:
+   - Violenza? No (i finish sono animazioni stilizzate, non violenza)
    - Contenuti sessuali? No
    - Linguaggio volgare? No
    - Sostanze controllate? No
    - Gambling? No
    - Contenuti generati dagli utenti? No
-5. **Risultato**: Rating **"Everyone"** / Per tutti
+5. **Interactive elements**:
+   - Users interact (online)? No (l'app è offline)
+   - Shares location? No
+   - Digital purchases? **Sì** (IAP "remove ads")
+6. **Risultato atteso**: Rating **"Everyone"** / Per tutti
+
+> ⚠️ Se cambi tipo da App a Gioco rispetto a una sottomissione precedente, il content rating va **rifatto da zero**.
 
 ---
 
 ## Step 5: Data Safety (Sicurezza dei dati)
 
 1. Vai su **Policy > App content > Data safety**
-2. **"La tua app raccoglie o condivide dati?"**: No
-3. **"La tua app raccoglie dati degli utenti?"**: No
-4. Conferma che l'app:
-   - Non raccoglie dati personali
-   - Non condivide dati con terze parti
-   - Non usa analytics o tracking
-5. **Privacy policy URL**: `https://albertocabasvidani.github.io/beybladex-score/privacy-policy.html`
+2. **"La tua app raccoglie o condivide dati?"**: **Sì** (a causa di AdMob)
+3. Dichiara i dati raccolti da **AdMob** (SDK `react-native-google-mobile-ads`):
+   - **Device or other IDs** (Advertising ID) — usato per Advertising or marketing
+   - Tipo: collected, not shared
+   - Crittografata in transito: Sì
+   - Required for ads functionality
+4. Dichiara i dati raccolti da **RevenueCat** (IAP):
+   - **Purchase history** — usato per App functionality (gestire stato IAP "remove ads")
+5. Dati dell'app stessa:
+   - Game scores, settings → **stored only on device** (NOT collected/shared)
+6. **Privacy policy URL**: `https://albertocabasvidani.github.io/beybladex-score/privacy-policy.html`
+
+> ⚠️ **Prima di submit**: aggiorna `privacy-policy.md` per dichiarare AdMob e RevenueCat tra i Third-Party Services. Il claim attuale "Third-Party Services: None" è inaccurato e in contrasto con quanto dichiarato qui in Data Safety.
 
 ---
 
@@ -92,7 +108,7 @@ Carica dalla cartella `store/`:
 ## Step 7: Ads Declaration
 
 1. Vai su **Policy > App content > Ads**
-2. **L'app contiene pubblicità?**: No
+2. **L'app contiene pubblicità?**: **Sì** (banner AdMob nella VictoryOverlay)
 
 ---
 

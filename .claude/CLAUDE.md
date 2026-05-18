@@ -68,6 +68,14 @@ bash packages/mobile/scripts/full-build-aab.sh
 - Ad unit ID: `TestIds.ADAPTIVE_BANNER` in dev (in `src/config/ads.ts`)
 - RevenueCat API key: `goog_XXXX` placeholder (in `src/store/purchases-store.ts`)
 
+## Play Store & ASO
+
+- Best practice ASO 2026 (riferimento + draft Custom Store Listing): **`packages/mobile/store/aso-best-practices-2026.md`**
+- Guida operativa pubblicazione: **`packages/mobile/store/play-store-guide.md`**
+- Listing markdown da copiare in Play Console: **`packages/mobile/store/listing-en.md`**, **`packages/mobile/store/listing-it.md`**
+
+**Categoria target**: Game > Sports (allineata ai competitor Beyblade sul Play Store).
+
 ## Deploy
 - **Web**: `cd packages/web && npm run deploy` (GitHub Pages)
 - **Mobile**: build locale AAB + upload manuale su Play Console
