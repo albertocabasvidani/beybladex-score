@@ -17,8 +17,8 @@
         "backgroundColor": "#1a1a2e"
       },
       "package": "com.beybladex.score",
-      "versionCode": 13,
-      "permissions": []
+      "versionCode": 15,
+      "permissions": ["com.google.android.gms.permission.AD_ID"]
     },
     "plugins": [
       "expo-localization",

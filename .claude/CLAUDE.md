@@ -53,6 +53,7 @@ bash packages/mobile/scripts/full-build-aab.sh
 - Sempre stoppare Gradle daemons prima di una nuova build
 - Upload Play Store: SEMPRE track **Production** (MAI Closed testing/Alpha)
 - Controllare review/rejection su Play Console via Chrome DevTools
+- **versionCode è bruciato anche dopo Discard draft**: se un AAB con versionCode N viene caricato e poi il draft scartato, Play Console rifiuta il prossimo upload con stesso N (errore *"Version code N has already been used"*). Bumpare SEMPRE a N+1 prima di re-buildare.
 
 ## Monetizzazione (AdMob + RevenueCat)
 
@@ -62,6 +63,12 @@ bash packages/mobile/scripts/full-build-aab.sh
 - **Store acquisti**: `packages/mobile/src/store/purchases-store.ts`
 
 **REGOLA CRITICA — Plugin AdMob in app.json**: i parametri usano **camelCase** (`androidAppId`), NON snake_case (`android_app_id`). Verificare SEMPRE i nomi parametri nel sorgente del plugin (`node_modules/react-native-google-mobile-ads/plugin/src/index.ts`) prima di configurare.
+
+**REGOLA CRITICA — Permission AD_ID in app.json**: poiché l'app dichiara in Play Console (App content > Advertising ID) di usare l'advertising ID per AdMob, il manifest **deve** contenere `com.google.android.gms.permission.AD_ID` (richiesto da Android 13+). In `app.json`:
+```json
+"android": { "permissions": ["com.google.android.gms.permission.AD_ID"] }
+```
+Senza questa permission, Play Console blocca la pubblicazione con errore *"manifest doesn't include AD_ID permission"*. Verificare che resti dopo `expo prebuild --clean`.
 
 **ID test** (da sostituire prima del rilascio):
 - App ID AdMob: `ca-app-pub-3940256099942544~3347511713` (in `app.json`)

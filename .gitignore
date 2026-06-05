@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+package-lock.json
 .pnp
 .pnp.js
 .yarn/*
@@ -55,9 +56,13 @@ ios/Pods/
 *.tmp
 *.temp
 nul
+tmp/
 
 # Google Service Account
 google-service-account.json
+
+# Secret RevenueCat (mai committare)
+revenuecat-sa-key.json
 
 # Screenshots and test files
 screenshots/

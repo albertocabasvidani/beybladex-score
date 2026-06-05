@@ -38,7 +38,7 @@ export function GuideModal({ visible, onClose, onOpenCredits }: Props) {
                 <Text style={{ fontWeight: '700' }}>F: 0/2</Text> — falli. Usa +/- per aggiungere o togliere. Al limite, il punto va all'avversario
               </Text>
               <Text style={styles.item}>
-                <Text style={{ fontWeight: '700' }}>🏆</Text> sopra il punteggio — vittorie nella sessione. Tieni premuto per azzerare entrambi
+                <Text style={{ fontWeight: '700' }}>🏆</Text> sopra il punteggio — vittorie nella sessione. Tocca per azzerare entrambi
               </Text>
               <Text style={styles.item}>
                 I <Text style={{ fontWeight: '700' }}>4 pulsanti grandi</Text> assegnano il punteggio in base al tipo di finish

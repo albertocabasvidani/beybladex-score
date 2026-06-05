@@ -7,6 +7,7 @@ import { AnimationOverlay } from '../animations';
 import { SettingsModal } from '../modals/SettingsModal';
 import { CreditsModal } from '../modals/CreditsModal';
 import { GuideModal } from '../modals/GuideModal';
+import { ReleaseNoteModal } from '../modals/ReleaseNoteModal';
 import { useGameStore } from '../../store/game-store';
 import { logger } from '../../utils/logger';
 
@@ -26,15 +27,26 @@ export function GameScreen() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [creditsOpen, setCreditsOpen] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
+  const [releaseNoteOpen, setReleaseNoteOpen] = useState(false);
 
-  // Show guide on first launch
+  // First launch → guide. Existing user without release-note flag → release note.
   useEffect(() => {
     let isMounted = true;
-    AsyncStorage.getItem('hasSeenGuide').then((value) => {
-      if (isMounted && !value) {
+    AsyncStorage.getItem('hasSeenGuide').then((guideValue) => {
+      if (!isMounted) return;
+      if (!guideValue) {
         setGuideOpen(true);
         AsyncStorage.setItem('hasSeenGuide', 'true');
+        AsyncStorage.setItem('hasSeenReleaseNote_v14', 'true');
+        return;
       }
+      AsyncStorage.getItem('hasSeenReleaseNote_v14').then((noteValue) => {
+        if (!isMounted) return;
+        if (!noteValue) {
+          setReleaseNoteOpen(true);
+          AsyncStorage.setItem('hasSeenReleaseNote_v14', 'true');
+        }
+      });
     });
     return () => { isMounted = false; };
   }, []);
@@ -45,10 +57,11 @@ export function GameScreen() {
       if (creditsOpen) { setCreditsOpen(false); return true; }
       if (guideOpen) { setGuideOpen(false); return true; }
       if (settingsOpen) { setSettingsOpen(false); return true; }
+      if (releaseNoteOpen) { setReleaseNoteOpen(false); return true; }
       return true; // Block back when no modal open (don't exit app)
     });
     return () => sub.remove();
-  }, [settingsOpen, creditsOpen, guideOpen]);
+  }, [settingsOpen, creditsOpen, guideOpen, releaseNoteOpen]);
 
   // Safety valve: force-clear stuck animations after 6 seconds
   useEffect(() => {
@@ -203,6 +216,7 @@ export function GameScreen() {
         }}
       />
       <CreditsModal visible={creditsOpen} onClose={() => setCreditsOpen(false)} />
+      <ReleaseNoteModal visible={releaseNoteOpen} onClose={() => setReleaseNoteOpen(false)} />
 
       {/* Animation Overlay */}
       {currentAnimation && (

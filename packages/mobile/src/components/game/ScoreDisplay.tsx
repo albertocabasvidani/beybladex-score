@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -6,6 +6,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useGameStore } from '../../store/game-store';
+import { ResetTrophiesModal } from '../modals/ResetTrophiesModal';
 import type { PlayerId } from '@beybladex/shared';
 
 interface Props {
@@ -15,8 +16,9 @@ interface Props {
 export function ScoreDisplay({ playerId }: Props) {
   const player = useGameStore((state) => state[playerId]);
   const winScore = useGameStore((state) => state.winScore);
-  const resetWins = useGameStore((state) => state.resetWins);
   const myWins = useGameStore((state) => state.wins[playerId]);
+
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const prevScoreRef = useRef(player.score);
   const scaleValue = useSharedValue(1);
@@ -64,8 +66,7 @@ export function ScoreDisplay({ playerId }: Props) {
     >
       {/* Wins trophy - always visible */}
       <Pressable
-          onLongPress={resetWins}
-          delayLongPress={800}
+          onPress={() => setConfirmOpen(true)}
           style={{
             alignItems: 'center',
             justifyContent: 'center',
@@ -131,6 +132,8 @@ export function ScoreDisplay({ playerId }: Props) {
       >
         {player.score}
       </Animated.Text>
+
+      <ResetTrophiesModal visible={confirmOpen} onClose={() => setConfirmOpen(false)} />
     </View>
   );
 }
