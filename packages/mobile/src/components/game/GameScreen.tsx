@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View, TouchableOpacity, Text, BackHandler } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PlayerPanel } from './PlayerPanel';
@@ -8,7 +8,9 @@ import { SettingsModal } from '../modals/SettingsModal';
 import { CreditsModal } from '../modals/CreditsModal';
 import { GuideModal } from '../modals/GuideModal';
 import { ReleaseNoteModal } from '../modals/ReleaseNoteModal';
+import { ReviewPromptModal } from '../modals/ReviewPromptModal';
 import { useGameStore } from '../../store/game-store';
+import { useReviewStore } from '../../store/review-store';
 import { logger } from '../../utils/logger';
 
 export function GameScreen() {
@@ -28,6 +30,22 @@ export function GameScreen() {
   const [creditsOpen, setCreditsOpen] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
   const [releaseNoteOpen, setReleaseNoteOpen] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
+
+  // Invito recensione dopo N partite completate (al passaggio winner null -> set)
+  const incrementGamesCompleted = useReviewStore((state) => state.incrementGamesCompleted);
+  const prevWinnerRef = useRef(winner);
+  useEffect(() => {
+    const prev = prevWinnerRef.current;
+    prevWinnerRef.current = winner;
+    if (!prev && winner) {
+      incrementGamesCompleted();
+      if (useReviewStore.getState().shouldShowReviewPrompt()) {
+        const timer = setTimeout(() => setReviewOpen(true), 1500);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [winner, incrementGamesCompleted]);
 
   // First launch → guide. Existing user without release-note flag → release note.
   useEffect(() => {
@@ -54,6 +72,7 @@ export function GameScreen() {
   // Android back button: close modals or do nothing (never exit app)
   useEffect(() => {
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (reviewOpen) { setReviewOpen(false); return true; }
       if (creditsOpen) { setCreditsOpen(false); return true; }
       if (guideOpen) { setGuideOpen(false); return true; }
       if (settingsOpen) { setSettingsOpen(false); return true; }
@@ -61,7 +80,7 @@ export function GameScreen() {
       return true; // Block back when no modal open (don't exit app)
     });
     return () => sub.remove();
-  }, [settingsOpen, creditsOpen, guideOpen, releaseNoteOpen]);
+  }, [settingsOpen, creditsOpen, guideOpen, releaseNoteOpen, reviewOpen]);
 
   // Safety valve: force-clear stuck animations after 6 seconds
   useEffect(() => {
@@ -217,6 +236,7 @@ export function GameScreen() {
       />
       <CreditsModal visible={creditsOpen} onClose={() => setCreditsOpen(false)} />
       <ReleaseNoteModal visible={releaseNoteOpen} onClose={() => setReleaseNoteOpen(false)} />
+      <ReviewPromptModal visible={reviewOpen} onClose={() => setReviewOpen(false)} />
 
       {/* Animation Overlay */}
       {currentAnimation && (

@@ -7,7 +7,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { RotateDeviceScreen } from './components/ui/RotateDeviceScreen';
 import { GameScreen } from './components/game/GameScreen';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import mobileAds from 'react-native-google-mobile-ads';
+import mobileAds, { MaxAdContentRating } from 'react-native-google-mobile-ads';
 import { logger } from './utils/logger';
 import { usePurchasesStore } from './store/purchases-store';
 import './i18n/config';
@@ -24,8 +24,13 @@ const originalHandler = (globalThis as any).ErrorUtils?.getGlobalHandler?.();
 
 logger.init().then(() => logger.info('App started'));
 
+// App rivolta a minori (target 13-15): annunci adatti all'età e non personalizzati
 mobileAds()
-  .initialize()
+  .setRequestConfiguration({
+    maxAdContentRating: MaxAdContentRating.G,
+    tagForUnderAgeOfConsent: true,
+  })
+  .then(() => mobileAds().initialize())
   .then(() => logger.info('AdMob initialized'))
   .catch((err: Error) => logger.warn('AdMob init failed', { message: err.message }));
 

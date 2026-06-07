@@ -45,6 +45,12 @@ export const translations = {
       reset: 'Sei sicuro di voler resettare la partita?',
       yes: 'Conferma',
       no: 'Annulla'
+    },
+    review: {
+      title: 'Ti piace Beyblade Score?',
+      message: 'Se l\'app ti è utile, una recensione sul Play Store ci aiuta tantissimo. Bastano pochi secondi.',
+      rate: 'Lascia una recensione',
+      later: 'Più tardi'
     }
   },
   en: {
@@ -88,6 +94,12 @@ export const translations = {
       reset: 'Are you sure you want to reset the game?',
       yes: 'Confirm',
       no: 'Cancel'
+    },
+    review: {
+      title: 'Enjoying Beyblade Score?',
+      message: 'If the app is useful to you, a quick review on the Play Store helps us a lot. It only takes a few seconds.',
+      rate: 'Rate the app',
+      later: 'Maybe later'
     }
   }
 } as const;

@@ -18,6 +18,7 @@ export function BannerAdView({ style }: Props) {
       <RNBannerAd
         unitId={AD_UNIT_IDS.banner}
         size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+        requestOptions={{ requestNonPersonalizedAdsOnly: true }}
         onAdFailedToLoad={(error) => {
           logger.warn('Banner ad failed to load', { message: error.message });
         }}
