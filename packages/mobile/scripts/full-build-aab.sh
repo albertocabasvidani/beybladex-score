@@ -102,7 +102,7 @@ fi
 echo ""
 echo "=== STEP 5: Gradle bundleRelease ==="
 cd "$BUILD_ANDROID"
-./gradlew bundleRelease --console=plain --no-build-cache -x lintVitalAnalyzeRelease -x lintVitalRelease
+./gradlew bundleRelease --console=plain --build-cache -x lintVitalAnalyzeRelease -x lintVitalRelease
 
 # ---- Result ----
 echo ""

@@ -25,7 +25,7 @@ echo "=== Building APK (arm64 only, custom Metro bundler) ==="
 echo "Project: $PROJECT_DIR"
 
 cd "$ANDROID_DIR"
-./gradlew assembleRelease --console=plain --no-build-cache -x lintVitalAnalyzeRelease -x lintVitalRelease
+./gradlew assembleRelease --console=plain --build-cache -x lintVitalAnalyzeRelease -x lintVitalRelease
 
 APK_PATH="$ANDROID_DIR/app/build/outputs/apk/release/app-release.apk"
 if [ -f "$APK_PATH" ]; then

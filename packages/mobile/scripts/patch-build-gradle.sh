@@ -88,4 +88,18 @@ else
     echo "  [SKIP] resizeableActivity already present in manifest"
 fi
 
+# 7. Performance flags in gradle.properties (sopravvivono al prebuild perche' riapplicati qui)
+#    - build cache + parallel + daemon + configure-on-demand + filesystem watch
+#    - heap piu' alto, Kotlin incrementale
+#    Nota: org.gradle.configuration-cache NON abilitato (incompatibile col React Native Gradle plugin).
+if [ -f "$GRADLE_PROPS" ]; then
+    sed -i 's/^org.gradle.jvmargs=.*/org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m -XX:+UseParallelGC/' "$GRADLE_PROPS"
+    grep -q '^org.gradle.caching=' "$GRADLE_PROPS"        || echo 'org.gradle.caching=true' >> "$GRADLE_PROPS"
+    grep -q '^org.gradle.configureondemand=' "$GRADLE_PROPS" || echo 'org.gradle.configureondemand=true' >> "$GRADLE_PROPS"
+    grep -q '^org.gradle.daemon=' "$GRADLE_PROPS"         || echo 'org.gradle.daemon=true' >> "$GRADLE_PROPS"
+    grep -q '^org.gradle.vfs.watch=' "$GRADLE_PROPS"      || echo 'org.gradle.vfs.watch=true' >> "$GRADLE_PROPS"
+    grep -q '^kotlin.incremental=' "$GRADLE_PROPS"        || echo 'kotlin.incremental=true' >> "$GRADLE_PROPS"
+    echo "  [OK] gradle.properties performance flags (cache/parallel/daemon/heap)"
+fi
+
 echo "=== Patch complete ==="

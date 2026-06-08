@@ -37,20 +37,25 @@ La build standard produce APK solo `arm64-v8a`, che **CRASHA sull'emulatore x86_
 
 ## Build & Release Android
 
-Dettagli completi in **`packages/mobile/BUILD-GUIDE.md`**.
+Ricette complete (emulatore / dispositivo / Play Store) in **`packages/mobile/BUILD-RECIPES.md`**. Dettagli/troubleshooting in **`packages/mobile/BUILD-GUIDE.md`**.
 
 Comandi rapidi:
 ```bash
-# APK test emulatore (include x86_64 automaticamente)
+# Iterazione veloce (incrementale, riusa C++ compilato): emulatore o device
+bash packages/mobile/scripts/build-apk-fast.sh --emulator   # x86_64
+bash packages/mobile/scripts/build-apk-fast.sh --device     # arm64-v8a
+
+# Build pulita (reset completo) se l'incrementale dà errori o cambi dipendenze
 bash packages/mobile/scripts/full-build-apk.sh --emulator
 
-# AAB Play Store
+# AAB Play Store (sempre pulita, tutte le ABI, firma upload)
 bash packages/mobile/scripts/full-build-aab.sh
 ```
 
 **REGOLE**:
+- **Iterazione = `build-apk-fast.sh`** (no `--clean`, riusa native cache → minuti). Build pulita solo per reset o cambio dipendenze.
+- Ottimizzazioni Gradle (build cache, parallel, daemon, heap 4G) sono in `patch-build-gradle.sh`, riapplicate a ogni build. `configuration-cache` NON abilitabile (incompatibile RN plugin).
 - MAI usare `build-apk.sh` dopo `expo prebuild --clean` senza `patch-build-gradle.sh`
-- Sempre stoppare Gradle daemons prima di una nuova build
 - Upload Play Store: SEMPRE track **Production** (MAI Closed testing/Alpha)
 - Controllare review/rejection su Play Console via Chrome DevTools
 - **versionCode è bruciato anche dopo Discard draft**: se un AAB con versionCode N viene caricato e poi il draft scartato, Play Console rifiuta il prossimo upload con stesso N (errore *"Version code N has already been used"*). Bumpare SEMPRE a N+1 prima di re-buildare.

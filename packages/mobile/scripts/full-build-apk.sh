@@ -102,7 +102,7 @@ bash "$BUILD_SCRIPTS/patch-build-gradle.sh"
 echo ""
 echo "=== STEP 5: Gradle assembleRelease ==="
 cd "$BUILD_ANDROID"
-./gradlew assembleRelease --console=plain --no-build-cache -x lintVitalAnalyzeRelease -x lintVitalRelease
+./gradlew assembleRelease --console=plain --build-cache -x lintVitalAnalyzeRelease -x lintVitalRelease
 
 # ---- Result ----
 echo ""
