@@ -86,6 +86,18 @@ bash packages/mobile/scripts/full-build-aab.sh
 ```
 Senza questa permission, Play Console blocca la pubblicazione con errore *"manifest doesn't include AD_ID permission"*. Verificare che resti dopo `expo prebuild --clean`.
 
+**Verifica AD_ID nell'AAB (NON fidarsi del grep)**: contare la stringa `AD_ID` nel manifest proto dell'AAB NON dimostra che la permission sia attiva (potrebbe essere in `tools:node="remove"` o nel pool stringhe). Verifica corretta: generare l'APK universale e leggere le permission reali.
+```bash
+java -jar bundletool.jar build-apks --bundle=app.aab --output=out.apks --mode=universal --overwrite
+unzip -o out.apks universal.apk -d extracted
+aapt2 dump permissions extracted/universal.apk   # deve elencare com.google.android.gms.permission.AD_ID
+```
+bundletool: scaricare il jar da GitHub releases (non è nell'SDK). aapt2 in `$ANDROID_SDK/build-tools/<ver>/aapt2.exe`.
+
+**Errore AD_ID in review quando l'AAB È corretto**: se l'AAB nuovo ha davvero la permission (verificato con bundletool) ma Play Console mostra comunque l'errore bloccante, l'errore riguarda il bundle **precedente ancora live** (costruito senza la permission). In quel caso *"Release without permission"* è **sicuro**: NON rimuove la permission dall'AAB nuovo (che la mantiene), bypassa solo il controllo relativo al vecchio artifact. La dichiarazione Advertising ID resta su "Yes". Da NON fare se invece l'AAB nuovo non ha la permission (lì l'ad id verrebbe azzerato → AdMob rotto).
+
+**expo-audio aggiunge permission in autolinking**: l'SDK expo-audio inietta nel manifest `RECORD_AUDIO`, `MODIFY_AUDIO_SETTINGS`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK` anche se l'app fa solo playback. Non bloccano la pubblicazione, ma `RECORD_AUDIO` è sensibile: se Play Console ne chiede la motivazione, rimuoverla via config del plugin.
+
 **ID test** (da sostituire prima del rilascio):
 - App ID AdMob: `ca-app-pub-3940256099942544~3347511713` (in `app.json`)
 - Ad unit ID: `TestIds.ADAPTIVE_BANNER` in dev (in `src/config/ads.ts`)
