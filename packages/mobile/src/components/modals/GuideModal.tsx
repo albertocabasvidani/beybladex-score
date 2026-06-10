@@ -1,4 +1,5 @@
 import { Modal, View, Text, TouchableOpacity, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { useTranslation, Trans } from 'react-i18next';
 
 interface Props {
   visible: boolean;
@@ -6,7 +7,18 @@ interface Props {
   onOpenCredits: () => void;
 }
 
+// Voce della guida con grassetti inline definiti nella traduzione (<b>...</b>)
+function GuideItem({ i18nKey }: { i18nKey: string }) {
+  return (
+    <Text style={styles.item}>
+      <Trans i18nKey={i18nKey} components={{ b: <Text style={{ fontWeight: '700' }} /> }} />
+    </Text>
+  );
+}
+
 export function GuideModal({ visible, onClose, onOpenCredits }: Props) {
+  const { t } = useTranslation();
+
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.overlay}>
@@ -18,7 +30,7 @@ export function GuideModal({ visible, onClose, onOpenCredits }: Props) {
           {/* Header */}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
             <Text style={{ color: 'white', fontSize: 20, fontWeight: '700' }}>
-              Come si gioca
+              {t('guide.title')}
             </Text>
             <TouchableOpacity onPress={onClose} style={{ padding: 4 }}>
               <Text style={{ color: '#94a3b8', fontSize: 20 }}>✕</Text>
@@ -28,53 +40,34 @@ export function GuideModal({ visible, onClose, onOpenCredits }: Props) {
           <ScrollView showsVerticalScrollIndicator={false}>
             {/* Player panel */}
             <Text style={styles.sectionTitle}>
-              Pannello giocatore
+              {t('guide.sectionPanel')}
             </Text>
             <View style={{ gap: 6, marginBottom: 14 }}>
-              <Text style={styles.item}>
-                Tocca il <Text style={{ fontWeight: '700' }}>nome</Text> per modificarlo
-              </Text>
-              <Text style={styles.item}>
-                <Text style={{ fontWeight: '700' }}>F: 0/2</Text> — falli. Usa +/- per aggiungere o togliere. Al limite, il punto va all'avversario
-              </Text>
-              <Text style={styles.item}>
-                <Text style={{ fontWeight: '700' }}>🏆</Text> sopra il punteggio — vittorie nella sessione. Tocca per azzerare entrambi
-              </Text>
-              <Text style={styles.item}>
-                I <Text style={{ fontWeight: '700' }}>4 pulsanti grandi</Text> assegnano il punteggio in base al tipo di finish
-              </Text>
+              <GuideItem i18nKey="guide.panelName" />
+              <GuideItem i18nKey="guide.panelFouls" />
+              <GuideItem i18nKey="guide.panelTrophies" />
+              <GuideItem i18nKey="guide.panelButtons" />
             </View>
 
             {/* Commands */}
             <Text style={styles.sectionTitle}>
-              Comandi
+              {t('guide.sectionCommands')}
             </Text>
             <View style={{ gap: 6, marginBottom: 14 }}>
-              <Text style={styles.item}>
-                <Text style={{ fontWeight: '700' }}>⇄</Text> (in alto al centro) — scambia i lati dei giocatori
-              </Text>
-              <Text style={styles.item}>
-                <Text style={{ fontWeight: '700' }}>🏆</Text> — apre le impostazioni (punteggio vittoria e limite falli)
-              </Text>
-              <Text style={styles.item}>
-                ↩ <Text style={{ fontWeight: '700' }}>Undo</Text> — annulla l'ultima azione
-              </Text>
-              <Text style={styles.item}>
-                ↻ <Text style={{ fontWeight: '700' }}>Reset</Text> — nuova partita (le vittorie restano)
-              </Text>
-              <Text style={styles.item}>
-                <Text style={{ fontWeight: '700' }}>i</Text> — questa guida
-              </Text>
+              <GuideItem i18nKey="guide.cmdSwap" />
+              <GuideItem i18nKey="guide.cmdSettings" />
+              <GuideItem i18nKey="guide.cmdCountdown" />
+              <GuideItem i18nKey="guide.cmdUndo" />
+              <GuideItem i18nKey="guide.cmdReset" />
+              <GuideItem i18nKey="guide.cmdInfo" />
             </View>
 
             {/* End game */}
             <Text style={styles.sectionTitle}>
-              Fine partita
+              {t('guide.sectionEnd')}
             </Text>
             <View style={{ gap: 6, marginBottom: 16 }}>
-              <Text style={styles.item}>
-                Quando un giocatore raggiunge il punteggio vittoria, tocca <Text style={{ fontWeight: '700' }}>New Game</Text> per ricominciare
-              </Text>
+              <GuideItem i18nKey="guide.endText" />
             </View>
           </ScrollView>
 
@@ -87,7 +80,7 @@ export function GuideModal({ visible, onClose, onOpenCredits }: Props) {
               paddingHorizontal: 16,
             }}
           >
-            <Text style={{ color: '#64748b', fontSize: 13 }}>Crediti</Text>
+            <Text style={{ color: '#64748b', fontSize: 13 }}>{t('guide.credits')}</Text>
           </TouchableOpacity>
         </View>
       </View>

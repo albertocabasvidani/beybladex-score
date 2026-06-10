@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { View, TouchableOpacity, Text, BackHandler } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PlayerPanel } from './PlayerPanel';
+import { CountdownButton } from './CountdownButton';
 import { VictoryOverlay } from './VictoryOverlay';
 import { AnimationOverlay } from '../animations';
 import { SettingsModal } from '../modals/SettingsModal';
@@ -55,14 +56,14 @@ export function GameScreen() {
       if (!guideValue) {
         setGuideOpen(true);
         AsyncStorage.setItem('hasSeenGuide', 'true');
-        AsyncStorage.setItem('hasSeenReleaseNote_v14', 'true');
+        AsyncStorage.setItem('hasSeenReleaseNote_v17', 'true');
         return;
       }
-      AsyncStorage.getItem('hasSeenReleaseNote_v14').then((noteValue) => {
+      AsyncStorage.getItem('hasSeenReleaseNote_v17').then((noteValue) => {
         if (!isMounted) return;
         if (!noteValue) {
           setReleaseNoteOpen(true);
-          AsyncStorage.setItem('hasSeenReleaseNote_v14', 'true');
+          AsyncStorage.setItem('hasSeenReleaseNote_v17', 'true');
         }
       });
     });
@@ -140,7 +141,7 @@ export function GameScreen() {
           paddingHorizontal: 12,
         }}
       >
-        {/* Left half */}
+        {/* Left half: trophy */}
         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
           {/* Trophy + win score */}
           <TouchableOpacity
@@ -160,9 +161,13 @@ export function GameScreen() {
               {winScore}
             </Text>
           </TouchableOpacity>
+        </View>
 
-          <View style={{ flex: 1 }} />
+        {/* Center: countdown */}
+        <CountdownButton />
 
+        {/* Right half: undo + reset + info */}
+        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
           {/* Undo */}
           <TouchableOpacity
             onPress={undo}
@@ -181,13 +186,7 @@ export function GameScreen() {
             <Text allowFontScaling={false} style={{ color: '#e2e8f0', fontSize: 14 }}>↩</Text>
             <Text allowFontScaling={false} style={{ color: '#e2e8f0', fontSize: 13, fontWeight: '600' }}>Undo</Text>
           </TouchableOpacity>
-        </View>
 
-        {/* Center spacer - matches divider width */}
-        <View style={{ width: 48 }} />
-
-        {/* Right half */}
-        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
           {/* Reset */}
           <TouchableOpacity
             onPress={reset}
@@ -204,8 +203,6 @@ export function GameScreen() {
             <Text allowFontScaling={false} style={{ color: '#fecaca', fontSize: 14 }}>↻</Text>
             <Text allowFontScaling={false} style={{ color: '#fecaca', fontSize: 13, fontWeight: '600' }}>Reset</Text>
           </TouchableOpacity>
-
-          <View style={{ flex: 1 }} />
 
           {/* Info */}
           <TouchableOpacity

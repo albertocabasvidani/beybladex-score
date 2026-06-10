@@ -17,7 +17,7 @@
         "backgroundColor": "#000000"
       },
       "package": "com.beybladex.score",
-      "versionCode": 16,
+      "versionCode": 17,
       "permissions": ["com.google.android.gms.permission.AD_ID"]
     },
     "plugins": [

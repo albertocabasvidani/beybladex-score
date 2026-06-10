@@ -6,7 +6,11 @@ import { translations } from '@beybladex/shared';
 i18n
   .use(initReactI18next)
   .init({
-    resources: translations,
+    // i18next richiede il livello namespace: { it: { translation: {...} } }
+    resources: {
+      it: { translation: translations.it },
+      en: { translation: translations.en },
+    },
     lng: Localization.getLocales()[0].languageCode || 'en',
     fallbackLng: 'en',
     interpolation: {

@@ -77,12 +77,41 @@ async function bundle() {
     dev,
     sourceMap: !!sourceMapOutput,
     out: bundleOutput,
+    assets: !!assetsDest,
   };
   if (sourceMapOutput) {
     buildOptions.sourceMapUrl = sourceMapOutput;
   }
 
-  await Metro.runBuild(config, buildOptions);
+  const result = await Metro.runBuild(config, buildOptions);
+
+  // Copy assets (mp3 -> res/raw, images -> drawable-*) like RN's buildBundle does;
+  // also writes keep.xml so shrinkResources doesn't strip res/raw entries.
+  // The package "exports" map blocks deep subpath requires, so resolve the
+  // internal file via absolute path (exports only applies to bare specifiers).
+  if (assetsDest && result && result.assets) {
+    const pluginDir = path.dirname(
+      require.resolve('@react-native/community-cli-plugin/package.json')
+    );
+    const saveAssets = require(
+      path.join(pluginDir, 'dist', 'commands', 'bundle', 'saveAssets')
+    ).default;
+
+    // Monorepo: metroServer.getAssets() calcola httpServerLocation rispetto alla
+    // workspace root ("/assets/packages/mobile/assets/sounds"), mentre il registry
+    // JS embedded nel bundle usa il projectRoot ("/assets/assets/sounds"). Il nome
+    // risorsa res/raw deriva da httpServerLocation: senza riallineamento il runtime
+    // cerca "assets_sounds_x" ma la risorsa si chiama "packages_mobile_assets_sounds_x"
+    // (Resource not found). Normalizza al projectRoot come fa il transformer.
+    const normalizedAssets = result.assets.map((asset) => {
+      const dir = path.dirname(asset.files[0]);
+      const rel = path.relative(projectRoot, dir).split(path.sep).join('/');
+      return { ...asset, httpServerLocation: '/assets/' + rel };
+    });
+
+    await saveAssets(normalizedAssets, platform, assetsDest, undefined);
+    console.log('[metro-bundle] Assets copied to:', assetsDest);
+  }
 
   // Metro writes source map as <out>.map - rename to expected path
   const metroMapOutput = bundleOutput + '.map';

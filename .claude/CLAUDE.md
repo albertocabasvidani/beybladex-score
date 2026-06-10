@@ -60,6 +60,17 @@ bash packages/mobile/scripts/full-build-aab.sh
 - Controllare review/rejection su Play Console via Chrome DevTools
 - **versionCode è bruciato anche dopo Discard draft**: se un AAB con versionCode N viene caricato e poi il draft scartato, Play Console rifiuta il prossimo upload con stesso N (errore *"Version code N has already been used"*). Bumpare SEMPRE a N+1 prima di re-buildare.
 
+## Audio countdown (expo-audio)
+
+- Pulsante pill "▶ 3·2·1" al centro della bottom bar: `CountdownButton.tsx` + hook `useCountdownAudio.ts`. File audio: `assets/sounds/countdown-{it,en}.mp3`, forniti dall'utente (generati con ElevenLabs, 06/2026).
+- Fallback TTS per rigenerarli: `bash packages/mobile/scripts/generate-countdown-audio.sh` (richiede `ELEVENLABS_API_KEY` nel `.env`; voci Davide IT / Charlie EN, pause tarabili con `PAUSE_NUM`/`PAUSE_FINAL`, segmenti cachati in `tmp/countdown-tts`). Sovrascrive i file dell'utente: usare solo se servono nuove versioni.
+
+**Regole critiche** (dettagli generali in `~/.claude/rules/react-native-android.md`):
+- `scripts/metro-bundle.js` deve mantenere il blocco `saveAssets` + normalizzazione `httpServerLocation`: senza, gli asset Metro non finiscono nell'APK o hanno nome risorsa sbagliato (monorepo) → `Resource not found` solo in release.
+- `useCountdownAudio.ts` costruisce l'URI `android.resource://com.beybladex.score/raw/<nome>` in release (il nome risorsa nudo non è riproducibile da ExoPlayer). La costante `ANDROID_PACKAGE` deve combaciare con `android.package` di `app.json`.
+- Verificare gli asset nell'APK con `aapt2 dump resources` (NON `unzip -l`: `optimizeReleaseResources` offusca i path).
+- Se si cambiano SOLO gli mp3, la build incrementale lascia `createBundleReleaseJsAndAssets` UP-TO-DATE (gli asset non sono input tracciati) e l'APK esce con gli audio vecchi: cancellare prima `C:/projects/beybladex/packages/mobile/android/app/build/generated/{assets,res}/createBundleReleaseJsAndAssets`.
+
 ## Monetizzazione (AdMob + RevenueCat)
 
 - **AdMob**: banner nella VictoryOverlay, SDK `react-native-google-mobile-ads`

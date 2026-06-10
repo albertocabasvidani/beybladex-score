@@ -1,4 +1,5 @@
-import { Modal, View, Text, TouchableOpacity, Pressable } from 'react-native';
+import { Modal, Text, TouchableOpacity, Pressable } from 'react-native';
+import { useTranslation, Trans } from 'react-i18next';
 
 interface Props {
   visible: boolean;
@@ -6,6 +7,8 @@ interface Props {
 }
 
 export function ReleaseNoteModal({ visible, onClose }: Props) {
+  const { t } = useTranslation();
+
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable
@@ -30,15 +33,18 @@ export function ReleaseNoteModal({ visible, onClose }: Props) {
           onPress={(e) => e.stopPropagation()}
         >
           <Text style={{ color: '#fbbf24', fontSize: 12, fontWeight: '700', textTransform: 'uppercase', marginBottom: 8, letterSpacing: 1 }}>
-            Novità
+            {t('releaseNote.badge')}
           </Text>
 
           <Text style={{ color: 'white', fontSize: 20, fontWeight: '700', marginBottom: 12 }}>
-            Reset trofei più facile
+            {t('releaseNote.title')}
           </Text>
 
           <Text style={{ color: '#cbd5e1', fontSize: 14, marginBottom: 24, lineHeight: 20 }}>
-            Ora puoi azzerare i trofei toccando l'icona 🏆 sopra il punteggio. Apparirà una conferma per evitare reset accidentali.
+            <Trans
+              i18nKey="releaseNote.body"
+              components={{ b: <Text style={{ fontWeight: '700', color: '#e2e8f0' }} /> }}
+            />
           </Text>
 
           <TouchableOpacity
@@ -51,7 +57,7 @@ export function ReleaseNoteModal({ visible, onClose }: Props) {
             }}
           >
             <Text style={{ color: '#e2e8f0', fontSize: 15, fontWeight: '600' }}>
-              Ho capito
+              {t('releaseNote.gotIt')}
             </Text>
           </TouchableOpacity>
         </Pressable>
