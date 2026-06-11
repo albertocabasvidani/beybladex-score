@@ -3,20 +3,22 @@ const React = require("react");
 const ReactDOMServer = require("react-dom/server");
 const sharp = require("sharp");
 const {
-  FaRobot, FaMicrophoneAlt, FaMobileAlt, FaGithub,
-  FaGooglePlay, FaKey, FaGlobeEurope,
-  FaAd, FaShoppingCart, FaInfoCircle, FaPiggyBank,
+  FaRobot, FaMobileAlt, FaGithub, FaGooglePlay, FaKey, FaGlobeEurope,
+  FaAd, FaShoppingCart, FaCoins,
+  FaBullseye, FaComments, FaCube, FaSyncAlt, FaClipboardCheck, FaRocket,
+  FaRegCommentDots, FaHandPointer, FaProjectDiagram, FaCode, FaCloudUploadAlt,
+  FaVial, FaChrome, FaUsb, FaStore, FaBalanceScale, FaSearchDollar, FaBookOpen,
 } = require("react-icons/fa");
 
 // Palette
-const BG = "0B1226";        // sfondo midnight navy
-const CARD = "16203F";      // card
-const CARDLINE = "2A3A6B";  // bordo card
-const CYAN = "2BD9E5";      // accento principale
-const CYANDARK = "0E3A44";  // cerchio icone
+const BG = "0B1226";
+const CARD = "16203F";
+const CARDLINE = "2A3A6B";
+const CYAN = "2BD9E5";
+const CYANDARK = "0E3A44";
 const WHITE = "F4F7FF";
 const MUTED = "AEBDE0";
-const GOLD = "F5C84C";      // accento numeri/denaro
+const GOLD = "F5C84C";
 
 const HEAD = "Arial Black";
 const BODY = "Arial";
@@ -26,7 +28,6 @@ function renderIconSvg(IconComponent, color, size = 256) {
     React.createElement(IconComponent, { color, size: String(size) })
   );
 }
-
 async function iconToBase64Png(IconComponent, color, size = 256) {
   const svg = renderIconSvg(IconComponent, color, size);
   const pngBuffer = await sharp(Buffer.from(svg)).png().toBuffer();
@@ -34,16 +35,20 @@ async function iconToBase64Png(IconComponent, color, size = 256) {
 }
 
 async function main() {
-  const icons = {};
   const defs = {
-    robot: FaRobot, mic: FaMicrophoneAlt, phone: FaMobileAlt, github: FaGithub,
-    play: FaGooglePlay, key: FaKey, globe: FaGlobeEurope,
-    ad: FaAd, cart: FaShoppingCart, info: FaInfoCircle, piggy: FaPiggyBank,
+    robot: FaRobot, phone: FaMobileAlt, github: FaGithub, play: FaGooglePlay,
+    key: FaKey, globe: FaGlobeEurope, ad: FaAd, cart: FaShoppingCart,
+    bullseye: FaBullseye, comments: FaComments, cube: FaCube, sync: FaSyncAlt,
+    clipboard: FaClipboardCheck, rocket: FaRocket, listen: FaRegCommentDots,
+    pick: FaHandPointer, plan: FaProjectDiagram, code: FaCode, upload: FaCloudUploadAlt,
+    vial: FaVial, chrome: FaChrome, usb: FaUsb, store: FaStore,
+    scale: FaBalanceScale, dollar: FaSearchDollar, book: FaBookOpen,
   };
+  const I = {};
   for (const [name, comp] of Object.entries(defs)) {
-    icons[name] = await iconToBase64Png(comp, "#" + CYAN);
+    I[name] = await iconToBase64Png(comp, "#" + CYAN);
   }
-  icons.piggyGold = await iconToBase64Png(FaPiggyBank, "#" + GOLD);
+  I.coinsGold = await iconToBase64Png(FaCoins, "#" + GOLD);
 
   const pres = new pptxgen();
   pres.layout = "LAYOUT_16x9";
@@ -54,66 +59,74 @@ async function main() {
     const s = pres.addSlide();
     s.background = { color: BG };
     s.addText(kicker, {
-      x: 0.7, y: 0.38, w: 8.6, h: 0.3, margin: 0,
-      fontFace: BODY, fontSize: 11, color: CYAN, charSpacing: 3, bold: true,
+      x: 0.7, y: 0.4, w: 9.0, h: 0.3, margin: 0,
+      fontFace: BODY, fontSize: 11, color: CYAN, charSpacing: 2, bold: true,
     });
     s.addText(title, {
-      x: 0.7, y: 0.68, w: 8.6, h: 0.62, margin: 0,
+      x: 0.7, y: 0.7, w: 8.6, h: 0.62, margin: 0,
       fontFace: HEAD, fontSize: 30, color: WHITE,
     });
     return s;
   }
-
-  function toolCard(s, { x, y, w, h, icon, name, desc }) {
+  function panel(s, x, y, w, h, accent) {
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, {
       x, y, w, h, rectRadius: 0.08,
-      fill: { color: CARD }, line: { color: CARDLINE, width: 0.75 },
-    });
-    s.addShape(pres.shapes.OVAL, {
-      x: x + 0.25, y: y + 0.25, w: 0.52, h: 0.52, fill: { color: CYANDARK },
-    });
-    s.addImage({ data: icon, x: x + 0.38, y: y + 0.38, w: 0.26, h: 0.26 });
-    s.addText(name, {
-      x: x + 0.95, y: y + 0.27, w: w - 1.15, h: 0.5, margin: 0, valign: "middle",
-      fontFace: BODY, fontSize: 15, bold: true, color: WHITE,
-    });
-    s.addText(desc, {
-      x: x + 0.25, y: y + 0.88, w: w - 0.5, h: h - 1.0, margin: 0, valign: "top",
-      fontFace: BODY, fontSize: 11, color: MUTED, lineSpacingMultiple: 1.15,
+      fill: { color: CARD }, line: { color: accent || CARDLINE, width: accent ? 1.1 : 0.75 },
     });
   }
+  function iconCircle(s, x, y, d, icon, ring) {
+    s.addShape(pres.shapes.OVAL, {
+      x, y, w: d, h: d, fill: { color: CYANDARK },
+      line: ring ? { color: CYAN, width: 0.75 } : { color: CYANDARK, width: 0 },
+    });
+    const pad = d * 0.27;
+    s.addImage({ data: icon, x: x + pad, y: y + pad, w: d - 2 * pad, h: d - 2 * pad });
+  }
+  // card with icon top-left, number top-right, title + desc below
+  function stepCard(s, { x, y, w, h, icon, num, name, desc }) {
+    panel(s, x, y, w, h);
+    iconCircle(s, x + 0.22, y + 0.2, 0.5, icon);
+    if (num) {
+      s.addText(num, { x: x + w - 0.72, y: y + 0.24, w: 0.5, h: 0.34, margin: 0, align: "right", valign: "middle", fontFace: HEAD, fontSize: 13, color: CYAN });
+    }
+    s.addText(name, { x: x + 0.22, y: y + 0.78, w: w - 0.44, h: 0.34, margin: 0, valign: "middle", fontFace: BODY, fontSize: 13, bold: true, color: WHITE });
+    s.addText(desc, { x: x + 0.22, y: y + 1.12, w: w - 0.44, h: h - 1.24, margin: 0, valign: "top", fontFace: BODY, fontSize: 10, color: MUTED, lineSpacingMultiple: 1.12 });
+  }
+  // wide card: icon-left header, desc below
+  function wideCard(s, { x, y, w, h, icon, name, desc, accent }) {
+    panel(s, x, y, w, h, accent);
+    iconCircle(s, x + 0.25, y + 0.25, 0.55, icon);
+    s.addText(name, { x: x + 0.95, y: y + 0.25, w: w - 1.15, h: 0.55, margin: 0, valign: "middle", fontFace: BODY, fontSize: 15, bold: true, color: WHITE });
+    s.addText(desc, { x: x + 0.25, y: y + 0.92, w: w - 0.5, h: h - 1.05, margin: 0, valign: "top", fontFace: BODY, fontSize: 11.5, color: MUTED, lineSpacingMultiple: 1.18 });
+  }
+  function listSlide(kicker, title, subtitle, items) {
+    const s = baseSlide(kicker, title);
+    s.addText(subtitle, { x: 0.72, y: 1.3, w: 8.5, h: 0.3, margin: 0, fontFace: BODY, fontSize: 13, italic: true, color: MUTED });
+    const startY = 1.85, endY = 5.25, n = items.length, step = (endY - startY) / n;
+    items.forEach((it, i) => {
+      const y = startY + i * step;
+      s.addText("0" + (i + 1), { x: 0.95, y, w: 0.75, h: step - 0.06, margin: 0, valign: "middle", fontFace: HEAD, fontSize: 22, color: CYAN });
+      s.addText(it, { x: 1.8, y, w: 7.3, h: step - 0.06, margin: 0, valign: "middle", fontFace: BODY, fontSize: 19, color: WHITE });
+      if (i < n - 1) s.addShape(pres.shapes.LINE, { x: 1.8, y: y + step - 0.04, w: 7.2, h: 0, line: { color: CARDLINE, width: 0.75 } });
+    });
+    return s;
+  }
 
-  // ---------- Slide 1: copertina ----------
+  // ---------- 1. Copertina ----------
   {
     const s = pres.addSlide();
     s.background = { color: BG };
-    // anelli decorativi (trottola stilizzata) a destra
     s.addShape(pres.shapes.OVAL, { x: 6.4, y: 0.9, w: 3.4, h: 3.4, fill: { color: BG, transparency: 100 }, line: { color: CYAN, width: 1.5, transparency: 70 } });
     s.addShape(pres.shapes.OVAL, { x: 6.8, y: 1.3, w: 2.6, h: 2.6, fill: { color: BG, transparency: 100 }, line: { color: CYAN, width: 1.5, transparency: 45 } });
     s.addShape(pres.shapes.OVAL, { x: 7.2, y: 1.7, w: 1.8, h: 1.8, fill: { color: BG, transparency: 100 }, line: { color: CYAN, width: 2, transparency: 15 } });
     s.addShape(pres.shapes.OVAL, { x: 7.95, y: 2.45, w: 0.3, h: 0.3, fill: { color: CYAN } });
-
-    s.addText("LA STORIA DI BEYBLADE SCORE", {
-      x: 0.7, y: 1.0, w: 6.0, h: 0.32, margin: 0,
-      fontFace: BODY, fontSize: 12, color: CYAN, charSpacing: 3, bold: true,
-    });
+    s.addText("LA STORIA DI BEYBLADE SCORE", { x: 0.7, y: 1.0, w: 6.0, h: 0.32, margin: 0, fontFace: BODY, fontSize: 12, color: CYAN, charSpacing: 3, bold: true });
     s.addText([
       { text: "Un'app sul Play Store.", options: { breakLine: true } },
       { text: "Zero righe di codice.", options: { color: CYAN } },
-    ], {
-      x: 0.7, y: 1.35, w: 6.3, h: 1.7, margin: 0,
-      fontFace: HEAD, fontSize: 34, color: WHITE, lineSpacingMultiple: 1.1,
-    });
-    s.addText("Strumenti, costi e metodo per creare un prodotto vero con l'AI", {
-      x: 0.7, y: 3.15, w: 5.9, h: 0.5, margin: 0,
-      fontFace: BODY, fontSize: 15, color: MUTED,
-    });
-
-    const stats = [
-      ["0", "righe scritte a mano"],
-      ["17", "versioni rilasciate"],
-      ["1 mese", "dall'idea al Play Store"],
-    ];
+    ], { x: 0.7, y: 1.35, w: 6.3, h: 1.7, margin: 0, fontFace: HEAD, fontSize: 34, color: WHITE, lineSpacingMultiple: 1.1 });
+    s.addText("Strumenti, costi e metodo per creare un prodotto vero con l'AI", { x: 0.7, y: 3.15, w: 5.9, h: 0.5, margin: 0, fontFace: BODY, fontSize: 15, color: MUTED });
+    const stats = [["0", "righe scritte a mano"], ["17", "versioni rilasciate"], ["1 mese", "dall'idea al Play Store"]];
     stats.forEach(([num, label], i) => {
       const x = 0.7 + i * 2.95;
       s.addText(num, { x, y: 4.35, w: 2.7, h: 0.55, margin: 0, fontFace: HEAD, fontSize: 26, color: GOLD });
@@ -121,168 +134,185 @@ async function main() {
     });
   }
 
-  // ---------- Slide 2: strumenti di creazione ----------
+  // ---------- 2. Strumenti · Creazione (3 card) ----------
   {
     const s = baseSlide("GLI STRUMENTI · 1 DI 3", "Creazione");
     const cards = [
-      { icon: icons.robot, name: "Claude Code", desc: "Il costruttore. Scrive codice, interfaccia, script e testi: tu descrivi in italiano, lui realizza e corregge." },
-      { icon: icons.mic, name: "ElevenLabs", desc: "Le voci dell'app. Il countdown vocale «3, 2, 1» è generato dall'AI, in italiano e in inglese." },
-      { icon: icons.phone, name: "Emulatore Android", desc: "Un telefono virtuale sul PC. L'AI ci installa l'app, la prova da sola e verifica le modifiche." },
-      { icon: icons.github, name: "GitHub", desc: "L'archivio del progetto. Ogni versione salvata, ogni modifica documentata e reversibile." },
-    ];
-    const pos = [
-      { x: 0.7, y: 1.6 }, { x: 5.15, y: 1.6 },
-      { x: 0.7, y: 3.5 }, { x: 5.15, y: 3.5 },
-    ];
-    cards.forEach((c, i) => toolCard(s, { ...pos[i], w: 4.15, h: 1.72, ...c }));
-  }
-
-  // ---------- Slide 3: strumenti di pubblicazione ----------
-  {
-    const s = baseSlide("GLI STRUMENTI · 2 DI 3", "Pubblicazione");
-    const cards = [
-      { icon: icons.play, name: "Google Play Console", desc: "La porta verso gli utenti Android: caricamento dell'app, revisione di Google, distribuzione in tutto il mondo, statistiche." },
-      { icon: icons.key, name: "Expo EAS", desc: "La firma digitale dell'app: certifica che ogni aggiornamento arriva davvero dall'autore originale." },
-      { icon: icons.globe, name: "GitHub Pages", desc: "La versione web gratuita: stessa app, dentro il browser, senza installare nulla. Online in un click." },
+      { icon: I.robot, name: "Claude Code", desc: "Il costruttore. Scrive codice, interfaccia, script e testi: tu descrivi in italiano, lui realizza e corregge." },
+      { icon: I.phone, name: "Emulatore Android", desc: "Un telefono virtuale sul PC. L'AI ci installa l'app, la prova da sola e verifica le modifiche." },
+      { icon: I.github, name: "GitHub", desc: "L'archivio del progetto. Ogni versione salvata, ogni modifica documentata e reversibile." },
     ];
     cards.forEach((c, i) => {
       const x = 0.7 + i * 2.95;
-      s.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-        x, y: 1.6, w: 2.73, h: 2.65, rectRadius: 0.08,
-        fill: { color: CARD }, line: { color: CARDLINE, width: 0.75 },
-      });
-      s.addShape(pres.shapes.OVAL, { x: x + 0.25, y: 1.85, w: 0.52, h: 0.52, fill: { color: CYANDARK } });
-      s.addImage({ data: c.icon, x: x + 0.38, y: 1.98, w: 0.26, h: 0.26 });
+      panel(s, x, 1.7, 2.73, 2.65);
+      iconCircle(s, x + 0.25, 1.95, 0.55, c.icon);
+      s.addText(c.name, { x: x + 0.25, y: 2.62, w: 2.23, h: 0.55, margin: 0, valign: "top", fontFace: BODY, fontSize: 15, bold: true, color: WHITE });
+      s.addText(c.desc, { x: x + 0.25, y: 3.2, w: 2.23, h: 1.0, margin: 0, valign: "top", fontFace: BODY, fontSize: 11, color: MUTED, lineSpacingMultiple: 1.18 });
+    });
+    s.addText("Pochi strumenti, tutti guidati a parole.", { x: 0.7, y: 4.65, w: 8.6, h: 0.45, margin: 0, align: "center", valign: "middle", fontFace: BODY, fontSize: 13, italic: true, color: CYAN });
+  }
+
+  // ---------- 3. Strumenti · Pubblicazione ----------
+  {
+    const s = baseSlide("GLI STRUMENTI · 2 DI 3", "Pubblicazione");
+    const cards = [
+      { icon: I.play, name: "Google Play Console", desc: "La porta verso gli utenti Android: caricamento dell'app, revisione di Google, distribuzione in tutto il mondo, statistiche." },
+      { icon: I.key, name: "Expo EAS", desc: "La firma digitale dell'app: certifica che ogni aggiornamento arriva davvero dall'autore originale." },
+      { icon: I.globe, name: "GitHub Pages", desc: "La versione web gratuita: stessa app, dentro il browser, senza installare nulla. Online in un click." },
+    ];
+    cards.forEach((c, i) => {
+      const x = 0.7 + i * 2.95;
+      panel(s, x, 1.6, 2.73, 2.65);
+      iconCircle(s, x + 0.25, 1.85, 0.55, c.icon);
       s.addText(c.name, { x: x + 0.25, y: 2.5, w: 2.23, h: 0.65, margin: 0, valign: "top", fontFace: BODY, fontSize: 14.5, bold: true, color: WHITE });
       s.addText(c.desc, { x: x + 0.25, y: 3.12, w: 2.23, h: 1.0, margin: 0, valign: "top", fontFace: BODY, fontSize: 10.5, color: MUTED, lineSpacingMultiple: 1.15 });
     });
-    s.addText("Un solo progetto, due piattaforme: Android e web.", {
-      x: 0.7, y: 4.6, w: 8.6, h: 0.45, margin: 0, align: "center", valign: "middle",
-      fontFace: BODY, fontSize: 13, italic: true, color: CYAN,
-    });
+    s.addText("Un solo progetto, due piattaforme: Android e web.", { x: 0.7, y: 4.6, w: 8.6, h: 0.45, margin: 0, align: "center", valign: "middle", fontFace: BODY, fontSize: 13, italic: true, color: CYAN });
   }
 
-  // ---------- Slide 4: strumenti di monetizzazione ----------
+  // ---------- 4. Strumenti · Monetizzazione ----------
   {
     const s = baseSlide("GLI STRUMENTI · 3 DI 3", "Monetizzazione");
-    toolCard(s, {
-      x: 0.7, y: 1.55, w: 4.15, h: 1.95, icon: icons.ad, name: "Google AdMob",
-      desc: "Banner pubblicitari a fine partita. Si attiva gratis: Google vende gli spazi e gira la quota dei ricavi all'autore.",
-    });
-    toolCard(s, {
-      x: 5.15, y: 1.55, w: 4.15, h: 1.95, icon: icons.cart, name: "RevenueCat",
-      desc: "Gestisce l'acquisto in-app «Rimuovi pubblicità». Gratuito fino a 2.500 $ al mese di incassi.",
-    });
-    // modello freemium: 3 passi
+    wideCard(s, { x: 0.7, y: 1.55, w: 4.15, h: 1.95, icon: I.ad, name: "Google AdMob", desc: "Banner pubblicitari a fine partita. Si attiva gratis: Google vende gli spazi e gira la quota dei ricavi all'autore." });
+    wideCard(s, { x: 5.15, y: 1.55, w: 4.15, h: 1.95, icon: I.cart, name: "RevenueCat", desc: "Gestisce l'acquisto in-app «Rimuovi pubblicità». Gratuito fino a 2.500 $ al mese di incassi." });
     const steps = ["Scarichi gratis", "Vedi la pubblicità", "Un acquisto la toglie per sempre"];
+    s.addText("Il modello freemium", { x: 0.7, y: 3.62, w: 8.6, h: 0.3, margin: 0, fontFace: BODY, fontSize: 11, color: MUTED, charSpacing: 2, bold: true });
     steps.forEach((t, i) => {
       const x = 0.7 + i * 3.0;
-      s.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-        x, y: 4.0, w: 2.6, h: 0.85, rectRadius: 0.08,
-        fill: { color: CYANDARK }, line: { color: CYAN, width: 0.75 },
-      });
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 4.0, w: 2.6, h: 0.85, rectRadius: 0.08, fill: { color: CYANDARK }, line: { color: CYAN, width: 0.75 } });
       s.addText(t, { x: x + 0.12, y: 4.0, w: 2.36, h: 0.85, margin: 0, align: "center", valign: "middle", fontFace: BODY, fontSize: 11.5, bold: true, color: WHITE, lineSpacingMultiple: 1.1 });
-      if (i < 2) {
-        s.addText("→", { x: x + 2.6, y: 4.0, w: 0.4, h: 0.85, margin: 0, align: "center", valign: "middle", fontFace: BODY, fontSize: 18, color: CYAN });
-      }
+      if (i < 2) s.addText("→", { x: x + 2.6, y: 4.0, w: 0.4, h: 0.85, margin: 0, align: "center", valign: "middle", fontFace: BODY, fontSize: 16, color: CYAN });
     });
-    s.addText("Il modello freemium", { x: 0.7, y: 3.62, w: 8.6, h: 0.3, margin: 0, fontFace: BODY, fontSize: 11, color: MUTED, charSpacing: 2, bold: true });
   }
 
-  // ---------- Slide 5: costi ----------
+  // ---------- 5. Costi ----------
   {
     const s = baseSlide("IL BUDGET", "Quanto costa davvero");
     const rows = [
-      ["Claude (abbonamento)", "Il vero costo di sviluppo: l'AI che costruisce tutto", "20 €/mese"],
-      ["Google Play Console", "Account sviluppatore una tantum, vale per tutte le app future", "25 $"],
+      ["Claude (abbonamento)", "Il vero costo di sviluppo: l'AI che costruisce tutto", "20–100 €/mese"],
+      ["Google Play Console", "Account sviluppatore una tantum, vale per tutte le app future", "25 €"],
       ["Tutto il resto", "GitHub, Expo, emulatore, AdMob, RevenueCat", "0 €"],
     ];
     rows.forEach(([name, sub, price], i) => {
-      const y = 1.55 + i * 0.95;
-      s.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-        x: 0.7, y, w: 5.4, h: 0.82, rectRadius: 0.06,
-        fill: { color: CARD }, line: { color: CARDLINE, width: 0.75 },
-      });
-      s.addText(name, { x: 0.95, y: y + 0.1, w: 3.4, h: 0.32, margin: 0, fontFace: BODY, fontSize: 13, bold: true, color: WHITE });
-      s.addText(sub, { x: 0.95, y: y + 0.42, w: 3.5, h: 0.32, margin: 0, fontFace: BODY, fontSize: 9.5, color: MUTED });
-      s.addText(price, { x: 4.35, y, w: 1.55, h: 0.82, margin: 0, align: "right", valign: "middle", fontFace: HEAD, fontSize: 13, color: GOLD });
+      const y = 1.65 + i * 1.0;
+      panel(s, 0.7, y, 8.6, 0.86);
+      s.addText(name, { x: 0.95, y: y + 0.13, w: 5.4, h: 0.34, margin: 0, fontFace: BODY, fontSize: 14, bold: true, color: WHITE });
+      s.addText(sub, { x: 0.95, y: y + 0.47, w: 5.6, h: 0.3, margin: 0, fontFace: BODY, fontSize: 10.5, color: MUTED });
+      s.addText(price, { x: 6.5, y, w: 2.6, h: 0.86, margin: 0, align: "right", valign: "middle", fontFace: HEAD, fontSize: 17, color: GOLD });
     });
-    // callout totale
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-      x: 6.4, y: 1.55, w: 2.9, h: 2.72, rectRadius: 0.08,
-      fill: { color: CARD }, line: { color: GOLD, width: 1.25 },
-    });
-    s.addImage({ data: icons.piggyGold, x: 7.55, y: 1.85, w: 0.6, h: 0.6 });
-    s.addText("< 50 €", { x: 6.5, y: 2.55, w: 2.7, h: 0.75, margin: 0, align: "center", fontFace: HEAD, fontSize: 36, color: GOLD });
-    s.addText("per mettere la tua prima app sul Play Store", { x: 6.7, y: 3.35, w: 2.3, h: 0.7, margin: 0, align: "center", fontFace: BODY, fontSize: 11.5, color: MUTED, lineSpacingMultiple: 1.15 });
-    // nota ElevenLabs
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-      x: 0.7, y: 4.55, w: 8.6, h: 0.62, rectRadius: 0.06,
-      fill: { color: CYANDARK }, line: { color: CYAN, width: 0.5 },
-    });
-    s.addImage({ data: icons.info, x: 0.92, y: 4.74, w: 0.24, h: 0.24 });
-    s.addText([
-      { text: "Caso a parte: ElevenLabs. ", options: { bold: true, color: WHITE } },
-      { text: "Solo se vuoi voci AI nell'app — gratis per iniziare, poi da ~5 $/mese.", options: { color: MUTED } },
-    ], { x: 1.3, y: 4.55, w: 7.85, h: 0.62, margin: 0, valign: "middle", fontFace: BODY, fontSize: 11.5 });
+    s.addText("Nessun team, nessun budget di sviluppo: un abbonamento all'AI e un account sviluppatore.", { x: 0.7, y: 4.85, w: 8.6, h: 0.45, margin: 0, align: "center", valign: "middle", fontFace: BODY, fontSize: 13, italic: true, color: CYAN });
   }
 
-  // ---------- Slide 6: metodo, prima release ----------
+  // ---------- 6. Prima release · lista ----------
+  listSlide("IL METODO · DALL'IDEA AL LANCIO", "La prima release", "I passi, in breve", [
+    "Parti dal problema", "Descrivi all'AI", "Ottieni un prototipo",
+    "Itera a parole", "Prepara il lancio", "Pubblica",
+  ]);
+
+  // ---------- 7. Prima release · dettaglio ----------
   {
-    const s = baseSlide("IL METODO · DALL'IDEA AL LANCIO", "La prima release");
+    const s = baseSlide("IL METODO · DALL'IDEA AL LANCIO", "La prima release, passo per passo");
     const steps = [
-      ["Parti dal problema", "Un utente preciso, un bisogno reale, la funzione minima che lo risolve."],
-      ["Descrivi all'AI", "Brief in linguaggio naturale: cosa deve fare, non come. Le tecnologie le sceglie lei."],
-      ["Ottieni un prototipo", "Una versione da toccare subito, anche imperfetta. Prima web, poi mobile."],
-      ["Itera a parole", "Usa l'app, descrivi cosa non va, l'AI corregge. Ripeti finché ti convince."],
-      ["Prepara il lancio", "Nome, icona, privacy policy, scheda store: li scrive l'AI, li approvi tu."],
-      ["Pubblica", "Firma digitale, caricamento, revisione di Google. Poi sei online nel mondo."],
+      { icon: I.bullseye, name: "Parti dal problema", desc: "Un utente preciso, un bisogno reale, la funzione minima che lo risolve." },
+      { icon: I.comments, name: "Descrivi all'AI", desc: "Brief in linguaggio naturale: cosa deve fare, non come. Le tecnologie le sceglie lei." },
+      { icon: I.cube, name: "Ottieni un prototipo", desc: "Una versione da toccare subito, anche imperfetta. Prima web, poi mobile." },
+      { icon: I.sync, name: "Itera a parole", desc: "Usa l'app, descrivi cosa non va, l'AI corregge. Ripeti finché ti convince." },
+      { icon: I.clipboard, name: "Prepara il lancio", desc: "Nome, icona, privacy policy, scheda store: li scrive l'AI, li approvi tu." },
+      { icon: I.rocket, name: "Pubblica", desc: "Firma digitale, caricamento, revisione di Google. Poi sei online nel mondo." },
     ];
-    steps.forEach(([name, desc], i) => {
+    steps.forEach((st, i) => {
       const col = i % 3, row = Math.floor(i / 3);
-      const x = 0.7 + col * 2.95;
-      const y = 1.5 + row * 1.95;
-      s.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-        x, y, w: 2.73, h: 1.8, rectRadius: 0.08,
-        fill: { color: CARD }, line: { color: CARDLINE, width: 0.75 },
-      });
-      s.addText("0" + (i + 1), { x: x + 0.22, y: y + 0.14, w: 0.8, h: 0.42, margin: 0, fontFace: HEAD, fontSize: 19, color: CYAN });
-      s.addText(name, { x: x + 0.22, y: y + 0.58, w: 2.3, h: 0.32, margin: 0, fontFace: BODY, fontSize: 13, bold: true, color: WHITE });
-      s.addText(desc, { x: x + 0.22, y: y + 0.92, w: 2.3, h: 0.8, margin: 0, valign: "top", fontFace: BODY, fontSize: 10, color: MUTED, lineSpacingMultiple: 1.12 });
+      stepCard(s, { x: 0.7 + col * 2.95, y: 1.5 + row * 1.95, w: 2.73, h: 1.8, num: "0" + (i + 1), ...st });
     });
   }
 
-  // ---------- Slide 7: metodo, aggiornamenti ----------
+  // ---------- 8. Aggiornamenti · lista ----------
+  listSlide("IL METODO · DOPO IL LANCIO", "Gli aggiornamenti", "I passi, in breve", [
+    "Ascolta", "Scegli una cosa", "Pianifica", "Implementa e prova", "Rilascia spesso",
+  ]);
+
+  // ---------- 9. Aggiornamenti · dettaglio (con Pianifica) ----------
   {
-    const s = baseSlide("IL METODO · DOPO IL LANCIO", "Gli aggiornamenti");
+    const s = baseSlide("IL METODO · DOPO IL LANCIO", "Gli aggiornamenti, passo per passo");
     const steps = [
-      ["Ascolta", "Recensioni, statistiche, uso reale: decidono i dati, non le supposizioni."],
-      ["Scegli una cosa", "Una sola modifica per versione: piccola, chiara, verificabile."],
-      ["Implementa e prova", "L'AI sviluppa e testa sull'emulatore; tu validi sul telefono vero."],
-      ["Rilascia spesso", "Versioni frequenti: 17 in quattro mesi. Ogni release è un esperimento."],
+      { icon: I.listen, name: "Ascolta", desc: "Recensioni, statistiche, uso reale: decidono i dati, non le supposizioni." },
+      { icon: I.pick, name: "Scegli una cosa", desc: "Una sola modifica per versione: piccola, chiara, verificabile." },
+      { icon: I.plan, name: "Pianifica", desc: "Architettura, strumenti, costi: l'AI ti aiuta a decidere come farla." },
+      { icon: I.code, name: "Implementa e prova", desc: "L'AI sviluppa e testa; tu validi sul telefono vero." },
+      { icon: I.upload, name: "Rilascia spesso", desc: "Versioni frequenti: 17 in quattro mesi. Ogni release è un esperimento." },
     ];
-    steps.forEach(([name, desc], i) => {
-      const x = 0.7 + i * 2.23;
-      s.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-        x, y: 1.55, w: 2.03, h: 2.55, rectRadius: 0.08,
-        fill: { color: CARD }, line: { color: CARDLINE, width: 0.75 },
-      });
-      s.addShape(pres.shapes.OVAL, { x: x + 0.2, y: 1.78, w: 0.46, h: 0.46, fill: { color: CYANDARK }, line: { color: CYAN, width: 0.75 } });
-      s.addText(String(i + 1), { x: x + 0.2, y: 1.78, w: 0.46, h: 0.46, margin: 0, align: "center", valign: "middle", fontFace: HEAD, fontSize: 14, color: CYAN });
-      s.addText(name, { x: x + 0.2, y: 2.38, w: 1.66, h: 0.62, margin: 0, valign: "top", fontFace: BODY, fontSize: 12.5, bold: true, color: WHITE, lineSpacingMultiple: 1.05 });
-      s.addText(desc, { x: x + 0.2, y: 3.0, w: 1.66, h: 1.0, margin: 0, valign: "top", fontFace: BODY, fontSize: 9.5, color: MUTED, lineSpacingMultiple: 1.12 });
-      if (i < 3) {
-        s.addText("→", { x: x + 2.03, y: 2.6, w: 0.2, h: 0.4, margin: 0, align: "center", valign: "middle", fontFace: BODY, fontSize: 12, color: CYAN });
-      }
+    steps.forEach((st, i) => {
+      let x, y;
+      if (i < 3) { x = 0.7 + i * 2.95; y = 1.5; }
+      else { x = 2.16 + (i - 3) * 2.95; y = 3.45; }
+      stepCard(s, { x, y, w: 2.73, h: 1.8, num: "0" + (i + 1), ...st });
     });
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-      x: 0.7, y: 4.45, w: 8.6, h: 0.72, rectRadius: 0.06,
-      fill: { color: CYANDARK }, line: { color: CYAN, width: 0.5 },
-    });
+  }
+
+  // ---------- 10. Chiedilo a Claude Code · intro ----------
+  {
+    const s = baseSlide("IL MOLTIPLICATORE", "Chiedilo a Claude Code");
     s.addText([
-      { text: "↻  Si ricomincia da «Ascolta». ", options: { bold: true, color: WHITE } },
-      { text: "E la routine si automatizza: build, test e pubblicazione diventano script che l'AI scrive una volta sola.", options: { color: MUTED } },
-    ], { x: 1.0, y: 4.45, w: 8.0, h: 0.72, margin: 0, valign: "middle", fontFace: BODY, fontSize: 12 });
+      { text: "Ogni passo del processo può essere ", options: {} },
+      { text: "informato", options: { color: CYAN, bold: true } },
+      { text: " — o, meglio ancora, ", options: {} },
+      { text: "realizzato", options: { color: CYAN, bold: true } },
+      { text: " — direttamente da Claude Code.", options: {} },
+    ], { x: 0.72, y: 1.55, w: 8.5, h: 1.0, margin: 0, fontFace: BODY, fontSize: 18, color: WHITE, lineSpacingMultiple: 1.3 });
+    const phases = [
+      { icon: I.plan, name: "Pianifica", sub: "decide come farla" },
+      { icon: I.code, name: "Implementa", sub: "la costruisce" },
+      { icon: I.vial, name: "Testa", sub: "la verifica" },
+    ];
+    phases.forEach((p, i) => {
+      const x = 0.7 + i * 2.95;
+      panel(s, x, 3.1, 2.73, 1.85, CYAN);
+      iconCircle(s, x + 1.1, 3.35, 0.55, p.icon, true);
+      s.addText(p.name, { x, y: 4.05, w: 2.73, h: 0.4, margin: 0, align: "center", fontFace: BODY, fontSize: 16, bold: true, color: WHITE });
+      s.addText(p.sub, { x, y: 4.45, w: 2.73, h: 0.35, margin: 0, align: "center", fontFace: BODY, fontSize: 12, color: MUTED });
+    });
+  }
+
+  // ---------- 11. Pianifica ----------
+  {
+    const s = baseSlide("CHIEDILO A CLAUDE CODE · 1 · PIANIFICA", "Pianifica");
+    s.addText("Prima di scrivere una riga di codice, Claude Code è il tuo consulente.", { x: 0.72, y: 1.3, w: 8.5, h: 0.32, margin: 0, fontFace: BODY, fontSize: 13.5, italic: true, color: MUTED });
+    const caps = [
+      { icon: I.plan, name: "Architettura", desc: "come strutturare l'app e i suoi pezzi" },
+      { icon: I.cube, name: "Strumenti", desc: "quali librerie e servizi conviene usare" },
+      { icon: I.scale, name: "Alternative", desc: "confronta più soluzioni e ti spiega i compromessi" },
+      { icon: I.dollar, name: "Costi", desc: "stima la spesa prima di iniziare" },
+      { icon: I.store, name: "Mercato", desc: "ricerche su concorrenti e domanda reale" },
+    ];
+    const startY = 1.85, step = 0.66;
+    caps.forEach((c, i) => {
+      const y = startY + i * step;
+      iconCircle(s, 0.85, y + 0.05, 0.5, c.icon);
+      s.addText([
+        { text: c.name + "  ", options: { bold: true, color: WHITE } },
+        { text: "— " + c.desc, options: { color: MUTED } },
+      ], { x: 1.55, y, w: 7.6, h: 0.6, margin: 0, valign: "middle", fontFace: BODY, fontSize: 14.5 });
+      if (i < caps.length - 1) s.addShape(pres.shapes.LINE, { x: 1.55, y: y + step - 0.05, w: 7.55, h: 0, line: { color: CARDLINE, width: 0.5 } });
+    });
+  }
+
+  // ---------- 12. Implementa ----------
+  {
+    const s = baseSlide("CHIEDILO A CLAUDE CODE · 2 · IMPLEMENTA", "Implementa");
+    s.addText("Non solo codice: anche tutte le istruzioni per arrivare in fondo.", { x: 0.72, y: 1.3, w: 8.5, h: 0.32, margin: 0, fontFace: BODY, fontSize: 13.5, italic: true, color: MUTED });
+    wideCard(s, { x: 0.7, y: 1.85, w: 4.15, h: 2.7, icon: I.code, name: "Scrive il codice", desc: "L'app, gli script di build, i testi dello store. Tu descrivi cosa vuoi, lui costruisce e corregge finché funziona." });
+    wideCard(s, { x: 5.15, y: 1.85, w: 4.15, h: 2.7, icon: I.book, name: "Ti guida passo-passo", desc: "Come aprire l'account sviluppatore, configurare i servizi, firmare e caricare l'app. Le guide operative, non solo il codice." });
+    s.addText("Resti tu al comando: leggi, capisci, approvi.", { x: 0.7, y: 4.75, w: 8.6, h: 0.4, margin: 0, align: "center", valign: "middle", fontFace: BODY, fontSize: 13, italic: true, color: CYAN });
+  }
+
+  // ---------- 13. Testa ----------
+  {
+    const s = baseSlide("CHIEDILO A CLAUDE CODE · 3 · TESTA", "Testa");
+    s.addText("Fino al 90% dei test li fa Claude da solo — in due modi.", { x: 0.72, y: 1.3, w: 8.5, h: 0.32, margin: 0, fontFace: BODY, fontSize: 13.5, italic: true, color: MUTED });
+    wideCard(s, { x: 0.7, y: 1.85, w: 4.15, h: 2.55, icon: I.chrome, name: "Nel browser", desc: "Claude crea una web app identica alla tua app Android e la prova lui stesso, con Claude in Chrome, direttamente nel tuo browser." });
+    wideCard(s, { x: 5.15, y: 1.85, w: 4.15, h: 2.55, icon: I.usb, name: "Sul telefono", desc: "Colleghi il telefono via USB e gli dai accesso con ADB (o l'equivalente Apple). Fa screenshot, tocca i punti giusti, verifica i risultati e valuta anche i video." });
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.7, y: 4.6, w: 8.6, h: 0.6, rectRadius: 0.06, fill: { color: CYANDARK }, line: { color: CYAN, width: 0.5 } });
+    s.addText("Ti spiega anche come autorizzare l'accesso al telefono, passo per passo.", { x: 0.9, y: 4.6, w: 8.2, h: 0.6, margin: 0, align: "center", valign: "middle", fontFace: BODY, fontSize: 12.5, color: WHITE });
   }
 
   await pres.writeFile({ fileName: "slide-video-ai.pptx" });
