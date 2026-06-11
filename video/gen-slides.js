@@ -99,6 +99,30 @@ async function main() {
     s.addText(name, { x: x + 0.95, y: y + 0.25, w: w - 1.15, h: 0.55, margin: 0, valign: "middle", fontFace: BODY, fontSize: 15, bold: true, color: WHITE });
     s.addText(desc, { x: x + 0.25, y: y + 0.92, w: w - 0.5, h: h - 1.05, margin: 0, valign: "top", fontFace: BODY, fontSize: 11.5, color: MUTED, lineSpacingMultiple: 1.18 });
   }
+  function stepDots(s, idx, total) {
+    const y = 4.95, x0 = 1.1, x1 = 8.9, span = x1 - x0;
+    const gap = total > 1 ? span / (total - 1) : 0;
+    s.addShape(pres.shapes.LINE, { x: x0, y, w: span, h: 0, line: { color: CARDLINE, width: 1 } });
+    for (let i = 0; i < total; i++) {
+      const cx = x0 + i * gap, cur = i === idx, d = cur ? 0.3 : 0.17;
+      s.addShape(pres.shapes.OVAL, { x: cx - d / 2, y: y - d / 2, w: d, h: d, fill: { color: cur ? CYAN : CARD }, line: { color: cur ? CYAN : CARDLINE, width: cur ? 0 : 1 } });
+      s.addText(String(i + 1), { x: cx - 0.3, y: y + 0.16, w: 0.6, h: 0.25, margin: 0, align: "center", fontFace: BODY, fontSize: 10, color: cur ? CYAN : MUTED, bold: cur });
+    }
+  }
+  function stepSlide(sectionKicker, idx, total, step) {
+    const s = pres.addSlide();
+    s.background = { color: BG };
+    s.addText(sectionKicker + " · PASSO " + (idx + 1) + " DI " + total, {
+      x: 0.72, y: 0.55, w: 8.5, h: 0.3, margin: 0,
+      fontFace: BODY, fontSize: 12, color: CYAN, charSpacing: 2, bold: true,
+    });
+    s.addText(step.name, { x: 0.7, y: 1.0, w: 5.6, h: 1.0, margin: 0, valign: "top", fontFace: HEAD, fontSize: 36, color: WHITE });
+    s.addText(step.desc, { x: 0.72, y: 2.35, w: 5.5, h: 1.9, margin: 0, valign: "top", fontFace: BODY, fontSize: 17, color: MUTED, lineSpacingMultiple: 1.45 });
+    panel(s, 6.55, 1.45, 2.5, 2.5, CYAN);
+    iconCircle(s, 7.0, 1.9, 1.6, step.icon, true);
+    stepDots(s, idx, total);
+    return s;
+  }
   function listSlide(kicker, title, subtitle, items) {
     const s = baseSlide(kicker, title);
     s.addText(subtitle, { x: 0.72, y: 1.3, w: 8.5, h: 0.3, margin: 0, fontFace: BODY, fontSize: 13, italic: true, color: MUTED });
@@ -209,21 +233,17 @@ async function main() {
     "Itera a parole", "Prepara il lancio", "Pubblica",
   ]);
 
-  // ---------- 7. Prima release · dettaglio ----------
+  // ---------- 7-12. Prima release · un passo per slide ----------
   {
-    const s = baseSlide("IL METODO · DALL'IDEA AL LANCIO", "La prima release, passo per passo");
     const steps = [
-      { icon: I.bullseye, name: "Parti dal problema", desc: "Un utente preciso, un bisogno reale, la funzione minima che lo risolve." },
-      { icon: I.comments, name: "Descrivi all'AI", desc: "Brief in linguaggio naturale: cosa deve fare, non come. Le tecnologie le sceglie lei." },
-      { icon: I.cube, name: "Ottieni un prototipo", desc: "Una versione da toccare subito, anche imperfetta. Prima web, poi mobile." },
-      { icon: I.sync, name: "Itera a parole", desc: "Usa l'app, descrivi cosa non va, l'AI corregge. Ripeti finché ti convince." },
-      { icon: I.clipboard, name: "Prepara il lancio", desc: "Nome, icona, privacy policy, scheda store: li scrive l'AI, li approvi tu." },
-      { icon: I.rocket, name: "Pubblica", desc: "Firma digitale, caricamento, revisione di Google. Poi sei online nel mondo." },
+      { icon: I.bullseye, name: "Parti dal problema", desc: "Un utente preciso, un bisogno reale, la funzione minima che lo risolve. Senza un problema vero, nessuno strumento serve." },
+      { icon: I.comments, name: "Descrivi all'AI", desc: "Un brief in linguaggio naturale: cosa deve fare l'app, non come. Le tecnologie giuste le sceglie l'AI." },
+      { icon: I.cube, name: "Ottieni un prototipo", desc: "Una versione da toccare subito, anche imperfetta. Prima la web app, poi quella mobile: vederla funzionare cambia tutto." },
+      { icon: I.sync, name: "Itera a parole", desc: "Usa l'app, descrivi cosa non va, l'AI corregge. Ripeti finché ti convince: è qui che il prodotto prende forma." },
+      { icon: I.clipboard, name: "Prepara il lancio", desc: "Nome, icona, privacy policy, scheda dello store: li scrive l'AI, tu li leggi e li approvi." },
+      { icon: I.rocket, name: "Pubblica", desc: "Firma digitale, caricamento, revisione di Google. Poi la tua app è online, in mano a chiunque nel mondo." },
     ];
-    steps.forEach((st, i) => {
-      const col = i % 3, row = Math.floor(i / 3);
-      stepCard(s, { x: 0.7 + col * 2.95, y: 1.5 + row * 1.95, w: 2.73, h: 1.8, num: "0" + (i + 1), ...st });
-    });
+    steps.forEach((st, i) => stepSlide("LA PRIMA RELEASE", i, steps.length, st));
   }
 
   // ---------- 8. Aggiornamenti · lista ----------
@@ -231,22 +251,16 @@ async function main() {
     "Ascolta", "Scegli una cosa", "Pianifica", "Implementa e prova", "Rilascia spesso",
   ]);
 
-  // ---------- 9. Aggiornamenti · dettaglio (con Pianifica) ----------
+  // ---------- 14-18. Aggiornamenti · un passo per slide (con Pianifica) ----------
   {
-    const s = baseSlide("IL METODO · DOPO IL LANCIO", "Gli aggiornamenti, passo per passo");
     const steps = [
-      { icon: I.listen, name: "Ascolta", desc: "Recensioni, statistiche, uso reale: decidono i dati, non le supposizioni." },
-      { icon: I.pick, name: "Scegli una cosa", desc: "Una sola modifica per versione: piccola, chiara, verificabile." },
-      { icon: I.plan, name: "Pianifica", desc: "Architettura, strumenti, costi: l'AI ti aiuta a decidere come farla." },
-      { icon: I.code, name: "Implementa e prova", desc: "L'AI sviluppa e testa; tu validi sul telefono vero." },
-      { icon: I.upload, name: "Rilascia spesso", desc: "Versioni frequenti: 17 in quattro mesi. Ogni release è un esperimento." },
+      { icon: I.listen, name: "Ascolta", desc: "Recensioni, statistiche, uso reale: a decidere sono i dati, non le supposizioni." },
+      { icon: I.pick, name: "Scegli una cosa", desc: "Una sola modifica per versione: piccola, chiara, verificabile. Un cambiamento alla volta." },
+      { icon: I.plan, name: "Pianifica", desc: "Architettura, strumenti, costi: prima di toccare il codice, l'AI ti aiuta a decidere come farla." },
+      { icon: I.code, name: "Implementa e prova", desc: "L'AI sviluppa la modifica e la testa; tu la validi sul telefono vero prima di rilasciare." },
+      { icon: I.upload, name: "Rilascia spesso", desc: "Versioni frequenti: 17 in quattro mesi. Ogni release è un piccolo esperimento sul campo." },
     ];
-    steps.forEach((st, i) => {
-      let x, y;
-      if (i < 3) { x = 0.7 + i * 2.95; y = 1.5; }
-      else { x = 2.16 + (i - 3) * 2.95; y = 3.45; }
-      stepCard(s, { x, y, w: 2.73, h: 1.8, num: "0" + (i + 1), ...st });
-    });
+    steps.forEach((st, i) => stepSlide("GLI AGGIORNAMENTI", i, steps.length, st));
   }
 
   // ---------- 10. Chiedilo a Claude Code · intro ----------
