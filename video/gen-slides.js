@@ -8,6 +8,7 @@ const {
   FaBullseye, FaComments, FaCube, FaSyncAlt, FaClipboardCheck, FaRocket,
   FaRegCommentDots, FaHandPointer, FaProjectDiagram, FaCode, FaCloudUploadAlt,
   FaVial, FaChrome, FaUsb, FaStore, FaBalanceScale, FaSearchDollar, FaBookOpen,
+  FaEye, FaBolt, FaLayerGroup, FaCogs, FaExclamationTriangle, FaShieldAlt,
 } = require("react-icons/fa");
 
 // Palette
@@ -43,6 +44,8 @@ async function main() {
     pick: FaHandPointer, plan: FaProjectDiagram, code: FaCode, upload: FaCloudUploadAlt,
     vial: FaVial, chrome: FaChrome, usb: FaUsb, store: FaStore,
     scale: FaBalanceScale, dollar: FaSearchDollar, book: FaBookOpen,
+    eye: FaEye, bolt: FaBolt, layers: FaLayerGroup, cogs: FaCogs,
+    warning: FaExclamationTriangle, shield: FaShieldAlt,
   };
   const I = {};
   for (const [name, comp] of Object.entries(defs)) {
@@ -121,6 +124,15 @@ async function main() {
     panel(s, 6.55, 1.45, 2.5, 2.5, CYAN);
     iconCircle(s, 7.0, 1.9, 1.6, step.icon, true);
     stepDots(s, idx, total);
+    return s;
+  }
+  function noteSlide(kicker, title, intro, cardA, cardB, footer) {
+    const s = baseSlide(kicker, title);
+    s.addText(intro, { x: 0.72, y: 1.3, w: 8.5, h: 0.34, margin: 0, fontFace: BODY, fontSize: 13.5, italic: true, color: MUTED });
+    wideCard(s, { x: 0.7, y: 1.9, w: 4.15, h: 2.4, ...cardA });
+    wideCard(s, { x: 5.15, y: 1.9, w: 4.15, h: 2.4, ...cardB });
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.7, y: 4.55, w: 8.6, h: 0.62, rectRadius: 0.06, fill: { color: CYANDARK }, line: { color: CYAN, width: 0.5 } });
+    s.addText(footer, { x: 0.9, y: 4.55, w: 8.2, h: 0.62, margin: 0, align: "center", valign: "middle", fontFace: BODY, fontSize: 12.5, color: WHITE });
     return s;
   }
   function listSlide(kicker, title, subtitle, items) {
@@ -328,6 +340,55 @@ async function main() {
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.7, y: 4.6, w: 8.6, h: 0.6, rectRadius: 0.06, fill: { color: CYANDARK }, line: { color: CYAN, width: 0.5 } });
     s.addText("Ti spiega anche come autorizzare l'accesso al telefono, passo per passo.", { x: 0.9, y: 4.6, w: 8.2, h: 0.6, margin: 0, align: "center", valign: "middle", fontFace: BODY, fontSize: 12.5, color: WHITE });
   }
+
+  // ---------- Da tenere a mente · intro ----------
+  {
+    const s = baseSlide("DA TENERE A MENTE", "Tre accortezze trasversali");
+    s.addText([
+      { text: "Non sono fasi in sequenza: sono ", options: {} },
+      { text: "abitudini", options: { color: CYAN, bold: true } },
+      { text: " valide a ogni modifica, che ti risparmiano tempo e brutte sorprese.", options: {} },
+    ], { x: 0.72, y: 1.55, w: 8.5, h: 1.0, margin: 0, fontFace: BODY, fontSize: 18, color: WHITE, lineSpacingMultiple: 1.3 });
+    const items = [
+      { icon: I.vial, name: "Testa sempre", sub: "doppia verifica" },
+      { icon: I.cogs, name: "Occhio alla build", sub: "tempo e CPU" },
+      { icon: I.book, name: "Leggi le regole", sub: "dello store" },
+    ];
+    items.forEach((p, i) => {
+      const x = 0.7 + i * 2.95;
+      panel(s, x, 3.1, 2.73, 1.85, CYAN);
+      iconCircle(s, x + 1.1, 3.35, 0.55, p.icon, true);
+      s.addText(p.name, { x, y: 4.05, w: 2.73, h: 0.4, margin: 0, align: "center", fontFace: BODY, fontSize: 16, bold: true, color: WHITE });
+      s.addText(p.sub, { x, y: 4.45, w: 2.73, h: 0.35, margin: 0, align: "center", fontFace: BODY, fontSize: 12, color: MUTED });
+    });
+  }
+
+  // ---------- Da tenere a mente · 1 · Testa sempre ----------
+  noteSlide(
+    "DA TENERE A MENTE · 1 · TESTA SEMPRE", "Testa sempre",
+    "Niente va online senza una verifica doppia.",
+    { icon: I.robot, name: "Fallo provare a Claude", desc: "Ogni volta che finalizzi una modifica, almeno un test automatico: Claude installa l'app, la prova e verifica che funzioni." },
+    { icon: I.eye, name: "Dai l'occhiata finale", desc: "Poi sempre un controllo umano, tuo, prima di pubblicare. L'ultimo sguardo lo dai tu." },
+    "Una modifica finalizzata = un test di Claude + un'occhiata tua, ogni volta."
+  );
+
+  // ---------- Da tenere a mente · 2 · Occhio alla build ----------
+  noteSlide(
+    "DA TENERE A MENTE · 2 · OCCHIO ALLA BUILD", "Occhio alla compilazione",
+    "Compilare l'app costa minuti e CPU: trattala come una risorsa preziosa.",
+    { icon: I.bolt, name: "Build ottimizzata", desc: "Chiedi a Claude la compilazione più adatta all'uso: la versione di test si genera molto più in fretta di quella per lo store." },
+    { icon: I.layers, name: "Solo quando serve", desc: "Accorpa le modifiche e compila una volta sola. Ricompilare per ogni micro-cambiamento è tempo buttato." },
+    "Su un computer normale una build può prendere 10 minuti e rallentare tutto."
+  );
+
+  // ---------- Da tenere a mente · 3 · Leggi le regole ----------
+  noteSlide(
+    "DA TENERE A MENTE · 3 · LE REGOLE DELLO STORE", "Leggi le regole dello store",
+    "Gli store hanno regole che cambiano nel tempo — e non riguardano solo il codice.",
+    { icon: I.book, name: "Falle leggere a Claude", desc: "Requisiti su come scrivere il codice, come compilare, su icona, testi, permessi e privacy: falle leggere bene prima di iniziare." },
+    { icon: I.warning, name: "Un dettaglio può bloccarti", desc: "A volte basta un'icona o un testo fuori regola per dover ricompilare e ricaricare tutto, anche col codice perfetto." },
+    "Le regole di pubblicazione cambiano: ricontrollale a ogni release importante."
+  );
 
   await pres.writeFile({ fileName: "slide-video-ai.pptx" });
   console.log("DONE slide-video-ai.pptx");
