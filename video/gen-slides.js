@@ -152,10 +152,15 @@ async function main() {
   {
     const s = pres.addSlide();
     s.background = { color: BG };
-    s.addShape(pres.shapes.OVAL, { x: 6.4, y: 0.9, w: 3.4, h: 3.4, fill: { color: BG, transparency: 100 }, line: { color: CYAN, width: 1.5, transparency: 70 } });
-    s.addShape(pres.shapes.OVAL, { x: 6.8, y: 1.3, w: 2.6, h: 2.6, fill: { color: BG, transparency: 100 }, line: { color: CYAN, width: 1.5, transparency: 45 } });
-    s.addShape(pres.shapes.OVAL, { x: 7.2, y: 1.7, w: 1.8, h: 1.8, fill: { color: BG, transparency: 100 }, line: { color: CYAN, width: 2, transparency: 15 } });
-    s.addShape(pres.shapes.OVAL, { x: 7.95, y: 2.45, w: 0.3, h: 0.3, fill: { color: CYAN } });
+    // Smartphone stilizzato (tema: creare app)
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 7.25, y: 0.95, w: 1.95, h: 3.15, rectRadius: 0.22, fill: { color: BG, transparency: 100 }, line: { color: CYAN, width: 2 } });
+    s.addShape(pres.shapes.LINE, { x: 7.95, y: 1.27, w: 0.55, h: 0, line: { color: CYAN, width: 2 } });
+    s.addShape(pres.shapes.RECTANGLE, { x: 7.5, y: 1.6, w: 1.45, h: 0.16, fill: { color: CYAN, transparency: 65 }, line: { color: CYAN, width: 0, transparency: 100 } });
+    s.addShape(pres.shapes.OVAL, { x: 7.8, y: 2.05, w: 0.85, h: 0.85, fill: { color: BG, transparency: 100 }, line: { color: CYAN, width: 1.5 } });
+    s.addShape(pres.shapes.OVAL, { x: 8.05, y: 2.3, w: 0.35, h: 0.35, fill: { color: CYAN } });
+    s.addShape(pres.shapes.RECTANGLE, { x: 7.5, y: 3.2, w: 1.45, h: 0.15, fill: { color: CYAN, transparency: 65 }, line: { color: CYAN, width: 0, transparency: 100 } });
+    s.addShape(pres.shapes.RECTANGLE, { x: 7.5, y: 3.5, w: 0.95, h: 0.15, fill: { color: CYAN, transparency: 78 }, line: { color: CYAN, width: 0, transparency: 100 } });
+    s.addShape(pres.shapes.LINE, { x: 7.95, y: 3.88, w: 0.55, h: 0, line: { color: CYAN, width: 2 } });
     s.addText("LA STORIA DI BEYBLADE SCORE", { x: 0.7, y: 1.0, w: 6.0, h: 0.32, margin: 0, fontFace: BODY, fontSize: 12, color: CYAN, charSpacing: 3, bold: true });
     s.addText([
       { text: "Un'app sul Play Store.", options: { breakLine: true } },
