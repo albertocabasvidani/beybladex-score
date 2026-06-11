@@ -97,3 +97,7 @@ mockup-layout-banner.html
 
 # Old project directory (migrated to packages/web)
 beybladex-score/
+
+# Slide video YouTube (artefatti rigenerabili con video/gen-slides.js)
+video/*.pdf
+video/slide-video-ai-slide-*.png
