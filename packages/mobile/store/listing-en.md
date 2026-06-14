@@ -82,4 +82,9 @@ Choose from the predefined Google Play tag list during Play Console setup. Sugge
 > Final tags must be picked from Google's curated list per category — the list shown in Play Console at the time of submission overrides this suggestion.
 
 ## Keywords to reinforce (organic, do not stuff)
-beyblade, beyblade x, score tracker, scorekeeper, blader, battle, finish, spin finish, burst finish, over finish, xtreme finish, tournament, stadium, landscape
+beyblade, beyblade x, score tracker, scoreboard, scorekeeper, blader, battle, finish, spin finish, burst finish, over finish, xtreme finish, tournament, stadium, landscape
+
+> Tutte le keyword primarie/secondarie del piano ASO sono già nella listing live (titolo, short, full). `scoreboard` è un sinonimo ad alto volume non ancora nel testo live: candidato per il prossimo aggiornamento della full description (c'è spazio, 2368/4000). Già presente come caption nei marketing screenshot.
+
+## Marketing screenshot (Play Store)
+5 screenshot 1920×1080 con caption story-flow in `marketing-screenshots/` (en-1…en-5). Caricati sulla Default store listing (en-US) il 14/06/2026 al posto dei 2 screenshot grezzi. Story-flow: match → 4 finish → vittoria → impostazioni → guida.

@@ -82,4 +82,9 @@ Da scegliere durante il setup in Play Console nella lista predefinita Google. Co
 > I tag finali devono essere selezionati dalla lista curata da Google per categoria — la lista mostrata in Play Console al momento del submit prevale su questa indicazione.
 
 ## Keyword da rinforzare (organico, evitare stuffing)
-beyblade, beyblade x, segnapunti, score tracker, blader, battle, battaglia, finish, spin finish, burst finish, over finish, xtreme finish, torneo, stadium, landscape
+beyblade, beyblade x, segnapunti, tabellone, score tracker, blader, battle, battaglia, finish, spin finish, burst finish, over finish, xtreme finish, torneo, stadium, landscape
+
+> Tutte le keyword primarie/secondarie del piano ASO sono già nella listing live (titolo, short, full). `tabellone` è un sinonimo ad alto volume non ancora nel testo live: candidato per il prossimo aggiornamento della descrizione completa. Già presente come caption nei marketing screenshot.
+
+## Marketing screenshot (Play Store)
+5 screenshot 1920×1080 con caption story-flow in italiano in `marketing-screenshots/` (it-1…it-5). Caricati sulla traduzione it-IT il 14/06/2026 al posto dei 4 screenshot grezzi. Le caption sono in italiano; le label UI dell'app restano in EN (vedi README della cartella).

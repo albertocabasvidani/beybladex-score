@@ -247,6 +247,18 @@ Built-in in Play Console, **gratis**. Permette test di:
 
 ---
 
+## Stato implementazione (14/06/2026)
+
+Audit completo della scheda live + interventi su Play Console (inviati per review):
+
+- **Screenshot Default (en-US, mondo)**: erano **2 grezzi** → sostituiti con **5 screenshot di marketing** 1920×1080 con caption story-flow EN. È il fix a maggior impatto sui click (la default serviva 16.475 visitatori con conv. 3,3% e soli 2 screenshot).
+- **Screenshot it-IT (Italia)**: erano **4 grezzi** → sostituiti con **5 screenshot** con caption in italiano.
+- **Custom Store Listing "beyblade"** (keyword globale): aveva **lingua default = Italiano** (errore: utenti non-IT vedevano contenuti IT; conv. 2,3% < 3,3% della default) → **lingua default cambiata a English (US)**, IT mantenuto come traduzione. Screenshot ereditati dalla default (ora ottimizzati).
+- **Lingue**: confermato setup corretto — **en-US default (mondo) + it-IT (Italia)** sia su default che custom listing.
+- **Keyword**: tutte le primarie/secondarie del piano già presenti in titolo/short/full (EN e IT). `scoreboard`/`tabellone` aggiunti come candidati per il prossimo update descrizione (vedi listing-en/it.md).
+- **Store Listing Experiment** "Screenshot 1 - feature vs outcome": resta **draft non avviato** — gli asset sono cambiati; rivalutare quando i nuovi screenshot sono live.
+- Asset/script screenshot versionati in `marketing-screenshots/`.
+
 ## Checklist deployment ottimizzato
 
 - [ ] Titolo include keyword principale all'inizio (≤30 char)
