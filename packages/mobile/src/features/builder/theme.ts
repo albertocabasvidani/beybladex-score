@@ -1,9 +1,10 @@
 /**
  * Palette e costanti del Builder. Estratte dal tema di bbxdeckbuild (che usava react-native-paper
  * MD3DarkTheme) e ridotte ai soli valori usati — niente dipendenza da Paper.
+ *
+ * I massimi delle stat (per-categoria e per-combo) NON sono qui: si calcolano dai dati reali via
+ * `getCategoryStatMax` / `getComboStatMax` in `@beybladex/shared` ("il massimo è quello sul sito").
  */
-import type { PartCategory } from '@beybladex/shared';
-
 export const palette = {
   bg: '#0D0D1A',
   surface: '#161628',
@@ -29,18 +30,3 @@ export const statColors = {
   def: '#3ABFFF',
   sta: '#2EE6A8',
 } as const;
-
-/**
- * Massimi per le StatBar di una singola parte, per categoria. Valori provvisori (le stat reali
- * non sono ancora nel dataset, vedi piano builder Parte A differita): andranno ritarati quando il
- * sito combo popolerà il campo `stats`. Riferimenti dall'infobox Fandom: blade ATK~55, bit ATK~40.
- */
-export const STAT_MAX_BY_CATEGORY: Partial<Record<PartCategory, number>> = {
-  blade: 100,
-  mainBlade: 100,
-  bit: 80,
-  ratchet: 60,
-};
-
-/** Massimo per il radar di un combo (somma blade + bit + ratchet sui 3 assi). */
-export const STAT_MAX_COMBO = 200;

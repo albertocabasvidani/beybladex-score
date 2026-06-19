@@ -77,6 +77,7 @@ export const useBuilderStore = create<BuilderState>()(
       loadCombo: (blade, ratchet, bit) =>
         set({ selectedBlade: blade, selectedRatchet: ratchet, selectedBit: bit }),
       getComboStats: () => {
+        // Somma grezza dei pezzi, senza pesi (valori come sul sito; pezzi senza stat = 0).
         const { selectedBlade, selectedRatchet, selectedBit } = get();
         const parts = [selectedBlade, selectedRatchet, selectedBit];
         return {

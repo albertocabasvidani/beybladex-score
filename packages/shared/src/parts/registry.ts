@@ -121,3 +121,41 @@ export function getCategoryOf(id: string): PartCategory | undefined {
 export function hasStats(part: { stats?: PartStats } | null | undefined): part is { stats: PartStats } {
   return !!part?.stats;
 }
+
+// --- Massimi delle stat, calcolati dai dati reali ("il massimo è quello sul sito"). ---
+
+const STAT_AXES: (keyof PartStats)[] = ['atk', 'def', 'sta'];
+
+function maxByAxis(parts: { stats?: PartStats }[]): PartStats {
+  const r: PartStats = { atk: 0, def: 0, sta: 0 };
+  for (const p of parts) {
+    if (!p.stats) continue;
+    for (const a of STAT_AXES) if (p.stats[a] > r[a]) r[a] = p.stats[a];
+  }
+  return r;
+}
+
+const _catMax = new Map<PartCategory, PartStats>();
+/** Massimo per asse osservato nella categoria (per le StatBar di una singola parte). */
+export function getCategoryStatMax(category: PartCategory): PartStats {
+  let v = _catMax.get(category);
+  if (!v) {
+    v = maxByAxis(getPartsByCategory(category) as { stats?: PartStats }[]);
+    _catMax.set(category, v);
+  }
+  return v;
+}
+
+let _comboMax: PartStats | null = null;
+/**
+ * Massimo per asse del totale di una combo = somma dei massimi di categoria (blade + ratchet + bit)
+ * per ogni stat. È la scala del radar: il minimo è 0, il massimo è la somma dei massimi sul sito.
+ */
+export function getComboStatMax(): PartStats {
+  if (_comboMax) return _comboMax;
+  const b = getCategoryStatMax('blade');
+  const r = getCategoryStatMax('ratchet');
+  const t = getCategoryStatMax('bit');
+  _comboMax = { atk: b.atk + r.atk + t.atk, def: b.def + r.def + t.def, sta: b.sta + r.sta + t.sta };
+  return _comboMax;
+}

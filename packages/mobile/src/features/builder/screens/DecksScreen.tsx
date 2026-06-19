@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView, StyleSheet, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { getComboStatMax } from '@beybladex/shared';
 import { RadarChart, GradientButton, type RadarDataSet } from '../components';
 import {
   useDeckStore,
@@ -9,7 +10,7 @@ import {
   type SavedCombo,
   type SavedDeck,
 } from '../stores';
-import { palette, STAT_MAX_COMBO } from '../theme';
+import { palette } from '../theme';
 import { CONTENT_PADDING } from '../responsive';
 
 const DATASET_COLORS = ['#FF3A4F', '#3ABFFF', '#2EE6A8'];
@@ -130,7 +131,7 @@ export function DecksScreen() {
       {selectedCombos.length > 0 && (
         <View style={styles.radarBox}>
           {datasets.length > 0 ? (
-            <RadarChart datasets={datasets} size={220} maxValue={STAT_MAX_COMBO} />
+            <RadarChart datasets={datasets} size={220} maxPerAxis={getComboStatMax()} />
           ) : (
             <Text style={styles.noRadarText}>{t('builder.deck.noRadar')}</Text>
           )}

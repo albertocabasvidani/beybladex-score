@@ -22,7 +22,8 @@ interface RadarChartProps {
   stats?: PartStats;
   datasets?: RadarDataSet[];
   size?: number;
-  maxValue?: number;
+  /** Massimo per asse (0 = centro, max = bordo). Tipicamente `getComboStatMax()`. */
+  maxPerAxis: PartStats;
 }
 
 // 3 assi: ATK in alto, DEF in basso a destra, STA in basso a sinistra (triangolo equilatero).
@@ -39,10 +40,11 @@ function polarToCartesian(angle: number, radius: number, cx: number, cy: number)
   return { x: cx + radius * Math.cos(rad), y: cy + radius * Math.sin(rad) };
 }
 
-function buildPolygonPoints(stats: PartStats, maxValue: number, r: number, cx: number, cy: number) {
+function buildPolygonPoints(stats: PartStats, max: PartStats, r: number, cx: number, cy: number) {
   return AXES.map((a) => {
-    const value = Math.min(stats[a.key], maxValue);
-    const ratio = maxValue > 0 ? value / maxValue : 0;
+    const m = max[a.key];
+    const value = Math.min(stats[a.key], m);
+    const ratio = m > 0 ? value / m : 0;
     return polarToCartesian(a.angle, r * ratio, cx, cy);
   });
 }
@@ -51,7 +53,7 @@ function buildPolygonPoints(stats: PartStats, maxValue: number, r: number, cx: n
  * Radar a 3 assi (ATK/DEF/STA). Accetta una singola `stats` o più `datasets` (deck multi-combo).
  * Portato da bbxdeckbuild (5 assi → 3, niente xdash/br, niente react-native-paper).
  */
-export function RadarChart({ stats, datasets, size = 200, maxValue = 200 }: RadarChartProps) {
+export function RadarChart({ stats, datasets, size = 200, maxPerAxis }: RadarChartProps) {
   const cx = size / 2;
   const cy = size / 2;
   const r = size * 0.34;
@@ -102,7 +104,7 @@ export function RadarChart({ stats, datasets, size = 200, maxValue = 200 }: Rada
         {allDatasets.map((ds, i) => {
           const hasData = AXES.some((a) => ds.stats[a.key] > 0);
           if (!hasData) return null;
-          const points = buildPolygonPoints(ds.stats, maxValue, r, cx, cy);
+          const points = buildPolygonPoints(ds.stats, maxPerAxis, r, cx, cy);
           const poly = points.map((p) => `${p.x},${p.y}`).join(' ');
           return (
             <React.Fragment key={`ds-${i}`}>

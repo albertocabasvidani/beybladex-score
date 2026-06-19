@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView, Modal, StyleSheet, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { getComboStatMax } from '@beybladex/shared';
 import { RadarChart, GradientButton, PartPicker, type PickerCategory } from '../components';
 import {
   useBuilderStore,
@@ -9,7 +10,7 @@ import {
   type SelectedPart,
   type SavedCombo,
 } from '../stores';
-import { palette, STAT_MAX_COMBO } from '../theme';
+import { palette } from '../theme';
 import { CONTENT_PADDING } from '../responsive';
 
 function Slot({
@@ -145,7 +146,7 @@ export function BuilderScreen() {
 
       <View style={styles.radarBox}>
         {showRadar ? (
-          <RadarChart stats={stats} size={220} maxValue={STAT_MAX_COMBO} />
+          <RadarChart stats={stats} size={220} maxPerAxis={getComboStatMax()} />
         ) : (
           <View style={styles.noRadar}>
             <Text style={styles.noRadarIcon}>📊</Text>

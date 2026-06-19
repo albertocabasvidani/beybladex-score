@@ -14,7 +14,7 @@ export interface SavedCombo {
   createdAt: number;
 }
 
-/** Somma delle 3 stat dei pezzi (pezzi senza stat contano 0). */
+/** Stat della combo = somma grezza di blade + ratchet + bit, senza pesi (pezzi senza stat = 0). */
 export function calcComboStats(blade: SelectedPart, ratchet: SelectedPart, bit: SelectedPart): PartStats {
   const parts = [blade, ratchet, bit];
   return {

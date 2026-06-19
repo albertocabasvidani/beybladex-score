@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import type { AnyPart, PartCategory, PartStats } from '@beybladex/shared';
-import { typeColors, statColors, STAT_MAX_BY_CATEGORY } from '../theme';
+import { getCategoryStatMax, type AnyPart, type PartCategory, type PartStats } from '@beybladex/shared';
+import { typeColors, statColors } from '../theme';
 import { StatBar } from './StatBar';
 
 interface PartCardProps {
@@ -63,7 +63,7 @@ export function PartCard({
   const type = partType(part);
   const stats = partStats(part);
   const typeColor = (type && typeColors[type]) || '#FF3A4F';
-  const max = STAT_MAX_BY_CATEGORY[category] ?? 100;
+  const max = getCategoryStatMax(category);
   const sub = subtitle(part, category, t);
 
   return (
@@ -100,9 +100,9 @@ export function PartCard({
 
         {stats ? (
           <View style={styles.statsContainer}>
-            <StatBar label="ATK" value={stats.atk} max={max} color={statColors.atk} />
-            <StatBar label="DEF" value={stats.def} max={max} color={statColors.def} />
-            <StatBar label="STA" value={stats.sta} max={max} color={statColors.sta} />
+            <StatBar label="ATK" value={stats.atk} max={max.atk} color={statColors.atk} />
+            <StatBar label="DEF" value={stats.def} max={max.def} color={statColors.def} />
+            <StatBar label="STA" value={stats.sta} max={max.sta} color={statColors.sta} />
           </View>
         ) : (
           <View style={styles.noStatsBadge}>
