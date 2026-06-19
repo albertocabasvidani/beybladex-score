@@ -75,6 +75,62 @@ export const translations = {
       sectionEnd: 'Fine partita',
       endText: 'Quando un giocatore raggiunge il punteggio vittoria, tocca <b>New Game</b> per ricominciare',
       credits: 'Crediti'
+    },
+    builder: {
+      title: 'Combo Builder',
+      backToScoreboard: 'Scoreboard',
+      tabs: { parts: 'Parti', builder: 'Builder', decks: 'Deck', collection: 'Collezione' },
+      category: { blade: 'Blade', ratchet: 'Ratchet', bit: 'Bit', cx: 'CX' },
+      type: { all: 'Tutti', attack: 'Attacco', defense: 'Difesa', stamina: 'Stamina', balance: 'Equilibrio' },
+      common: {
+        search: 'Cerca...',
+        clear: 'Pulisci',
+        noResults: 'Nessun risultato',
+        cancel: 'Annulla',
+        delete: 'Elimina',
+        noStats: 'Stats non disponibili',
+        close: 'Chiudi'
+      },
+      picker: { title: 'Seleziona {{category}}', search: 'Cerca {{category}}...', recent: 'Recenti' },
+      parts: { empty: 'Nessuna parte' },
+      partCard: {
+        bit: 'Bit',
+        ratchet: 'Ratchet',
+        mainBlade: 'Main Blade (CX)',
+        assistBlade: 'Assist Blade (CX)',
+        lockChip: 'Lock Chip (CX)',
+        overBlade: 'Over Blade (CX)'
+      },
+      combo: {
+        selectSlot: 'Seleziona {{slot}}',
+        namePlaceholder: 'Nome combo (opzionale)',
+        save: 'Salva combo',
+        update: 'Aggiorna combo',
+        saved: 'Combo salvate ({{count}})',
+        empty: 'Nessuna combo salvata',
+        noRadar: 'Stats non disponibili',
+        noRadarHint: 'Le statistiche compariranno quando saranno presenti nel database parti.',
+        deleteTitle: 'Elimina combo',
+        deleteMsg: 'Eliminare "{{name}}"?'
+      },
+      deck: {
+        new: 'Nuovo deck ({{count}}/{{size}})',
+        wboHint: 'Regola WBO: nessuna parte (blade/ratchet/bit) ripetuta tra le combo.',
+        needCombos: 'Salva prima qualche combo nel Builder.',
+        noRadar: 'Stats non disponibili per il radar',
+        duplicateInline: '{{kind}} "{{name}}" è ripetuta.',
+        namePlaceholder: 'Nome deck (opzionale)',
+        save: 'Salva deck',
+        update: 'Aggiorna deck',
+        saved: 'Deck salvati ({{count}})',
+        empty: 'Nessun deck salvato',
+        deleteTitle: 'Elimina deck',
+        deleteMsg: 'Eliminare "{{name}}"?',
+        duplicateTitle: 'Parti duplicate',
+        duplicateMsg: '{{kind}} "{{name}}" usata in più combo del deck.',
+        defaultName: 'Deck {{n}}'
+      },
+      collection: { counter: '{{owned}}/{{total}} possedute' }
     }
   },
   en: {
@@ -148,6 +204,62 @@ export const translations = {
       sectionEnd: 'End of game',
       endText: 'When a player reaches the win score, tap <b>New Game</b> to start over',
       credits: 'Credits'
+    },
+    builder: {
+      title: 'Combo Builder',
+      backToScoreboard: 'Scoreboard',
+      tabs: { parts: 'Parts', builder: 'Builder', decks: 'Decks', collection: 'Collection' },
+      category: { blade: 'Blade', ratchet: 'Ratchet', bit: 'Bit', cx: 'CX' },
+      type: { all: 'All', attack: 'Attack', defense: 'Defense', stamina: 'Stamina', balance: 'Balance' },
+      common: {
+        search: 'Search...',
+        clear: 'Clear',
+        noResults: 'No results',
+        cancel: 'Cancel',
+        delete: 'Delete',
+        noStats: 'Stats unavailable',
+        close: 'Close'
+      },
+      picker: { title: 'Select {{category}}', search: 'Search {{category}}...', recent: 'Recent' },
+      parts: { empty: 'No parts' },
+      partCard: {
+        bit: 'Bit',
+        ratchet: 'Ratchet',
+        mainBlade: 'Main Blade (CX)',
+        assistBlade: 'Assist Blade (CX)',
+        lockChip: 'Lock Chip (CX)',
+        overBlade: 'Over Blade (CX)'
+      },
+      combo: {
+        selectSlot: 'Select {{slot}}',
+        namePlaceholder: 'Combo name (optional)',
+        save: 'Save combo',
+        update: 'Update combo',
+        saved: 'Saved combos ({{count}})',
+        empty: 'No saved combos',
+        noRadar: 'Stats unavailable',
+        noRadarHint: 'Stats will appear once they are present in the parts database.',
+        deleteTitle: 'Delete combo',
+        deleteMsg: 'Delete "{{name}}"?'
+      },
+      deck: {
+        new: 'New deck ({{count}}/{{size}})',
+        wboHint: 'WBO rule: no part (blade/ratchet/bit) repeated across combos.',
+        needCombos: 'Save some combos in the Builder first.',
+        noRadar: 'Stats unavailable for the radar',
+        duplicateInline: '{{kind}} "{{name}}" is repeated.',
+        namePlaceholder: 'Deck name (optional)',
+        save: 'Save deck',
+        update: 'Update deck',
+        saved: 'Saved decks ({{count}})',
+        empty: 'No saved decks',
+        deleteTitle: 'Delete deck',
+        deleteMsg: 'Delete "{{name}}"?',
+        duplicateTitle: 'Duplicate parts',
+        duplicateMsg: '{{kind}} "{{name}}" used in more than one combo of the deck.',
+        defaultName: 'Deck {{n}}'
+      },
+      collection: { counter: '{{owned}}/{{total}} owned' }
     }
   }
 } as const;

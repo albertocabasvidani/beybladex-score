@@ -61,6 +61,14 @@ else
     echo "  [SKIP] No gradlew yet (first build)"
 fi
 
+# ---- STEP 0.5: Sync parts registry from combo site (build-time, never runtime) ----
+echo ""
+echo "=== STEP 0.5: Sync parts registry ==="
+# Aggiorna packages/shared/src/parts/bundled-parts.json dal sito combo PRIMA della copia sorgenti,
+# così la versione fresca finisce nel build. Offline → mantiene il file esistente (vedi script).
+# Schema corrotto → exit 1 → set -e aborta il build (protezione dati).
+node "$SRC/packages/mobile/scripts/sync-parts.js"
+
 # ---- STEP 1: Sync ALL source files (entire directories) ----
 echo ""
 echo "=== STEP 1: Sync source files ==="

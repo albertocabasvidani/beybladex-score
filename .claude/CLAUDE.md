@@ -71,6 +71,18 @@ bash packages/mobile/scripts/full-build-aab.sh
 - Verificare gli asset nell'APK con `aapt2 dump resources` (NON `unzip -l`: `optimizeReleaseResources` offusca i path).
 - Se si cambiano SOLO gli mp3, la build incrementale lascia `createBundleReleaseJsAndAssets` UP-TO-DATE (gli asset non sono input tracciati) e l'APK esce con gli audio vecchi: cancellare prima `C:/projects/beybladex/packages/mobile/android/app/build/generated/{assets,res}/createBundleReleaseJsAndAssets`.
 
+## Combo Builder (tab feature-flagged)
+
+Builder di combo/deck come tab interna. **Feature flag `BUILDER_ENABLED = __DEV__`** (`packages/mobile/src/config/featureFlags.ts`): ON in dev, OFF in release → in produzione l'app è identica allo scoreboard (nessun tab, lock landscape, BuilderShell mai montato). FAB dev "🛠️ Builder" in alto a sinistra sullo scoreboard per entrarci.
+
+- **Dati parti**: `packages/shared/src/parts/` — `bundled-parts.json` (registry 265 parti, import statico inlinato da Metro → istantaneo, offline) + `registry.ts` (getter tipizzati `getBlades/getBits/getRatchets/getCxParts/getPartById`). Fonte di verità = `data/parts.json` del sito combo (`albertocabasvidani/beyblade-x-combo-finder`, branch **master**).
+- **Sync** (build-time, MAI runtime): `scripts/sync-parts.js` (`npm run sync-parts`) scarica + valida parts.json → `bundled-parts.json` (committato). Integrato in `full-build-apk.sh` (STEP 0.5, prima della copia sorgenti). Offline → mantiene il file esistente; schema rotto → exit 1 (blocca il build).
+- **Stats radar (ATK/DEF/STA) DIFFERITE**: il campo `stats` esiste nello schema (shared + sito combo `types.ts`/`build-parts.ts`, pass-through) ma `parts.json` non le ha ancora. Le stat reali stanno nelle pagine Fandom **dedicate** (`Blade - X`, `Bit - X`), NON nelle pagine prodotto scrappate dalla pipeline; copertura parziale, ratchet quasi sempre vuoti. Finché non popolate, il radar è nascosto con badge "Stats non disponibili" (degradazione in `PartCard`/`BuilderScreen`/`DecksScreen`). `STAT_MAX_*` in `features/builder/theme.ts` da ritarare sui dati reali.
+- **Navigazione**: niente react-navigation. `src/store/uiStore.ts` (`activeTab` scoreboard/builder + `activeBuilderTab`, persist key `beybladex-ui`); `App.tsx` fa lock orientamento per-tab (scoreboard=LANDSCAPE, builder=PORTRAIT) via `useEffect([isBuilder])`.
+- **UI** (`src/features/builder/`): `BuilderShell.tsx` (header + tab bar 4 voci) + `components/` (RadarChart 3 assi su `react-native-svg`, PartPicker, PartCard, StatBar, GradientButton, FilterChipRow, CollectionGridItem — niente `react-native-paper`, niente immagini, icone = emoji) + `stores/` (builder/combo/deck/collection/filter, persist key `beybladex-builder-*`; collection `ownedIds` Set↔Array; deck con regola WBO no-duplicati `validateNoDuplicateParts`) + `screens/` (Parts/Builder/Decks/Collection). Componenti portati da `bbxdeckbuild` adattati allo schema canonico (`type`/`line`, 3 assi).
+- **i18n**: namespace `builder.*` in `packages/shared/src/i18n/translations.ts` (it+en).
+- **Nuova dipendenza nativa**: `react-native-svg` (radar) → richiede build nativa (`full-build-apk.sh`), non basta OTA.
+
 ## Monetizzazione (AdMob + RevenueCat)
 
 - **AdMob**: banner nella VictoryOverlay, SDK `react-native-google-mobile-ads`

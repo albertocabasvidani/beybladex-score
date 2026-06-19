@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useWindowDimensions, AppState } from 'react-native';
+import { useWindowDimensions, AppState, Pressable, Text, StyleSheet } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { useKeepAwake } from 'expo-keep-awake';
@@ -10,6 +10,9 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import mobileAds, { MaxAdContentRating } from 'react-native-google-mobile-ads';
 import { logger } from './utils/logger';
 import { usePurchasesStore } from './store/purchases-store';
+import { useUiStore } from './store/uiStore';
+import { BUILDER_ENABLED } from './config/featureFlags';
+import { BuilderShell } from './features/builder/BuilderShell';
 import './i18n/config';
 
 // Global error handler for uncaught JS errors
@@ -39,25 +42,46 @@ usePurchasesStore.getState().init();
 function AppContent() {
   useKeepAwake();
 
-  useEffect(() => {
-    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-  }, []);
+  const activeTab = useUiStore((s) => s.activeTab);
+  const setActiveTab = useUiStore((s) => s.setActiveTab);
+  // Con il flag OFF l'app resta SEMPRE sullo scoreboard: nessun cambio di orientamento/UI.
+  const effectiveTab = BUILDER_ENABLED ? activeTab : 'scoreboard';
+  const isBuilder = effectiveTab === 'builder';
 
-  // Re-hide status bar when returning from notification shade
+  // Orientamento per-tab: scoreboard = landscape (storico), builder = portrait.
   useEffect(() => {
-    SystemBars.setHidden({ statusBar: true });
+    ScreenOrientation.lockAsync(
+      isBuilder
+        ? ScreenOrientation.OrientationLock.PORTRAIT_UP
+        : ScreenOrientation.OrientationLock.LANDSCAPE
+    );
+  }, [isBuilder]);
+
+  // Status bar: nascosta sullo scoreboard (come prima), visibile nel builder portrait.
+  useEffect(() => {
+    const hidden = !isBuilder;
+    SystemBars.setHidden({ statusBar: hidden });
 
     const subscription = AppState.addEventListener('change', (state) => {
       if (state === 'active') {
-        SystemBars.setHidden({ statusBar: true });
+        SystemBars.setHidden({ statusBar: hidden });
       }
     });
 
     return () => subscription.remove();
-  }, []);
+  }, [isBuilder]);
 
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
+
+  if (isBuilder) {
+    return (
+      <>
+        <SystemBars hidden={{ statusBar: false }} />
+        <BuilderShell />
+      </>
+    );
+  }
 
   if (!isLandscape) {
     return (
@@ -72,9 +96,36 @@ function AppContent() {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['left', 'right']}>
       <SystemBars hidden={{ statusBar: true }} />
       <GameScreen />
+      {BUILDER_ENABLED && (
+        <Pressable
+          onPress={() => setActiveTab('builder')}
+          hitSlop={8}
+          style={styles.builderFab}
+          accessibilityRole="button"
+          accessibilityLabel="Apri Combo Builder"
+        >
+          <Text style={styles.builderFabText}>🛠️ Builder</Text>
+        </Pressable>
+      )}
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  // FAB di sviluppo per saltare al builder (visibile solo con BUILDER_ENABLED = __DEV__).
+  builderFab: {
+    position: 'absolute',
+    top: 6,
+    left: 6,
+    backgroundColor: '#0D0D1AE6',
+    borderColor: '#FF3A4F',
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  builderFabText: { color: '#FF3A4F', fontSize: 12, fontWeight: '700' },
+});
 
 export default function App() {
   return (
