@@ -3,7 +3,7 @@ name: combo-builder
 status: active
 updated: 20/06/2026
 health: green
-next-step: "Smoke test builder su emulatore + decidere rilascio produzione"
+next-step: "Rigenerare combos.json (accesso WBO) + decidere rilascio produzione"
 blocked-by: null
 current-plan: plans/piano-combo-builder-come-tab-nellapp-beyblade-scor-2026-06-19-1450.md
 main-doc: .claude/CLAUDE.md
