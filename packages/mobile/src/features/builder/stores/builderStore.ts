@@ -1,20 +1,23 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { PartStats, AnyPart } from '@beybladex/shared';
+import { getBladeLine, type PartCategory, type ComboLine } from '@beybladex/shared';
 import { asyncStorage } from '../../../store/async-storage';
+import {
+  CX_LAMA_CATEGORIES,
+  ratchetIsIncluded,
+  sumStats,
+  type SelectedPart,
+  type SelectedParts,
+} from './slots';
 
-/** Parte selezionata in uno slot. `stats` opzionale: molte parti non le hanno (vedi degradazione). */
-export interface SelectedPart {
-  id: string;
-  name: string;
-  stats?: PartStats;
-}
+// La logica pura degli slot vive in ./slots (testabile in isolamento) ed è ri-esportata qui per i consumatori.
+export * from './slots';
 
-export const emptyStats: PartStats = { atk: 0, def: 0, sta: 0 };
-
-/** Converte una parte del registry in SelectedPart (id/name/stats). */
-export function toSelectedPart(part: AnyPart): SelectedPart {
-  return { id: part.id, name: part.name, stats: (part as { stats?: PartStats }).stats };
+/** Linea combo derivata dalle parti: cx se c'è una lama CX, altrimenti bx/ux dal blade. */
+export function getComboLine(parts: SelectedParts): ComboLine {
+  if (CX_LAMA_CATEGORIES.some((c) => !!parts[c])) return 'cx';
+  if (parts.blade) return getBladeLine(parts.blade.id);
+  return 'bx';
 }
 
 const RECENTS_MAX = 6;
@@ -23,86 +26,86 @@ function pushRecent(list: SelectedPart[], part: SelectedPart): SelectedPart[] {
 }
 
 interface BuilderState {
-  selectedBlade: SelectedPart | null;
-  selectedRatchet: SelectedPart | null;
-  selectedBit: SelectedPart | null;
-  recentBlades: SelectedPart[];
-  recentRatchets: SelectedPart[];
-  recentBits: SelectedPart[];
-  setBlade: (blade: SelectedPart | null) => void;
-  setRatchet: (ratchet: SelectedPart | null) => void;
-  setBit: (bit: SelectedPart | null) => void;
-  /** Carica una combo esistente nei tre slot (per la modifica). */
-  loadCombo: (blade: SelectedPart, ratchet: SelectedPart, bit: SelectedPart) => void;
-  /** Somma delle stat dei pezzi selezionati (parti senza stat contano 0). */
-  getComboStats: () => PartStats;
-  /** True se almeno un pezzo selezionato ha le stat (per decidere se mostrare il radar). */
+  parts: SelectedParts;
+  recent: Partial<Record<PartCategory, SelectedPart[]>>;
+  setPart: (category: PartCategory, part: SelectedPart) => void;
+  clearPart: (category: PartCategory) => void;
+  /** Carica una combo esistente negli slot (per la modifica). */
+  loadCombo: (parts: SelectedParts) => void;
+  getComboStats: () => ReturnType<typeof sumStats>;
   hasAnyStats: () => boolean;
   clearAll: () => void;
 }
 
 interface PersistedBuilder {
-  selectedBlade: SelectedPart | null;
-  selectedRatchet: SelectedPart | null;
-  selectedBit: SelectedPart | null;
-  recentBlades: SelectedPart[];
-  recentRatchets: SelectedPart[];
-  recentBits: SelectedPart[];
+  parts: SelectedParts;
+  recent: Partial<Record<PartCategory, SelectedPart[]>>;
 }
 
 export const useBuilderStore = create<BuilderState>()(
   persist(
     (set, get) => ({
-      selectedBlade: null,
-      selectedRatchet: null,
-      selectedBit: null,
-      recentBlades: [],
-      recentRatchets: [],
-      recentBits: [],
-      setBlade: (blade) =>
-        set((s) => ({
-          selectedBlade: blade,
-          recentBlades: blade ? pushRecent(s.recentBlades, blade) : s.recentBlades,
-        })),
-      setRatchet: (ratchet) =>
-        set((s) => ({
-          selectedRatchet: ratchet,
-          recentRatchets: ratchet ? pushRecent(s.recentRatchets, ratchet) : s.recentRatchets,
-        })),
-      setBit: (bit) =>
-        set((s) => ({
-          selectedBit: bit,
-          recentBits: bit ? pushRecent(s.recentBits, bit) : s.recentBits,
-        })),
-      loadCombo: (blade, ratchet, bit) =>
-        set({ selectedBlade: blade, selectedRatchet: ratchet, selectedBit: bit }),
-      getComboStats: () => {
-        // Somma grezza dei pezzi, senza pesi (valori come sul sito; pezzi senza stat = 0).
-        const { selectedBlade, selectedRatchet, selectedBit } = get();
-        const parts = [selectedBlade, selectedRatchet, selectedBit];
-        return {
-          atk: parts.reduce((sum, p) => sum + (p?.stats?.atk ?? 0), 0),
-          def: parts.reduce((sum, p) => sum + (p?.stats?.def ?? 0), 0),
-          sta: parts.reduce((sum, p) => sum + (p?.stats?.sta ?? 0), 0),
-        };
-      },
-      hasAnyStats: () => {
-        const { selectedBlade, selectedRatchet, selectedBit } = get();
-        return [selectedBlade, selectedRatchet, selectedBit].some((p) => !!p?.stats);
-      },
-      clearAll: () => set({ selectedBlade: null, selectedRatchet: null, selectedBit: null }),
+      parts: {},
+      recent: {},
+      setPart: (category, part) =>
+        set((s) => {
+          const parts: SelectedParts = { ...s.parts, [category]: part };
+          // Famiglia esclusiva: blade ↔ lame CX.
+          if (category === 'blade') {
+            for (const c of CX_LAMA_CATEGORIES) delete parts[c];
+          } else if (CX_LAMA_CATEGORIES.includes(category)) {
+            delete parts.blade;
+          }
+          // Se la nuova parte ingloba il ratchet, svuota lo slot ratchet.
+          if (ratchetIsIncluded(parts)) delete parts.ratchet;
+          return {
+            parts,
+            recent: { ...s.recent, [category]: pushRecent(s.recent[category] ?? [], part) },
+          };
+        }),
+      clearPart: (category) =>
+        set((s) => {
+          const parts = { ...s.parts };
+          delete parts[category];
+          return { parts };
+        }),
+      loadCombo: (parts) => set({ parts: { ...parts } }),
+      getComboStats: () => sumStats(get().parts),
+      hasAnyStats: () => Object.values(get().parts).some((p) => !!p?.stats),
+      clearAll: () => set({ parts: {} }),
     }),
     {
       name: 'beybladex-builder-current',
       storage: createJSONStorage(() => asyncStorage),
-      partialize: (s): PersistedBuilder => ({
-        selectedBlade: s.selectedBlade,
-        selectedRatchet: s.selectedRatchet,
-        selectedBit: s.selectedBit,
-        recentBlades: s.recentBlades,
-        recentRatchets: s.recentRatchets,
-        recentBits: s.recentBits,
-      }),
+      version: 2,
+      migrate: (persisted, version) => {
+        if (!persisted || typeof persisted !== 'object') return persisted as PersistedBuilder;
+        const s = persisted as Record<string, unknown>;
+        // v0: schema originale a 3 variabili fisse.
+        if (version < 1) {
+          const parts: SelectedParts = {};
+          if (s.selectedBlade) parts.blade = s.selectedBlade as SelectedPart;
+          if (s.selectedRatchet) parts.ratchet = s.selectedRatchet as SelectedPart;
+          if (s.selectedBit) parts.bit = s.selectedBit as SelectedPart;
+          return {
+            parts,
+            recent: {
+              blade: (s.recentBlades as SelectedPart[]) ?? [],
+              ratchet: (s.recentRatchets as SelectedPart[]) ?? [],
+              bit: (s.recentBits as SelectedPart[]) ?? [],
+            },
+          } as PersistedBuilder as unknown as BuilderState;
+        }
+        // v1: aveva { system, parts, recent } → rimuovo system.
+        if (version < 2) {
+          return {
+            parts: (s.parts as SelectedParts) ?? {},
+            recent: (s.recent as PersistedBuilder['recent']) ?? {},
+          } as PersistedBuilder as unknown as BuilderState;
+        }
+        return persisted as BuilderState;
+      },
+      partialize: (s): PersistedBuilder => ({ parts: s.parts, recent: s.recent }),
     }
   )
 );

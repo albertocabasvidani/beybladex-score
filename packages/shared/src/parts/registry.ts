@@ -18,6 +18,7 @@ import type {
   PartCategory,
   PartStats,
   PartWithCategory,
+  ComboLine,
 } from './types';
 
 const registry = bundled as unknown as PartsRegistry;
@@ -113,6 +114,15 @@ export function getPartById(id: string): PartWithCategory | undefined {
   return index().get(id);
 }
 
+/**
+ * Linea di un blade BX/UX dato l'id. Serve a derivare la `line` di una combo "standard" al
+ * salvataggio (il blade scelto sa se è BX o UX). Fallback 'bx' se l'id non si risolve.
+ */
+export function getBladeLine(id: string): ComboLine {
+  const line = (getPartById(id) as { line?: ComboLine } | undefined)?.line;
+  return line ?? 'bx';
+}
+
 export function getCategoryOf(id: string): PartCategory | undefined {
   return index().get(id)?.category;
 }
@@ -146,16 +156,36 @@ export function getCategoryStatMax(category: PartCategory): PartStats {
   return v;
 }
 
-let _comboMax: PartStats | null = null;
+// Parti che portano stat in una combo, per linea. BX/UX: blade+ratchet+bit. CX: mainBlade+ratchet+bit
+// (lock chip / assist blade / over blade non hanno stat nel dataset → non contribuiscono).
+const COMBO_STAT_CATEGORIES: Record<ComboLine, PartCategory[]> = {
+  bx: ['blade', 'ratchet', 'bit'],
+  ux: ['blade', 'ratchet', 'bit'],
+  cx: ['mainBlade', 'ratchet', 'bit'],
+};
+
+const _comboMaxByLine: Partial<Record<ComboLine, PartStats>> = {};
 /**
- * Massimo per asse del totale di una combo = somma dei massimi di categoria (blade + ratchet + bit)
- * per ogni stat. È la scala del radar: il minimo è 0, il massimo è la somma dei massimi sul sito.
+ * Massimo per asse del totale di una combo, per linea = somma dei massimi di categoria delle parti
+ * che portano le stat (vedi COMBO_STAT_CATEGORIES). È la scala del radar: il minimo è 0, il massimo
+ * è la somma dei massimi sul sito. Clamp ≥1 per asse per non rompere la normalizzazione del
+ * RadarChart se una categoria fosse interamente priva di stat.
  */
-export function getComboStatMax(): PartStats {
-  if (_comboMax) return _comboMax;
-  const b = getCategoryStatMax('blade');
-  const r = getCategoryStatMax('ratchet');
-  const t = getCategoryStatMax('bit');
-  _comboMax = { atk: b.atk + r.atk + t.atk, def: b.def + r.def + t.def, sta: b.sta + r.sta + t.sta };
-  return _comboMax;
+export function getComboStatMax(line: ComboLine = 'bx'): PartStats {
+  const cached = _comboMaxByLine[line];
+  if (cached) return cached;
+  const sum: PartStats = { atk: 0, def: 0, sta: 0 };
+  for (const cat of COMBO_STAT_CATEGORIES[line]) {
+    const m = getCategoryStatMax(cat);
+    sum.atk += m.atk;
+    sum.def += m.def;
+    sum.sta += m.sta;
+  }
+  const clamped: PartStats = {
+    atk: Math.max(1, sum.atk),
+    def: Math.max(1, sum.def),
+    sta: Math.max(1, sum.sta),
+  };
+  _comboMaxByLine[line] = clamped;
+  return clamped;
 }

@@ -7,7 +7,11 @@ import {
   useBuilderStore,
   toSelectedPart,
   useComboStore,
-  type SelectedPart,
+  comboPartsLabel,
+  computeSlots,
+  comboComplete,
+  getComboLine,
+  SLOT_ORDER,
   type SavedCombo,
 } from '../stores';
 import { palette } from '../theme';
@@ -15,43 +19,65 @@ import { CONTENT_PADDING } from '../responsive';
 
 function Slot({
   label,
+  value,
   placeholder,
-  part,
+  enabled,
+  disabledHint,
+  isEmpty,
   onPress,
+  onClear,
 }: {
   label: string;
+  value: string;
   placeholder: string;
-  part: SelectedPart | null;
+  enabled: boolean;
+  disabledHint?: string;
+  isEmpty: boolean;
   onPress: () => void;
+  onClear?: () => void;
 }) {
+  if (!enabled) {
+    return (
+      <View style={[styles.slot, styles.slotDisabled]}>
+        <Text style={[styles.slotLabel, styles.slotLabelDisabled]} numberOfLines={1}>
+          {label}
+        </Text>
+        <Text style={styles.slotDisabledHint} numberOfLines={1}>
+          {disabledHint ?? '—'}
+        </Text>
+      </View>
+    );
+  }
   return (
     <Pressable style={styles.slot} onPress={onPress} accessibilityRole="button">
-      <Text style={styles.slotLabel}>{label}</Text>
-      <Text style={[styles.slotValue, !part && styles.slotPlaceholder]} numberOfLines={1}>
-        {part ? part.name : placeholder}
+      <Text style={styles.slotLabel} numberOfLines={1}>
+        {label}
       </Text>
-      <Text style={styles.slotChevron}>›</Text>
+      <Text style={[styles.slotValue, isEmpty && styles.slotPlaceholder]} numberOfLines={1}>
+        {isEmpty ? placeholder : value}
+      </Text>
+      {onClear && !isEmpty ? (
+        <Pressable onPress={onClear} hitSlop={10} style={styles.slotClear} accessibilityRole="button">
+          <Text style={styles.slotClearText}>✕</Text>
+        </Pressable>
+      ) : (
+        <Text style={styles.slotChevron}>›</Text>
+      )}
     </Pressable>
   );
 }
 
 export function BuilderScreen() {
   const { t } = useTranslation();
-  const {
-    selectedBlade,
-    selectedRatchet,
-    selectedBit,
-    setBlade,
-    setRatchet,
-    setBit,
-    loadCombo,
-    getComboStats,
-    hasAnyStats,
-    clearAll,
-    recentBlades,
-    recentRatchets,
-    recentBits,
-  } = useBuilderStore();
+  const parts = useBuilderStore((s) => s.parts);
+  const recent = useBuilderStore((s) => s.recent);
+  const setPart = useBuilderStore((s) => s.setPart);
+  const clearPart = useBuilderStore((s) => s.clearPart);
+  const loadCombo = useBuilderStore((s) => s.loadCombo);
+  const getComboStats = useBuilderStore((s) => s.getComboStats);
+  const hasAnyStats = useBuilderStore((s) => s.hasAnyStats);
+  const clearAll = useBuilderStore((s) => s.clearAll);
+
   const combos = useComboStore((s) => s.combos);
   const saveCombo = useComboStore((s) => s.saveCombo);
   const updateCombo = useComboStore((s) => s.updateCombo);
@@ -61,24 +87,16 @@ export function BuilderScreen() {
   const [name, setName] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  const complete = !!(selectedBlade && selectedRatchet && selectedBit);
+  const slots = computeSlots(parts);
+  const complete = comboComplete(parts);
   const stats = getComboStats();
   const showRadar = hasAnyStats();
+  const line = getComboLine(parts);
 
-  const recentIds =
-    picker === 'blade'
-      ? recentBlades.map((p) => p.id)
-      : picker === 'ratchet'
-        ? recentRatchets.map((p) => p.id)
-        : picker === 'bit'
-          ? recentBits.map((p) => p.id)
-          : [];
+  const recentIds = picker ? (recent[picker]?.map((p) => p.id) ?? []) : [];
 
   const onPicked = (category: PickerCategory) => (part: Parameters<typeof toSelectedPart>[0]) => {
-    const sp = toSelectedPart(part);
-    if (category === 'blade') setBlade(sp);
-    else if (category === 'ratchet') setRatchet(sp);
-    else setBit(sp);
+    setPart(category, toSelectedPart(part));
   };
 
   const resetForm = () => {
@@ -87,22 +105,19 @@ export function BuilderScreen() {
     setEditingId(null);
   };
 
-  const slotLabel: Record<PickerCategory, string> = {
-    blade: t('builder.category.blade'),
-    ratchet: t('builder.category.ratchet'),
-    bit: t('builder.category.bit'),
-  };
-
   const onSave = () => {
-    if (!selectedBlade || !selectedRatchet || !selectedBit) return;
-    const finalName = name.trim() || `${selectedBlade.name} ${selectedRatchet.name} ${selectedBit.name}`;
-    if (editingId) updateCombo(editingId, finalName, selectedBlade, selectedRatchet, selectedBit);
-    else saveCombo(finalName, selectedBlade, selectedRatchet, selectedBit);
+    if (!complete) return;
+    const defaultName = SLOT_ORDER.map((c) => parts[c]?.name)
+      .filter(Boolean)
+      .join(' ');
+    const finalName = name.trim() || defaultName;
+    if (editingId) updateCombo(editingId, finalName, line, parts);
+    else saveCombo(finalName, line, parts);
     resetForm();
   };
 
   const onEdit = (combo: SavedCombo) => {
-    loadCombo(combo.blade, combo.ratchet, combo.bit);
+    loadCombo(combo.parts);
     setName(combo.name);
     setEditingId(combo.id);
   };
@@ -124,29 +139,35 @@ export function BuilderScreen() {
   return (
     <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <View style={styles.slots}>
-        <Slot
-          label={slotLabel.blade}
-          placeholder={t('builder.combo.selectSlot', { slot: slotLabel.blade.toLowerCase() })}
-          part={selectedBlade}
-          onPress={() => setPicker('blade')}
-        />
-        <Slot
-          label={slotLabel.ratchet}
-          placeholder={t('builder.combo.selectSlot', { slot: slotLabel.ratchet.toLowerCase() })}
-          part={selectedRatchet}
-          onPress={() => setPicker('ratchet')}
-        />
-        <Slot
-          label={slotLabel.bit}
-          placeholder={t('builder.combo.selectSlot', { slot: slotLabel.bit.toLowerCase() })}
-          part={selectedBit}
-          onPress={() => setPicker('bit')}
-        />
+        {slots.map((slot) => {
+          const part = parts[slot.category];
+          const label = t(`builder.category.${slot.category}`);
+          const optional = slot.category === 'overBlade';
+          const disabledHint =
+            slot.reason === 'integratedRatchet' ? t('builder.slotDisabled.integratedRatchet') : undefined;
+          return (
+            <Slot
+              key={slot.category}
+              label={label}
+              value={part?.name ?? ''}
+              isEmpty={!part}
+              enabled={slot.enabled}
+              disabledHint={disabledHint}
+              placeholder={
+                optional
+                  ? t('builder.combo.optional')
+                  : t('builder.combo.selectSlot', { slot: label.toLowerCase() })
+              }
+              onPress={() => setPicker(slot.category)}
+              onClear={optional ? () => clearPart(slot.category) : undefined}
+            />
+          );
+        })}
       </View>
 
       <View style={styles.radarBox}>
         {showRadar ? (
-          <RadarChart stats={stats} size={220} maxPerAxis={getComboStatMax()} />
+          <RadarChart stats={stats} size={220} maxPerAxis={getComboStatMax(line)} />
         ) : (
           <View style={styles.noRadar}>
             <Text style={styles.noRadarIcon}>📊</Text>
@@ -189,7 +210,7 @@ export function BuilderScreen() {
                 {combo.name}
               </Text>
               <Text style={styles.comboParts} numberOfLines={1}>
-                {combo.blade.name} · {combo.ratchet.name} · {combo.bit.name}
+                {comboPartsLabel(combo)}
               </Text>
             </Pressable>
             <Pressable onPress={() => onDelete(combo)} hitSlop={10} style={styles.deleteBtn}>
@@ -204,6 +225,7 @@ export function BuilderScreen() {
           <Pressable style={styles.sheet} onPress={(e) => e.stopPropagation()}>
             {picker && (
               <PartPicker
+                key={picker}
                 category={picker}
                 recentIds={recentIds}
                 onSelect={onPicked(picker)}
@@ -230,10 +252,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#FFFFFF10',
   },
-  slotLabel: { color: '#8888AA', fontSize: 13, fontWeight: '700', width: 70 },
+  slotDisabled: { opacity: 0.4, backgroundColor: '#12121F' },
+  slotLabel: { color: '#8888AA', fontSize: 13, fontWeight: '700', width: 92 },
+  slotLabelDisabled: { color: '#66667A' },
   slotValue: { color: palette.text, fontSize: 17, fontWeight: '600', flex: 1 },
   slotPlaceholder: { color: '#8888AA', fontWeight: '400' },
+  slotDisabledHint: { color: '#66667A', fontSize: 13, fontStyle: 'italic', flex: 1 },
   slotChevron: { color: '#8888AA', fontSize: 22, fontWeight: '700' },
+  slotClear: { paddingHorizontal: 4 },
+  slotClearText: { color: '#8888AA', fontSize: 16, fontWeight: '700' },
   radarBox: { alignItems: 'center', justifyContent: 'center', marginVertical: 16, minHeight: 220 },
   noRadar: { alignItems: 'center', paddingHorizontal: 24 },
   noRadarIcon: { fontSize: 40, marginBottom: 8 },

@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView, StyleSheet, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { getComboStatMax } from '@beybladex/shared';
+import { getComboStatMax, type ComboLine, type PartCategory, type PartStats } from '@beybladex/shared';
 import { RadarChart, GradientButton, type RadarDataSet } from '../components';
 import {
   useDeckStore,
   useComboStore,
   validateNoDuplicateParts,
+  comboPartsLabel,
   type SavedCombo,
   type SavedDeck,
 } from '../stores';
@@ -26,9 +27,23 @@ function deckDatasets(combos: SavedCombo[]): RadarDataSet[] {
     .map((c, i) => ({ stats: c.stats, color: DATASET_COLORS[i % DATASET_COLORS.length], opacity: 0.25 }));
 }
 
+/** Scala del radar di un deck = massimo per asse tra le linee presenti (deck misti BX/UX/CX). */
+function deckStatMax(combos: SavedCombo[]): PartStats {
+  const lines = new Set<ComboLine>(combos.map((c) => c.line));
+  if (lines.size === 0) return getComboStatMax('bx');
+  const max: PartStats = { atk: 0, def: 0, sta: 0 };
+  for (const line of lines) {
+    const m = getComboStatMax(line);
+    max.atk = Math.max(max.atk, m.atk);
+    max.def = Math.max(max.def, m.def);
+    max.sta = Math.max(max.sta, m.sta);
+  }
+  return max;
+}
+
 export function DecksScreen() {
   const { t } = useTranslation();
-  const kindLabel = (kind: 'blade' | 'ratchet' | 'bit') => t(`builder.category.${kind}`);
+  const kindLabel = (kind: PartCategory) => t(`builder.category.${kind}`);
   const decks = useDeckStore((s) => s.decks);
   const saveDeck = useDeckStore((s) => s.saveDeck);
   const updateDeck = useDeckStore((s) => s.updateDeck);
@@ -120,7 +135,7 @@ export function DecksScreen() {
                   {combo.name}
                 </Text>
                 <Text style={styles.comboParts} numberOfLines={1}>
-                  {combo.blade.name} · {combo.ratchet.name} · {combo.bit.name}
+                  {comboPartsLabel(combo)}
                 </Text>
               </View>
             </Pressable>
@@ -131,7 +146,7 @@ export function DecksScreen() {
       {selectedCombos.length > 0 && (
         <View style={styles.radarBox}>
           {datasets.length > 0 ? (
-            <RadarChart datasets={datasets} size={220} maxPerAxis={getComboStatMax()} />
+            <RadarChart datasets={datasets} size={220} maxPerAxis={deckStatMax(selectedCombos)} />
           ) : (
             <Text style={styles.noRadarText}>{t('builder.deck.noRadar')}</Text>
           )}

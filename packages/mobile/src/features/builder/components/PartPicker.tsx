@@ -2,18 +2,18 @@ import { useMemo, useState } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import {
-  getBlades,
-  getRatchets,
-  getBits,
+  getPartsByCategory,
   getPartById,
   type AnyPart,
   type PartStats,
+  type PartCategory,
 } from '@beybladex/shared';
 import { typeColors, statColors, palette } from '../theme';
 import { CONTENT_PADDING, LIST_PADDING } from '../responsive';
 import { FilterChipRow, type FilterOption } from './FilterChipRow';
 
-export type PickerCategory = 'blade' | 'ratchet' | 'bit';
+/** Una qualsiasi delle 7 categorie del registry (blade/ratchet/bit + i 4 pezzi CX). */
+export type PickerCategory = PartCategory;
 
 interface PartPickerProps {
   category: PickerCategory;
@@ -24,14 +24,7 @@ interface PartPickerProps {
 }
 
 function getData(category: PickerCategory): AnyPart[] {
-  switch (category) {
-    case 'blade':
-      return getBlades();
-    case 'ratchet':
-      return getRatchets();
-    case 'bit':
-      return getBits();
-  }
+  return getPartsByCategory(category);
 }
 
 function partType(p: AnyPart): string | undefined {
@@ -73,8 +66,10 @@ export function PartPicker({ category, onSelect, onClose, recentIds }: PartPicke
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
-  const showTypeFilter = category === 'blade' || category === 'bit';
-  const isBladeGrid = category === 'blade';
+  // Filtro tipo solo dove le parti hanno `type` (blade, bit, main blade).
+  const showTypeFilter = category === 'blade' || category === 'bit' || category === 'mainBlade';
+  // Griglia 2 colonne con mini-stat per le "lame" (blade, main blade); token 3 colonne per il resto.
+  const isBladeGrid = category === 'blade' || category === 'mainBlade';
   const numColumns = isBladeGrid ? 2 : 3;
 
   const typeOptions: FilterOption[] = [

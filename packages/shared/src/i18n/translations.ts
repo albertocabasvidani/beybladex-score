@@ -80,7 +80,8 @@ export const translations = {
       title: 'Combo Builder',
       backToScoreboard: 'Scoreboard',
       tabs: { parts: 'Parti', builder: 'Builder', decks: 'Deck', collection: 'Collezione' },
-      category: { blade: 'Blade', ratchet: 'Ratchet', bit: 'Bit', cx: 'CX' },
+      category: { blade: 'Blade', ratchet: 'Ratchet', bit: 'Bit', cx: 'CX', lockChip: 'Lock Chip', mainBlade: 'Main Blade', assistBlade: 'Assist Blade', overBlade: 'Over Blade' },
+      slotDisabled: { integratedRatchet: 'Ratchet incluso nella parte' },
       type: { all: 'Tutti', attack: 'Attacco', defense: 'Difesa', stamina: 'Stamina', balance: 'Equilibrio' },
       common: {
         search: 'Cerca...',
@@ -103,6 +104,7 @@ export const translations = {
       },
       combo: {
         selectSlot: 'Seleziona {{slot}}',
+        optional: 'Opzionale',
         namePlaceholder: 'Nome combo (opzionale)',
         save: 'Salva combo',
         update: 'Aggiorna combo',
@@ -115,7 +117,7 @@ export const translations = {
       },
       deck: {
         new: 'Nuovo deck ({{count}}/{{size}})',
-        wboHint: 'Regola WBO: nessuna parte (blade/ratchet/bit) ripetuta tra le combo.',
+        wboHint: 'Regola WBO: nessuna parte ripetuta tra le combo.',
         needCombos: 'Salva prima qualche combo nel Builder.',
         noRadar: 'Stats non disponibili per il radar',
         duplicateInline: '{{kind}} "{{name}}" è ripetuta.',
@@ -209,7 +211,8 @@ export const translations = {
       title: 'Combo Builder',
       backToScoreboard: 'Scoreboard',
       tabs: { parts: 'Parts', builder: 'Builder', decks: 'Decks', collection: 'Collection' },
-      category: { blade: 'Blade', ratchet: 'Ratchet', bit: 'Bit', cx: 'CX' },
+      category: { blade: 'Blade', ratchet: 'Ratchet', bit: 'Bit', cx: 'CX', lockChip: 'Lock Chip', mainBlade: 'Main Blade', assistBlade: 'Assist Blade', overBlade: 'Over Blade' },
+      slotDisabled: { integratedRatchet: 'Ratchet included in the part' },
       type: { all: 'All', attack: 'Attack', defense: 'Defense', stamina: 'Stamina', balance: 'Balance' },
       common: {
         search: 'Search...',
@@ -232,6 +235,7 @@ export const translations = {
       },
       combo: {
         selectSlot: 'Select {{slot}}',
+        optional: 'Optional',
         namePlaceholder: 'Combo name (optional)',
         save: 'Save combo',
         update: 'Update combo',
@@ -244,7 +248,7 @@ export const translations = {
       },
       deck: {
         new: 'New deck ({{count}}/{{size}})',
-        wboHint: 'WBO rule: no part (blade/ratchet/bit) repeated across combos.',
+        wboHint: 'WBO rule: no part repeated across combos.',
         needCombos: 'Save some combos in the Builder first.',
         noRadar: 'Stats unavailable for the radar',
         duplicateInline: '{{kind}} "{{name}}" is repeated.',

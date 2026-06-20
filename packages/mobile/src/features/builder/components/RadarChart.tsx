@@ -22,7 +22,7 @@ interface RadarChartProps {
   stats?: PartStats;
   datasets?: RadarDataSet[];
   size?: number;
-  /** Massimo per asse (0 = centro, max = bordo). Tipicamente `getComboStatMax()`. */
+  /** Massimo per asse (0 = centro, max = bordo). Tipicamente `getComboStatMax(line)`. */
   maxPerAxis: PartStats;
 }
 

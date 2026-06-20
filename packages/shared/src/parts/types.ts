@@ -80,6 +80,8 @@ export interface Bit {
   shortName?: string;
   aliases?: string[];
   stats?: PartStats;
+  /** Ratchet Integrated Bit (es. Operate, Turbo): ratchet+bit in un'unica parte → combo senza ratchet. */
+  integratedRatchet?: boolean;
 }
 
 export interface PartsRegistry {
