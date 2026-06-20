@@ -5,6 +5,15 @@
 - `packages/web`: React web app (Vite + Tailwind)
 - `packages/mobile`: React Native app (Expo + NativeWind + Reanimated)
 
+## Sottoprogetti
+
+Tracking di backlog/issue/changelog in `projects/` (vedi `projects/INDEX.md`).
+
+| Sottoprogetto | Scope |
+|---|---|
+| `scoreboard` | App segnapunti (web+mobile), logica shared, monetizzazione, build/release, ASO |
+| `combo-builder` | Tab Combo Builder feature-flagged: dati parti, radar stats, deck/collection |
+
 ## Working Directory
 - **Web**: `cd packages/web`
 - **Mobile**: `cd packages/mobile`
@@ -77,7 +86,7 @@ Builder di combo/deck come tab interna. **Feature flag `BUILDER_ENABLED = __DEV_
 
 - **Dati parti**: `packages/shared/src/parts/` — `bundled-parts.json` (registry 265 parti, import statico inlinato da Metro → istantaneo, offline) + `registry.ts` (getter tipizzati `getBlades/getBits/getRatchets/getCxParts/getPartById`). Fonte di verità = `data/parts.json` del sito combo (`albertocabasvidani/beyblade-x-combo-finder`, branch **master**).
 - **Sync** (build-time, MAI runtime): `scripts/sync-parts.js` (`npm run sync-parts`) scarica + valida parts.json → `bundled-parts.json` (committato). Integrato in `full-build-apk.sh` (STEP 0.5, prima della copia sorgenti). Offline → mantiene il file esistente; schema rotto → exit 1 (blocca il build).
-- **Stats radar (ATK/DEF/STA)**: popolate dalle pagine Fandom **dedicate** (`Blade - X`, `Bit - X`, `Ratchet - X`, `Main Blade - X`) via `beyblade combos/scripts/enrich-stats.ts` (`npm run enrich:stats`): scrive `stats` nel master (merge-master le preserva nei run giornalieri) → `build:parts` → `parts.json` → `sync-parts` → `bundled-parts.json`. Copertura attuale: blade 97/105, bit 45/53, ratchet 27/35, main blade 15/22. Le parti scoperte degradano (badge "Stats non disponibili" in `PartCard`/`BuilderScreen`/`DecksScreen`; StatBar/mini-stat nascoste). RadarChart a 3 assi (`react-native-svg`); `STAT_MAX_*` in `features/builder/theme.ts`. **Nota**: combo/selezioni salvate memorizzano uno snapshot delle stat al momento del salvataggio — un aggiornamento dati non le ricalcola finché non si ri-seleziona la parte.
+- **Stats radar (ATK/DEF/STA)**: popolate dalle pagine Fandom **dedicate** (`Blade - X`, `Bit - X`, `Ratchet - X`, `Main Blade - X`) via `beyblade combos/scripts/enrich-stats.ts` (`npm run enrich:stats`): scrive `stats` nel master (merge-master le preserva nei run giornalieri) → `build:parts` → `parts.json` → `sync-parts` → `bundled-parts.json`. Copertura stat attuale tracciata in `projects/combo-builder.md`. Le parti scoperte degradano (badge "Stats non disponibili" in `PartCard`/`BuilderScreen`/`DecksScreen`; StatBar/mini-stat nascoste). RadarChart a 3 assi (`react-native-svg`); `STAT_MAX_*` in `features/builder/theme.ts`. **Nota**: combo/selezioni salvate memorizzano uno snapshot delle stat al momento del salvataggio — un aggiornamento dati non le ricalcola finché non si ri-seleziona la parte.
 - **Navigazione**: niente react-navigation. `src/store/uiStore.ts` (`activeTab` scoreboard/builder + `activeBuilderTab`, persist key `beybladex-ui`); `App.tsx` fa lock orientamento per-tab (scoreboard=LANDSCAPE, builder=PORTRAIT) via `useEffect([isBuilder])`.
 - **UI** (`src/features/builder/`): `BuilderShell.tsx` (header + tab bar 4 voci) + `components/` (RadarChart 3 assi su `react-native-svg`, PartPicker, PartCard, StatBar, GradientButton, FilterChipRow, CollectionGridItem — niente `react-native-paper`, niente immagini, icone = emoji) + `stores/` (builder/combo/deck/collection/filter, persist key `beybladex-builder-*`; collection `ownedIds` Set↔Array; deck con regola WBO no-duplicati `validateNoDuplicateParts`) + `screens/` (Parts/Builder/Decks/Collection). Componenti portati da `bbxdeckbuild` adattati allo schema canonico (`type`/`line`, 3 assi).
 - **i18n**: namespace `builder.*` in `packages/shared/src/i18n/translations.ts` (it+en).
@@ -110,7 +119,7 @@ bundletool: scaricare il jar da GitHub releases (non è nell'SDK). aapt2 in `$AN
 
 **expo-audio aggiunge permission in autolinking**: l'SDK expo-audio inietta nel manifest `RECORD_AUDIO`, `MODIFY_AUDIO_SETTINGS`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK` anche se l'app fa solo playback. Non bloccano la pubblicazione, ma `RECORD_AUDIO` è sensibile: se Play Console ne chiede la motivazione, rimuoverla via config del plugin.
 
-**ID test** (da sostituire prima del rilascio):
+**ID test** (sostituzione con gli ID reali tracciata come known issue in `projects/scoreboard.md`):
 - App ID AdMob: `ca-app-pub-3940256099942544~3347511713` (in `app.json`)
 - Ad unit ID: `TestIds.ADAPTIVE_BANNER` in dev (in `src/config/ads.ts`)
 - RevenueCat API key: `goog_XXXX` placeholder (in `src/store/purchases-store.ts`)
