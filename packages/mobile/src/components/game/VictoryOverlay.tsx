@@ -13,7 +13,7 @@ import Animated, {
   cancelAnimation,
 } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import type { PlayerId } from '@beybladex/shared';
+import { isDefaultPlayerName, type PlayerId } from '@beybladex/shared';
 import { useGameStore } from '../../store/game-store';
 import { usePurchasesStore } from '../../store/purchases-store';
 import { BannerAdView } from '../ads/banner-ad';
@@ -170,6 +170,10 @@ interface Props {
 export function VictoryOverlay({ winnerId }: Props) {
   const { t } = useTranslation();
   const player = useGameStore((state) => state[winnerId]);
+  // Nome localizzato se ancora il default (coerente con PlayerPanel)
+  const displayName = isDefaultPlayerName(player.name, winnerId)
+    ? t(`player.${winnerId}`)
+    : player.name;
   const reset = useGameStore((state) => state.reset);
   const wins = useGameStore((state) => state.wins[winnerId]);
   const purchaseRemoveAds = usePurchasesStore((state) => state.purchaseRemoveAds);
@@ -223,7 +227,7 @@ export function VictoryOverlay({ winnerId }: Props) {
               textShadowRadius: 15,
             }}
           >
-            {t('game.winner', { name: player.name })}
+            {t('game.winner', { name: displayName })}
           </Text>
         </SlideInView>
 
