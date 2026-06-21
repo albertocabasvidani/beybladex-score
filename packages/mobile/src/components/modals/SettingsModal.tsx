@@ -1,4 +1,5 @@
 import { Modal, View, Text, TouchableOpacity, Pressable } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useGameStore } from '../../store/game-store';
 import { MIN_WIN_SCORE, MAX_WIN_SCORE, MIN_MAX_FOULS, MAX_MAX_FOULS } from '@beybladex/shared';
 
@@ -8,10 +9,13 @@ interface Props {
 }
 
 export function SettingsModal({ visible, onClose }: Props) {
+  const { t } = useTranslation();
   const winScore = useGameStore((state) => state.winScore);
   const setWinScoreValue = useGameStore((state) => state.setWinScoreValue);
   const maxFouls = useGameStore((state) => state.maxFouls);
   const setMaxFoulsValue = useGameStore((state) => state.setMaxFoulsValue);
+  const reminderEnabled = useGameStore((state) => state.sideSwitchReminderEnabled);
+  const setReminderEnabled = useGameStore((state) => state.setSideSwitchReminderEnabled);
 
   const decreaseWin = () => {
     if (winScore > MIN_WIN_SCORE) setWinScoreValue(winScore - 1);
@@ -149,6 +153,41 @@ export function SettingsModal({ visible, onClose }: Props) {
           <Text style={{ color: '#64748b', fontSize: 12, textAlign: 'center', marginTop: 8 }}>
             {MIN_MAX_FOULS === 0 ? 'OFF' : MIN_MAX_FOULS} - {MAX_MAX_FOULS}
           </Text>
+
+          {/* Side-switch reminder */}
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginTop: 24,
+            }}
+          >
+            <Text style={{ color: '#cbd5e1', fontSize: 14, fontWeight: '600', flex: 1, paddingRight: 12 }}>
+              {t('sideSwitch.settingLabel')}
+            </Text>
+            <Pressable
+              onPress={() => setReminderEnabled(!reminderEnabled)}
+              style={{
+                width: 52,
+                height: 30,
+                borderRadius: 15,
+                backgroundColor: reminderEnabled ? '#fbbf24' : '#334155',
+                justifyContent: 'center',
+                padding: 3,
+              }}
+            >
+              <View
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: 12,
+                  backgroundColor: reminderEnabled ? '#0f172a' : '#94a3b8',
+                  alignSelf: reminderEnabled ? 'flex-end' : 'flex-start',
+                }}
+              />
+            </Pressable>
+          </View>
         </Pressable>
       </Pressable>
     </Modal>

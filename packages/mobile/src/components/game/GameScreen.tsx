@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PlayerPanel } from './PlayerPanel';
 import { CountdownButton } from './CountdownButton';
 import { VictoryOverlay } from './VictoryOverlay';
+import { SideSwitchReminder } from './SideSwitchReminder';
 import { AnimationOverlay } from '../animations';
 import { SettingsModal } from '../modals/SettingsModal';
 import { CreditsModal } from '../modals/CreditsModal';
@@ -22,6 +23,9 @@ export function GameScreen() {
   const clearAnimation = useGameStore((state) => state.clearAnimation);
   const isSwapped = useGameStore((state) => state.isSwapped);
   const swapSides = useGameStore((state) => state.swapSides);
+  const totalLanci = useGameStore((state) => state.history.filter((h) => h.type === 'score').length);
+  const reminderEnabled = useGameStore((state) => state.sideSwitchReminderEnabled);
+  const setSideSwitchReminderEnabled = useGameStore((state) => state.setSideSwitchReminderEnabled);
   const canUndoValue = canUndo();
 
   const leftPlayer = isSwapped ? 'player2' : 'player1';
@@ -32,6 +36,7 @@ export function GameScreen() {
   const [guideOpen, setGuideOpen] = useState(false);
   const [releaseNoteOpen, setReleaseNoteOpen] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [reminderVisible, setReminderVisible] = useState(false);
 
   // Invito recensione dopo N partite completate (al passaggio winner null -> set)
   const incrementGamesCompleted = useReviewStore((state) => state.incrementGamesCompleted);
@@ -48,6 +53,39 @@ export function GameScreen() {
     }
   }, [winner, incrementGamesCompleted]);
 
+  // Promemoria "Avete cambiato lato?" ogni 3 lanci, mostrato a fine animazione dei punti
+  const prevAnimationRef = useRef(currentAnimation);
+  const lastReminderRound = useRef(0);
+
+  useEffect(() => {
+    const prev = prevAnimationRef.current;
+    prevAnimationRef.current = currentAnimation;
+
+    // Agisci solo alla transizione "animazione finita": non-null -> null
+    if (!(prev && !currentAnimation)) return;
+    if (winner) return;                                   // ha vinto qualcuno: parte la VictoryOverlay
+    if (!reminderEnabled) return;                         // disattivato dall'utente
+    if (totalLanci === 0 || totalLanci % 3 !== 0) return; // solo 3, 6, 9...
+    if (lastReminderRound.current === totalLanci) return; // già mostrato per questa soglia
+
+    lastReminderRound.current = totalLanci;
+    setReminderVisible(true);
+  }, [currentAnimation, winner, reminderEnabled, totalLanci]);
+
+  // Reset della soglia su undo sotto soglia o reset partita (permette la ricomparsa)
+  useEffect(() => {
+    if (totalLanci < lastReminderRound.current) {
+      lastReminderRound.current = 0;
+    }
+  }, [totalLanci]);
+
+  // Chiudi subito il banner se inizia un nuovo lancio o appare la schermata vittoria
+  useEffect(() => {
+    if ((currentAnimation || winner) && reminderVisible) {
+      setReminderVisible(false);
+    }
+  }, [currentAnimation, winner, reminderVisible]);
+
   // First launch → guide. Existing user without release-note flag → release note.
   useEffect(() => {
     let isMounted = true;
@@ -56,14 +94,14 @@ export function GameScreen() {
       if (!guideValue) {
         setGuideOpen(true);
         AsyncStorage.setItem('hasSeenGuide', 'true');
-        AsyncStorage.setItem('hasSeenReleaseNote_v17', 'true');
+        AsyncStorage.setItem('hasSeenReleaseNote_v18', 'true');
         return;
       }
-      AsyncStorage.getItem('hasSeenReleaseNote_v17').then((noteValue) => {
+      AsyncStorage.getItem('hasSeenReleaseNote_v18').then((noteValue) => {
         if (!isMounted) return;
         if (!noteValue) {
           setReleaseNoteOpen(true);
-          AsyncStorage.setItem('hasSeenReleaseNote_v17', 'true');
+          AsyncStorage.setItem('hasSeenReleaseNote_v18', 'true');
         }
       });
     });
@@ -73,6 +111,7 @@ export function GameScreen() {
   // Android back button: close modals or do nothing (never exit app)
   useEffect(() => {
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (reminderVisible) { setReminderVisible(false); return true; }
       if (reviewOpen) { setReviewOpen(false); return true; }
       if (creditsOpen) { setCreditsOpen(false); return true; }
       if (guideOpen) { setGuideOpen(false); return true; }
@@ -81,7 +120,7 @@ export function GameScreen() {
       return true; // Block back when no modal open (don't exit app)
     });
     return () => sub.remove();
-  }, [settingsOpen, creditsOpen, guideOpen, releaseNoteOpen, reviewOpen]);
+  }, [settingsOpen, creditsOpen, guideOpen, releaseNoteOpen, reviewOpen, reminderVisible]);
 
   // Safety valve: force-clear stuck animations after 6 seconds
   useEffect(() => {
@@ -240,6 +279,17 @@ export function GameScreen() {
         <AnimationOverlay
           animation={currentAnimation}
           onComplete={clearAnimation}
+        />
+      )}
+
+      {/* Side-switch reminder - banner non bloccante ogni 3 lanci */}
+      {reminderVisible && (
+        <SideSwitchReminder
+          onDismiss={() => setReminderVisible(false)}
+          onDisable={() => {
+            setSideSwitchReminderEnabled(false);
+            setReminderVisible(false);
+          }}
         />
       )}
 

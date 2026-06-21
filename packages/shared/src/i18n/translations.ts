@@ -52,10 +52,15 @@ export const translations = {
       rate: 'Lascia una recensione',
       later: 'Più tardi'
     },
+    sideSwitch: {
+      message: 'Avete cambiato lato?',
+      dontShowAgain: 'Non mostrare più',
+      settingLabel: 'Promemoria cambio lato'
+    },
     releaseNote: {
       badge: 'Novità',
-      title: 'Conto alla rovescia vocale',
-      body: 'Nuovo pulsante <b>▶ 3·2·1</b> al centro della barra in basso: toccalo e l\'app conta per te — "3, 2, 1, pronti... lancio!". La voce segue la lingua del telefono (italiano o inglese).',
+      title: 'Promemoria cambio lato',
+      body: 'Dopo ogni 3 lanci l\'app ti chiede <b>"Avete cambiato lato?"</b>. Il promemoria compare da solo e sparisce dopo pochi secondi; puoi disattivarlo dal messaggio o dalle impostazioni.',
       gotIt: 'Ho capito'
     },
     guide: {
@@ -183,10 +188,15 @@ export const translations = {
       rate: 'Rate the app',
       later: 'Maybe later'
     },
+    sideSwitch: {
+      message: 'Did you switch sides?',
+      dontShowAgain: "Don't show again",
+      settingLabel: 'Side-switch reminder'
+    },
     releaseNote: {
       badge: 'What\'s new',
-      title: 'Voice countdown',
-      body: 'New <b>▶ 3·2·1</b> button at the center of the bottom bar: tap it and the app counts down for you — "3, 2, 1... go shoot!". The voice follows your phone language (English or Italian).',
+      title: 'Side-switch reminder',
+      body: 'After every 3 launches the app asks <b>"Did you switch sides?"</b>. The reminder pops up on its own and disappears after a few seconds; you can turn it off from the message or in settings.',
       gotIt: 'Got it'
     },
     guide: {

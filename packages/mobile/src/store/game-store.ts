@@ -25,6 +25,7 @@ interface GameStore extends MatchState {
   } | null;
   isSwapped: boolean;
   wins: { player1: number; player2: number };
+  sideSwitchReminderEnabled: boolean;
 
   // Actions
   score: (playerId: PlayerId, finishType: FinishType) => void;
@@ -39,6 +40,7 @@ interface GameStore extends MatchState {
   setMaxFoulsValue: (value: number) => void;
   swapSides: () => void;
   resetWins: () => void;
+  setSideSwitchReminderEnabled: (value: boolean) => void;
 }
 
 interface PersistedState {
@@ -46,6 +48,7 @@ interface PersistedState {
   maxFouls: number;
   wins: { player1: number; player2: number };
   _persistedNames: { player1: string; player2: string };
+  sideSwitchReminderEnabled: boolean;
 }
 
 export const useGameStore = create<GameStore>()(
@@ -56,6 +59,7 @@ export const useGameStore = create<GameStore>()(
       currentAnimation: null,
       isSwapped: false,
       wins: { player1: 0, player2: 0 },
+      sideSwitchReminderEnabled: true,
 
       // Score a point
       score: (playerId, finishType) => {
@@ -111,7 +115,7 @@ export const useGameStore = create<GameStore>()(
             historyLength: state.history.length,
             p1: state.player1.score,
             p2: state.player2.score,
-            currentAnimation: state.currentAnimation?.type ?? null,
+            currentAnimation: null, // garantito null: il guard sopra fa return se è in corso un'animazione
           });
           const newState = undoLastAction(state);
           set({
@@ -276,6 +280,12 @@ export const useGameStore = create<GameStore>()(
         set({ wins: { player1: 0, player2: 0 } });
       },
 
+      // Enable/disable the "did you switch sides?" reminder
+      setSideSwitchReminderEnabled: (value) => {
+        logger.info('Set side-switch reminder', { value });
+        set({ sideSwitchReminderEnabled: value });
+      },
+
       // Set max fouls limit
       setMaxFoulsValue: (value) => {
         try {
@@ -302,6 +312,7 @@ export const useGameStore = create<GameStore>()(
           player1: state.player1.name,
           player2: state.player2.name,
         },
+        sideSwitchReminderEnabled: state.sideSwitchReminderEnabled,
       }),
       merge: (persisted, current) => {
         const p = persisted as PersistedState | undefined;
@@ -319,6 +330,8 @@ export const useGameStore = create<GameStore>()(
             ...(current as GameStore).player2,
             name: p._persistedNames?.player2 ?? (current as GameStore).player2.name,
           },
+          sideSwitchReminderEnabled:
+            p.sideSwitchReminderEnabled ?? (current as GameStore).sideSwitchReminderEnabled,
         };
       },
     }
