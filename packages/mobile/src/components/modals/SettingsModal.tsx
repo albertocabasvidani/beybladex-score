@@ -59,7 +59,7 @@ export function SettingsModal({ visible, onClose }: Props) {
           {/* Header */}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             <Text style={{ color: 'white', fontSize: 20, fontWeight: '700' }}>
-              Settings
+              {t('settings.title')}
             </Text>
             <TouchableOpacity onPress={onClose} style={{ padding: 4 }}>
               <Text style={{ color: '#94a3b8', fontSize: 20 }}>✕</Text>
@@ -68,7 +68,7 @@ export function SettingsModal({ visible, onClose }: Props) {
 
           {/* Win Score */}
           <Text style={{ color: '#cbd5e1', fontSize: 14, fontWeight: '600', marginBottom: 12 }}>
-            Win Score
+            {t('settings.winScore')}
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
             <TouchableOpacity
@@ -112,7 +112,7 @@ export function SettingsModal({ visible, onClose }: Props) {
 
           {/* Foul Limit */}
           <Text style={{ color: '#cbd5e1', fontSize: 14, fontWeight: '600', marginBottom: 12, marginTop: 20 }}>
-            Foul Limit
+            {t('settings.maxFouls')}
           </Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
             <TouchableOpacity
@@ -131,7 +131,7 @@ export function SettingsModal({ visible, onClose }: Props) {
             </TouchableOpacity>
 
             <Text style={{ color: maxFouls === 0 ? '#64748b' : 'white', fontSize: 48, fontWeight: '900', minWidth: 60, textAlign: 'center' }}>
-              {maxFouls === 0 ? 'OFF' : maxFouls}
+              {maxFouls === 0 ? t('foul.disabled') : maxFouls}
             </Text>
 
             <TouchableOpacity
@@ -151,7 +151,7 @@ export function SettingsModal({ visible, onClose }: Props) {
           </View>
 
           <Text style={{ color: '#64748b', fontSize: 12, textAlign: 'center', marginTop: 8 }}>
-            {MIN_MAX_FOULS === 0 ? 'OFF' : MIN_MAX_FOULS} - {MAX_MAX_FOULS}
+            {MIN_MAX_FOULS === 0 ? t('foul.disabled') : MIN_MAX_FOULS} - {MAX_MAX_FOULS}
           </Text>
 
           {/* Side-switch reminder */}

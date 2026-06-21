@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
+import i18n from 'i18next';
 import { logger } from '../utils/logger';
 
 interface State {
@@ -31,7 +32,7 @@ export class ErrorBoundary extends React.Component<{ children: React.ReactNode }
       return (
         <View style={{ flex: 1, backgroundColor: '#0f172a', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
           <Text style={{ color: '#ef4444', fontSize: 24, fontWeight: '800', marginBottom: 12 }}>
-            Something went wrong
+            {i18n.t('error.title')}
           </Text>
           <Text style={{ color: '#94a3b8', fontSize: 14, textAlign: 'center', marginBottom: 16 }}>
             {this.state.error?.message}
@@ -53,7 +54,7 @@ export class ErrorBoundary extends React.Component<{ children: React.ReactNode }
             }}
           >
             <Text style={{ color: '#0f172a', fontSize: 16, fontWeight: '700' }}>
-              Restart
+              {i18n.t('error.restart')}
             </Text>
           </Pressable>
         </View>

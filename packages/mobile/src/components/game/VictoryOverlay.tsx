@@ -12,6 +12,7 @@ import Animated, {
   FadeIn,
   cancelAnimation,
 } from 'react-native-reanimated';
+import { useTranslation } from 'react-i18next';
 import type { PlayerId } from '@beybladex/shared';
 import { useGameStore } from '../../store/game-store';
 import { usePurchasesStore } from '../../store/purchases-store';
@@ -167,6 +168,7 @@ interface Props {
 }
 
 export function VictoryOverlay({ winnerId }: Props) {
+  const { t } = useTranslation();
   const player = useGameStore((state) => state[winnerId]);
   const reset = useGameStore((state) => state.reset);
   const wins = useGameStore((state) => state.wins[winnerId]);
@@ -221,7 +223,7 @@ export function VictoryOverlay({ winnerId }: Props) {
               textShadowRadius: 15,
             }}
           >
-            {player.name} WINS!
+            {t('game.winner', { name: player.name })}
           </Text>
         </SlideInView>
 
@@ -234,7 +236,7 @@ export function VictoryOverlay({ winnerId }: Props) {
               marginTop: Math.round(available * 0.015),
             }}
           >
-            Score: {player.score}  ·  🏆 {wins} {wins === 1 ? 'victory' : 'victories'}
+            {t('game.scoreLabel')}: {player.score}  ·  🏆 {t('game.victories', { count: wins })}
           </Text>
         </SlideInView>
 
@@ -261,7 +263,7 @@ export function VictoryOverlay({ winnerId }: Props) {
                 fontWeight: '800',
               }}
             >
-              New Game
+              {t('buttons.newGame')}
             </Text>
           </Pressable>
         </SlideInView>
@@ -279,7 +281,7 @@ export function VictoryOverlay({ winnerId }: Props) {
                 textDecorationLine: 'underline',
               }}
             >
-              Rimuovi pubblicità
+              {t('ads.remove')}
             </Text>
           </Pressable>
         </View>

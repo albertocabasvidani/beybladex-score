@@ -1,4 +1,5 @@
 import { Modal, View, Text, TouchableOpacity, Pressable } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useGameStore } from '../../store/game-store';
 
 interface Props {
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export function ResetTrophiesModal({ visible, onClose }: Props) {
+  const { t } = useTranslation();
   const resetWins = useGameStore((state) => state.resetWins);
 
   const handleConfirm = () => {
@@ -38,11 +40,11 @@ export function ResetTrophiesModal({ visible, onClose }: Props) {
           onPress={(e) => e.stopPropagation()}
         >
           <Text style={{ color: 'white', fontSize: 20, fontWeight: '700', marginBottom: 12 }}>
-            Azzerare i trofei?
+            {t('resetTrophies.title')}
           </Text>
 
           <Text style={{ color: '#cbd5e1', fontSize: 14, marginBottom: 24, lineHeight: 20 }}>
-            I trofei di entrambi i giocatori verranno azzerati.
+            {t('resetTrophies.message')}
           </Text>
 
           <View style={{ flexDirection: 'row', gap: 12 }}>
@@ -57,7 +59,7 @@ export function ResetTrophiesModal({ visible, onClose }: Props) {
               }}
             >
               <Text style={{ color: '#e2e8f0', fontSize: 15, fontWeight: '600' }}>
-                Annulla
+                {t('confirm.no')}
               </Text>
             </TouchableOpacity>
 
@@ -72,7 +74,7 @@ export function ResetTrophiesModal({ visible, onClose }: Props) {
               }}
             >
               <Text style={{ color: '#fecaca', fontSize: 15, fontWeight: '700' }}>
-                Azzera
+                {t('resetTrophies.confirm')}
               </Text>
             </TouchableOpacity>
           </View>

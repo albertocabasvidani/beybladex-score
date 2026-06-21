@@ -1,4 +1,5 @@
 import { Modal, View, Text, TouchableOpacity, Pressable, Linking } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   visible: boolean;
@@ -6,6 +7,7 @@ interface Props {
 }
 
 export function CreditsModal({ visible, onClose }: Props) {
+  const { t } = useTranslation();
   const handleEmail = () => {
     Linking.openURL('mailto:albertocabasvidani@gmail.com');
   };
@@ -36,7 +38,7 @@ export function CreditsModal({ visible, onClose }: Props) {
           {/* Intestazione */}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             <Text style={{ color: 'white', fontSize: 20, fontWeight: '700' }}>
-              Crediti
+              {t('credits.title')}
             </Text>
             <TouchableOpacity onPress={onClose} style={{ padding: 4 }}>
               <Text style={{ color: '#94a3b8', fontSize: 20 }}>✕</Text>
@@ -46,10 +48,10 @@ export function CreditsModal({ visible, onClose }: Props) {
           {/* Contenuto */}
           <View style={{ alignItems: 'center' }}>
             <Text style={{ color: 'white', fontSize: 16, fontWeight: '600', marginBottom: 8 }}>
-              Creato da Alberto Cabas Vidani
+              {t('credits.createdBy')}
             </Text>
             <Text style={{ color: '#94a3b8', fontSize: 13, marginBottom: 16, textAlign: 'center' }}>
-              Contattami per idee, problemi e complimenti ;-)
+              {t('credits.contactMessage')}
             </Text>
             <TouchableOpacity
               onPress={handleEmail}
@@ -64,7 +66,7 @@ export function CreditsModal({ visible, onClose }: Props) {
               }}
             >
               <Text style={{ color: 'white', fontSize: 16 }}>✉</Text>
-              <Text style={{ color: 'white', fontSize: 14, fontWeight: '600' }}>Invia Email</Text>
+              <Text style={{ color: 'white', fontSize: 14, fontWeight: '600' }}>{t('credits.sendEmail')}</Text>
             </TouchableOpacity>
           </View>
         </Pressable>

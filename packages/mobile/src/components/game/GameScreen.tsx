@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, TouchableOpacity, Text, BackHandler } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PlayerPanel } from './PlayerPanel';
 import { CountdownButton } from './CountdownButton';
@@ -16,6 +17,7 @@ import { useReviewStore } from '../../store/review-store';
 import { logger } from '../../utils/logger';
 
 export function GameScreen() {
+  const { t } = useTranslation();
   const { undo, reset, canUndo } = useGameStore();
   const winner = useGameStore((state) => state.winner);
   const winScore = useGameStore((state) => state.winScore);
@@ -223,7 +225,7 @@ export function GameScreen() {
             }}
           >
             <Text allowFontScaling={false} style={{ color: '#e2e8f0', fontSize: 14 }}>↩</Text>
-            <Text allowFontScaling={false} style={{ color: '#e2e8f0', fontSize: 13, fontWeight: '600' }}>Undo</Text>
+            <Text allowFontScaling={false} style={{ color: '#e2e8f0', fontSize: 13, fontWeight: '600' }}>{t('buttons.undo')}</Text>
           </TouchableOpacity>
 
           {/* Reset */}
@@ -240,7 +242,7 @@ export function GameScreen() {
             }}
           >
             <Text allowFontScaling={false} style={{ color: '#fecaca', fontSize: 14 }}>↻</Text>
-            <Text allowFontScaling={false} style={{ color: '#fecaca', fontSize: 13, fontWeight: '600' }}>Reset</Text>
+            <Text allowFontScaling={false} style={{ color: '#fecaca', fontSize: 13, fontWeight: '600' }}>{t('buttons.reset')}</Text>
           </TouchableOpacity>
 
           {/* Info */}

@@ -1,6 +1,8 @@
 import { View, Text } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 export function RotateDeviceScreen() {
+  const { t } = useTranslation();
   return (
     <View
       style={{
@@ -18,7 +20,7 @@ export function RotateDeviceScreen() {
           textAlign: 'center',
         }}
       >
-        Ruota il dispositivo in landscape per giocare
+        {t('app.rotateDevice')}
       </Text>
     </View>
   );

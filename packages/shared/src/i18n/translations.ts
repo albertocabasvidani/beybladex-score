@@ -6,7 +6,8 @@
 export const translations = {
   it: {
     app: {
-      title: 'Beyblade Score'
+      title: 'Beyblade Score',
+      rotateDevice: 'Ruota il dispositivo in landscape per giocare'
     },
     player: {
       player1: 'Giocatore 1',
@@ -21,7 +22,10 @@ export const translations = {
     game: {
       vs: 'VS',
       winScore: 'Vittoria a {{score}} punti',
-      winner: '{{name}} vince!'
+      winner: '{{name}} vince!',
+      scoreLabel: 'Punti',
+      victories_one: '{{count}} vittoria',
+      victories_other: '{{count}} vittorie'
     },
     buttons: {
       undo: 'Annulla',
@@ -46,6 +50,24 @@ export const translations = {
       yes: 'Conferma',
       no: 'Annulla'
     },
+    credits: {
+      title: 'Crediti',
+      createdBy: 'Creato da Alberto Cabas Vidani',
+      contactMessage: 'Contattami per idee, problemi e complimenti ;-)',
+      sendEmail: 'Invia Email'
+    },
+    resetTrophies: {
+      title: 'Azzerare i trofei?',
+      message: 'I trofei di entrambi i giocatori verranno azzerati.',
+      confirm: 'Azzera'
+    },
+    ads: {
+      remove: 'Rimuovi pubblicità'
+    },
+    error: {
+      title: 'Qualcosa è andato storto',
+      restart: 'Riavvia'
+    },
     review: {
       title: 'Ti piace Beyblade Score?',
       message: 'Se l\'app ti è utile, una recensione sul Play Store ci aiuta tantissimo. Bastano pochi secondi.',
@@ -60,7 +82,7 @@ export const translations = {
     releaseNote: {
       badge: 'Novità',
       title: 'Promemoria cambio lato',
-      body: 'Dopo ogni 3 lanci l\'app ti chiede <b>"Avete cambiato lato?"</b>. Il promemoria compare da solo e sparisce dopo pochi secondi; puoi disattivarlo dal messaggio o dalle impostazioni.',
+      body: 'In Beyblade dopo 3 lanci si cambia lato. Ora l\'app te lo ricorda: dopo ogni 3 lanci compare <b>"Avete cambiato lato?"</b>, sparisce da solo dopo pochi secondi e puoi disattivarlo dal messaggio stesso o dalle impostazioni.',
       gotIt: 'Ho capito'
     },
     guide: {
@@ -142,7 +164,8 @@ export const translations = {
   },
   en: {
     app: {
-      title: 'Beyblade Score'
+      title: 'Beyblade Score',
+      rotateDevice: 'Rotate your device to landscape to play'
     },
     player: {
       player1: 'Player 1',
@@ -157,7 +180,10 @@ export const translations = {
     game: {
       vs: 'VS',
       winScore: 'First to {{score}} points',
-      winner: '{{name}} wins!'
+      winner: '{{name}} wins!',
+      scoreLabel: 'Score',
+      victories_one: '{{count}} victory',
+      victories_other: '{{count}} victories'
     },
     buttons: {
       undo: 'Undo',
@@ -182,6 +208,24 @@ export const translations = {
       yes: 'Confirm',
       no: 'Cancel'
     },
+    credits: {
+      title: 'Credits',
+      createdBy: 'Created by Alberto Cabas Vidani',
+      contactMessage: 'Contact me for ideas, issues and compliments ;-)',
+      sendEmail: 'Send Email'
+    },
+    resetTrophies: {
+      title: 'Reset trophies?',
+      message: "Both players' trophies will be reset.",
+      confirm: 'Reset'
+    },
+    ads: {
+      remove: 'Remove ads'
+    },
+    error: {
+      title: 'Something went wrong',
+      restart: 'Restart'
+    },
     review: {
       title: 'Enjoying Beyblade Score?',
       message: 'If the app is useful to you, a quick review on the Play Store helps us a lot. It only takes a few seconds.',
@@ -196,7 +240,7 @@ export const translations = {
     releaseNote: {
       badge: 'What\'s new',
       title: 'Side-switch reminder',
-      body: 'After every 3 launches the app asks <b>"Did you switch sides?"</b>. The reminder pops up on its own and disappears after a few seconds; you can turn it off from the message or in settings.',
+      body: 'In Beyblade you switch sides after 3 launches. Now the app reminds you: after every 3 launches it shows <b>"Did you switch sides?"</b>, disappears on its own after a few seconds, and you can turn it off from the message itself or in settings.',
       gotIt: 'Got it'
     },
     guide: {
