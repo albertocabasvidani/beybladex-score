@@ -1,7 +1,7 @@
 ---
 name: scoreboard
 status: active
-updated: 20/06/2026
+updated: 21/06/2026
 health: green
 next-step: "Sostituire ID test AdMob/RevenueCat con quelli reali prima del prossimo rilascio"
 blocked-by: null
@@ -31,6 +31,7 @@ L'app segnapunti vera e propria (web + mobile) e la logica di gioco condivisa in
 ## Changelog
 
 <!-- Cose completate, dalla più recente. Formato: `- gg/mm/aaaa — testo` -->
+- 21/06/2026 — Promemoria "cambia lato" ogni 3 lanci (banner auto-dismiss, disattivabile da messaggio o impostazioni) + localizzazione completa UI it/en (audit stringhe hardcoded) e nomi giocatore localizzati (v18, in review).
 - 19/06/2026 — ASO: listing Play Store ottimizzato (best practice 2026), screenshot marketing, custom listing Beyblade.
 - 10/06/2026 — Countdown vocale 3-2-1 + modali bilingui (v17).
 - 05/06/2026 — Icona minimale, invito recensione dopo 10 partite, annunci non personalizzati per minori (v16).
