@@ -4,8 +4,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useUiStore } from '../../store/uiStore';
 import { useStatsStore } from './statsStore';
-import { filterByRange, type TimeRange } from './aggregation';
+import { filterByRange, type TimeRange, type CustomRange } from './aggregation';
 import { TimeRangeChips } from './components/TimeRangeChips';
+import { RangeCalendar } from './components/RangeCalendar';
+import { StatsLegendModal } from './components/StatsLegendModal';
 import { ComboDetailModal } from './components/ComboDetailModal';
 import { OverviewScreen } from './screens/OverviewScreen';
 import { MatchupsScreen } from './screens/MatchupsScreen';
@@ -29,9 +31,15 @@ export function StatsShell() {
 
   const [tab, setTab] = useState<StatsTab>('overview');
   const [range, setRange] = useState<TimeRange>('all');
+  const [customRange, setCustomRange] = useState<CustomRange | null>(null);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [showLegend, setShowLegend] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
 
-  const filtered = useMemo(() => filterByRange(records, range, Date.now()), [records, range]);
+  const filtered = useMemo(
+    () => filterByRange(records, range, Date.now(), customRange),
+    [records, range, customRange]
+  );
 
   const confirmClear = () => {
     Alert.alert(t('stats.clearTitle'), t('stats.clearBody'), [
@@ -56,6 +64,9 @@ export function StatsShell() {
         </Pressable>
         <Text style={styles.title}>{t('stats.title')}</Text>
         <View style={[styles.headerSide, styles.headerRight]}>
+          <Pressable onPress={() => setShowLegend(true)} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('stats.legend.title')}>
+            <Text style={styles.help}>ⓘ</Text>
+          </Pressable>
           {!empty ? (
             <Pressable onPress={confirmClear} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('stats.clearTitle')}>
               <Text style={styles.clear}>🗑</Text>
@@ -76,7 +87,13 @@ export function StatsShell() {
       ) : (
         <>
           <View style={styles.rangeWrap}>
-            <TimeRangeChips value={range} onChange={setRange} />
+            <TimeRangeChips
+              value={range}
+              onChange={setRange}
+              customRange={customRange}
+              onCustomPress={() => setShowCalendar(true)}
+            />
+            <Text style={styles.caption}>{t(`stats.tabCaption.${tab}`)}</Text>
           </View>
 
           <View style={styles.content}>
@@ -115,6 +132,20 @@ export function StatsShell() {
           onClose={() => setSelected(null)}
         />
       ) : null}
+
+      {showCalendar ? (
+        <RangeCalendar
+          value={customRange}
+          onApply={(r) => {
+            setCustomRange(r);
+            setRange('custom');
+            setShowCalendar(false);
+          }}
+          onClose={() => setShowCalendar(false)}
+        />
+      ) : null}
+
+      {showLegend ? <StatsLegendModal onClose={() => setShowLegend(false)} /> : null}
     </SafeAreaView>
   );
 }
@@ -131,11 +162,13 @@ const styles = StyleSheet.create({
     borderBottomColor: sp.border,
   },
   headerSide: { minWidth: 90 },
-  headerRight: { alignItems: 'flex-end' },
+  headerRight: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 16 },
   back: { color: sp.gold, fontSize: 16, fontWeight: '700' },
   title: { color: sp.text, fontSize: 18, fontWeight: '800' },
+  help: { color: sp.dim, fontSize: 20, fontWeight: '700' },
   clear: { fontSize: 18 },
   rangeWrap: { paddingHorizontal: 14, paddingTop: 12, paddingBottom: 4 },
+  caption: { color: sp.faint, fontSize: 12, textAlign: 'center', marginTop: 8 },
   content: { flex: 1 },
   tabBar: {
     flexDirection: 'row',

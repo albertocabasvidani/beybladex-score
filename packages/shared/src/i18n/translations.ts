@@ -23,7 +23,7 @@ export const translations = {
       title: 'Analitiche',
       backHome: 'Home',
       tabs: { overview: 'Combo', matchups: 'Matchup', parts: 'Parti' },
-      range: { all: 'Tutto', today: 'Oggi', d7: '7g', d30: '30g' },
+      range: { all: 'Tutto', today: 'Oggi', d7: '7g', d30: '30g', custom: 'Personalizzato' },
       empty: {
         title: 'Ancora nessun dato',
         body: 'Assegna una Bey a ciascun giocatore nel segnapunti: ogni partita verrà registrata qui.',
@@ -51,6 +51,31 @@ export const translations = {
       },
       matchups: { title: 'Matchup di {{name}}' },
       parts: { searchPlaceholder: 'Cerca una parte…', noResults: 'Nessuna parte trovata' },
+      tabCaption: {
+        overview: 'Le tue combo ordinate per win-rate',
+        matchups: 'Come va una combo contro ciascuna avversaria',
+        parts: 'Win-rate di ogni singola parte'
+      },
+      calendar: {
+        months: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
+        weekdays: ['L', 'M', 'M', 'G', 'V', 'S', 'D'],
+        pickStart: 'Scegli la data di inizio',
+        apply: 'Applica',
+        prevMonth: 'Mese precedente',
+        nextMonth: 'Mese successivo'
+      },
+      legend: {
+        title: 'Come leggere le analitiche',
+        tabsTitle: 'Le tab',
+        tabOverview: 'Le tue combo in classifica per percentuale di vittorie.',
+        tabMatchups: 'Quanto bene una combo se la cava contro ciascuna avversaria.',
+        tabParts: 'La percentuale di vittorie di ogni singola parte.',
+        metricsTitle: 'La notazione',
+        mWinrate: 'Barra = win-rate (verde alto, ambra incerto, rosso basso).',
+        mRecord: 'Vittorie–sconfitte.',
+        mDiff: 'Differenza tra punti fatti e subiti (verde se positiva, rossa se negativa).',
+        mLowSample: 'Meno di 5 partite: dato poco affidabile.'
+      },
       bey: {
         add: 'Aggiungi Bey',
         change: 'Cambia Bey',
@@ -243,7 +268,7 @@ export const translations = {
       title: 'Analytics',
       backHome: 'Home',
       tabs: { overview: 'Combos', matchups: 'Matchups', parts: 'Parts' },
-      range: { all: 'All', today: 'Today', d7: '7d', d30: '30d' },
+      range: { all: 'All', today: 'Today', d7: '7d', d30: '30d', custom: 'Custom' },
       empty: {
         title: 'No data yet',
         body: 'Assign a Bey to each player in the scoreboard: every game gets recorded here.',
@@ -271,6 +296,31 @@ export const translations = {
       },
       matchups: { title: '{{name}} matchups' },
       parts: { searchPlaceholder: 'Search a part…', noResults: 'No part found' },
+      tabCaption: {
+        overview: 'Your combos ranked by win-rate',
+        matchups: 'How a combo fares against each opponent',
+        parts: 'Win-rate of each single part'
+      },
+      calendar: {
+        months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        weekdays: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+        pickStart: 'Pick a start date',
+        apply: 'Apply',
+        prevMonth: 'Previous month',
+        nextMonth: 'Next month'
+      },
+      legend: {
+        title: 'How to read the analytics',
+        tabsTitle: 'The tabs',
+        tabOverview: 'Your combos ranked by win percentage.',
+        tabMatchups: 'How well a combo does against each opponent.',
+        tabParts: 'The win percentage of each single part.',
+        metricsTitle: 'The notation',
+        mWinrate: 'Bar = win-rate (green high, amber uncertain, red low).',
+        mRecord: 'Wins–losses.',
+        mDiff: 'Difference between points scored and conceded (green if positive, red if negative).',
+        mLowSample: 'Fewer than 5 games: unreliable figure.'
+      },
       bey: {
         add: 'Add Bey',
         change: 'Change Bey',

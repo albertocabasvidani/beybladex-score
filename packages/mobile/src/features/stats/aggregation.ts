@@ -6,7 +6,13 @@ import type { ComboLine, FinishType, PartCategory } from '@beybladex/shared';
 import { FINISH_ORDER } from '@beybladex/shared';
 import type { MatchRecord, RecordedBey, RecordedSide } from './statsStore';
 
-export type TimeRange = 'all' | 'today' | '7d' | '30d';
+export type TimeRange = 'all' | 'today' | '7d' | '30d' | 'custom';
+
+/** Intervallo personalizzato: estremi inclusivi in ms (from = inizio giorno, to = fine giorno). */
+export interface CustomRange {
+  from: number;
+  to: number;
+}
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -16,9 +22,18 @@ function startOfDay(now: number): number {
   return d.getTime();
 }
 
-/** Filtra i match per finestra temporale (rispetto a `now`). */
-export function filterByRange(records: MatchRecord[], range: TimeRange, now: number): MatchRecord[] {
+/** Filtra i match per finestra temporale (rispetto a `now`; `custom` usa gli estremi passati). */
+export function filterByRange(
+  records: MatchRecord[],
+  range: TimeRange,
+  now: number,
+  custom?: CustomRange | null
+): MatchRecord[] {
   if (range === 'all') return records;
+  if (range === 'custom') {
+    if (!custom) return records;
+    return records.filter((r) => r.playedAt >= custom.from && r.playedAt <= custom.to);
+  }
   const cutoff =
     range === 'today' ? startOfDay(now) : range === '7d' ? now - 7 * DAY_MS : now - 30 * DAY_MS;
   return records.filter((r) => r.playedAt >= cutoff);
