@@ -4,7 +4,7 @@
  */
 
 import type { FinishType, PlayerId, Player, MatchState, ScoreHistoryEntry, FoulHistoryEntry } from './types';
-import { FINISH_SCORES, DEFAULT_WIN_SCORE, DEFAULT_MAX_FOULS, createInitialPlayer } from './constants';
+import { FINISH_SCORES, DEFAULT_WIN_SCORE, DEFAULT_MAX_FOULS, DEFAULT_PLAYER_NAMES, createInitialPlayer } from './constants';
 
 /**
  * Calculate points for a finish type
@@ -241,7 +241,7 @@ export function setPlayerName(
     ...state,
     [playerId]: {
       ...state[playerId],
-      name: name.trim() || (playerId === 'player1' ? 'Player 1' : 'Player 2'),
+      name: name.trim() || DEFAULT_PLAYER_NAMES[playerId],
     },
   };
 }

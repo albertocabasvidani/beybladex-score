@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, TextInput, Pressable } from 'react-native';
-import type { PlayerId } from '@beybladex/shared';
+import { useTranslation } from 'react-i18next';
+import { isDefaultPlayerName, type PlayerId } from '@beybladex/shared';
 import { useGameStore } from '../../store/game-store';
 import { ScoreDisplay } from './ScoreDisplay';
 import { FinishButton } from './FinishButton';
@@ -11,13 +12,18 @@ interface Props {
 }
 
 export function PlayerPanel({ playerId }: Props) {
+  const { t } = useTranslation();
   const player = useGameStore((state) => state[playerId]);
   const setPlayerNameValue = useGameStore((state) => state.setPlayerNameValue);
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState(player.name);
 
+  // Nome default (sentinella) -> mostra il nome localizzato finché l'utente non lo cambia
+  const isDefault = isDefaultPlayerName(player.name, playerId);
+  const displayName = isDefault ? t(`player.${playerId}`) : player.name;
+
   const handleNamePress = () => {
-    setEditName(player.name);
+    setEditName(isDefault ? '' : player.name);
     setEditing(true);
   };
 
@@ -44,6 +50,8 @@ export function PlayerPanel({ playerId }: Props) {
           onChangeText={setEditName}
           onBlur={handleNameSubmit}
           onSubmitEditing={handleNameSubmit}
+          placeholder={t(`player.${playerId}`)}
+          placeholderTextColor="#64748b"
           autoFocus
           selectTextOnFocus
           maxLength={20}
@@ -69,7 +77,7 @@ export function PlayerPanel({ playerId }: Props) {
               paddingVertical: 2,
             }}
           >
-            {player.name}
+            {displayName}
           </Text>
         </Pressable>
       )}

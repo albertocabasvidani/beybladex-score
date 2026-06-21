@@ -3,7 +3,7 @@
  * Pure TypeScript - no React/DOM dependencies for mobile reuse
  */
 
-import type { FinishType, Player } from './types';
+import type { FinishType, Player, PlayerId } from './types';
 
 // Points awarded for each finish type
 export const FINISH_SCORES: Record<FinishType, number> = {
@@ -66,11 +66,23 @@ export const FINISH_INFO: Record<FinishType, {
 // Order of finish buttons (left to right)
 export const FINISH_ORDER: FinishType[] = ['spin', 'burst', 'over', 'xtreme'];
 
+// Default player names. Used as a sentinel: the UI shows the localized name
+// (player.player1/2) while the stored value still equals one of these.
+export const DEFAULT_PLAYER_NAMES: Record<PlayerId, string> = {
+  player1: 'Player 1',
+  player2: 'Player 2',
+};
+
+// True when the name is still the (English) default, i.e. the user never set a custom one.
+export function isDefaultPlayerName(name: string, playerId: PlayerId): boolean {
+  return name === DEFAULT_PLAYER_NAMES[playerId];
+}
+
 // Create initial player state
 export function createInitialPlayer(id: 'player1' | 'player2'): Player {
   return {
     id,
-    name: id === 'player1' ? 'Player 1' : 'Player 2',
+    name: DEFAULT_PLAYER_NAMES[id],
     score: 0,
     fouls: 0,
     finishCounts: {
