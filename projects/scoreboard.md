@@ -13,7 +13,7 @@ main-doc: .claude/CLAUDE.md
 
 ## Scope
 
-L'app segnapunti vera e propria (web + mobile) e la logica di gioco condivisa in `packages/shared`: punteggio, falli, schermata vittoria, font dinamico, countdown audio, modali, impostazioni. Include come feature trasversali la monetizzazione (AdMob + RevenueCat), la pipeline di build/release Android e l'ASO/store listing. Il Combo Builder è tracciato a parte in [[combo-builder]].
+L'app segnapunti vera e propria (web + mobile) e la logica di gioco condivisa in `packages/shared`: punteggio, falli, schermata vittoria, font dinamico, countdown audio, modali, impostazioni. Include come feature trasversali la monetizzazione (AdMob + RevenueCat), la pipeline di build/release Android e l'ASO/store listing. Il Combo Builder è tracciato a parte in [[combo-builder]], le statistiche/selezione Bey in [[combo-stats]].
 
 ## Backlog
 

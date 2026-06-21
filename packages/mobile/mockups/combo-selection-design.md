@@ -1,6 +1,6 @@
 # Bozza design — Selezione combo & match tracking
 
-**Stato**: bozza (non implementato) · **Data**: 19/06/2026
+**Stato**: implementato il 21/06/2026 (branch `feat/combo-stats`, feature-flag `STATS_ENABLED`) · **Bozza**: 19/06/2026 · Tracking in `projects/combo-stats.md`
 **Mockup interattivo**: [combo-selection.html](combo-selection.html) (servire via HTTP: `python -m http.server 8901 --directory packages/mobile/mockups`)
 
 ## Obiettivo
