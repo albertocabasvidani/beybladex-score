@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beyblade X Score — Anteprima selezione combo</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: #1e293b;
+    color: #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    gap: 16px;
+  }
+
+  /* ---- Legenda ---- */
+  .legend {
+    max-width: 896px;
+    width: 100%;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .legend h1 { font-size: 15px; color: #fbbf24; margin-bottom: 6px; }
+  .legend b { color: #fbbf24; }
+  .legend .steps { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 8px; }
+  .legend .step { flex: 1; min-width: 200px; }
+  .legend .num { display:inline-block; width:18px; height:18px; line-height:18px; text-align:center;
+                 background:#fbbf24; color:#0f172a; border-radius:50%; font-weight:800; font-size:11px; margin-right:6px; }
+
+  /* ---- Telefono landscape ---- */
+  .phone {
+    width: 896px;
+    height: 414px;
+    background: #0f172a;
+    border-radius: 20px;
+    border: 8px solid #000;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  .panels { flex: 1; display: flex; flex-direction: row; min-height: 0; }
+  .panel { flex: 1; padding: 6px 6px 2px; display: flex; flex-direction: column; min-height: 0; }
+
+  .divider { width: 48px; display: flex; flex-direction: column; align-items: center; }
+  .swap { color: #64748b; font-size: 26px; padding: 2px 0; }
+  .divider .line { width: 1px; flex: 1; background: #334155; }
+
+  /* nome + Bey sulla STESSA riga per risparmiare spazio verticale */
+  .head-row { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 4px 0; flex-wrap: wrap; }
+  .pname { color: #e2e8f0; font-size: 20px; font-weight: 800; text-align: center; }
+  .head-row .sep { color:#475569; font-size:14px; }
+
+  /* ---- Bey chip (NUOVO) ---- */
+  .bey-row { display: flex; justify-content: center; align-items: center; }
+  .bey-add {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(51,65,85,0.6); border: 1px dashed #475569;
+    color: #94a3b8; font-size: 11px; font-weight: 600;
+    padding: 3px 10px; border-radius: 999px; cursor: pointer;
+  }
+  .bey-add:hover { background: #334155; color: #cbd5e1; }
+  .bey-chips { display: inline-flex; align-items: center; gap: 3px; cursor: pointer; }
+  .bey-chips .ico { font-size: 12px; opacity: .7; margin-right: 2px; }
+  .part {
+    font-size: 11px; font-weight: 700; padding: 3px 7px; border-radius: 6px;
+    background: #1e293b; border: 1px solid #334155; color: #cbd5e1; white-space: nowrap;
+  }
+  .part.blade { color: #fbbf24; border-color: #475569; }
+  .part:hover { border-color: #fbbf24; background: #283449; }
+  .bey-variant { font-size: 10px; color: #fb923c; margin-left: 4px; font-weight: 700; }
+
+  /* ---- Falli (accennato) ---- */
+  .fouls { display:flex; justify-content:center; gap:4px; padding:1px 0 2px; }
+  .fouls .dot { width:7px; height:7px; border-radius:50%; border:1px solid #475569; }
+
+  /* ---- Area gioco ---- */
+  .play { flex: 1; display: flex; gap: 6px; min-height: 0; padding-bottom: 2px; }
+  .btns { flex: 2; display: flex; flex-direction: column; gap: 4px; }
+  .center { flex: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+  .fbtn {
+    flex: 1; border-radius: 12px; border-width: 3px; border-style: solid;
+    display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.5); cursor: pointer; user-select: none;
+  }
+  .fbtn .pts { color: #fff; font-size: 28px; font-weight: 900; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); z-index: 2; }
+  .fbtn .wm { position: absolute; font-size: 30px; font-weight: 900; color: rgba(255,255,255,0.18);
+              transform: rotate(-28deg); white-space: nowrap; }
+  .spin   { background:#16a34a; border-color:#4ade80; }
+  .burst  { background:#dc2626; border-color:#f87171; }
+  .over   { background:#2563eb; border-color:#60a5fa; }
+  .xtreme { background:#ea580c; border-color:#fb923c; }
+
+  .wins { position: relative; display: flex; align-items: center; justify-content: center; }
+  .wins .trophy { font-size: 40px; opacity: .3; }
+  .wins .wn { position: absolute; top: 2px; font-size: 20px; font-weight: 900; color: #64748b;
+              text-shadow: 1.5px 1.5px 3px rgba(0,0,0,0.8); }
+  .score { color: #f1f5f9; font-size: 86px; font-weight: 900; line-height: 1;
+           text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+
+  /* ---- Bottom bar ---- */
+  .bottom { display: flex; align-items: center; padding: 8px 12px 6px; gap: 8px; }
+  .bhalf { flex: 1; display: flex; align-items: center; }
+  .bhalf.right { justify-content: flex-end; gap: 8px; }
+  .pill { display: inline-flex; align-items: center; gap: 4px; padding: 6px 10px; border-radius: 8px;
+          font-size: 14px; font-weight: 800; background: #334155; }
+  .pill .gold { color: #fbbf24; }
+  .countdown { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:8px;
+               background:#334155; border:2px solid #475569; color:#e2e8f0; font-weight:900; letter-spacing:1px; font-size:14px; }
+  .ubtn { display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:8px;
+          background:#334155; color:#e2e8f0; font-size:13px; font-weight:600; }
+  .rbtn { background: rgba(127,29,29,0.5); color:#fecaca; }
+  .ibtn { width:34px; height:34px; border-radius:50%; background:#334155; color:#94a3b8;
+          display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:700; }
+
+  /* ---- Bottom sheet ---- */
+  .sheet-back {
+    position: absolute; inset: 0; background: rgba(0,0,0,0.55);
+    display: none; align-items: flex-end; z-index: 50;
+  }
+  .sheet-back.open { display: flex; }
+  .sheet {
+    width: 100%; background: #1e293b; border-top-left-radius: 18px; border-top-right-radius: 18px;
+    border-top: 1px solid #334155; padding: 14px 16px 16px; max-height: 92%; overflow-y: auto;
+    transform: translateY(100%); transition: transform .22s ease;
+  }
+  .sheet-back.open .sheet { transform: translateY(0); }
+  .sheet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .sheet-head .title { font-size: 15px; font-weight: 800; }
+  .sheet-head .title small { color:#64748b; font-weight:600; }
+  .sheet-head .x { color:#94a3b8; font-size: 20px; cursor: pointer; padding: 0 6px; }
+  .sheet-sub { font-size: 11px; color: #64748b; margin: 8px 0 6px; text-transform: uppercase; letter-spacing: .5px; }
+
+  /* scaffale */
+  .shelf { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+  .bey-card {
+    flex: 0 0 auto; width: 116px; background: #0f172a; border: 1px solid #334155;
+    border-radius: 12px; padding: 10px; cursor: pointer; transition: border-color .12s, transform .12s;
+  }
+  .bey-card:hover { border-color: #fbbf24; transform: translateY(-2px); }
+  .bey-card .top { font-size: 24px; text-align: center; }
+  .bey-card .nm { font-size: 12px; font-weight: 800; color: #fbbf24; margin-top: 4px; text-align: center; }
+  .bey-card .pr { font-size: 10px; color: #94a3b8; text-align: center; margin-top: 2px; }
+  .bey-card.new { border-style: dashed; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; }
+  .bey-card.new .plus { font-size: 26px; }
+  .bey-card.new .lbl { font-size: 11px; font-weight: 700; margin-top: 2px; }
+
+  /* freeform */
+  .freeform { display: flex; gap: 8px; margin-top: 4px; }
+  .freeform input {
+    flex: 1; background: #0f172a; border: 1px solid #334155; border-radius: 8px;
+    color: #e2e8f0; padding: 8px 12px; font-size: 13px;
+  }
+  .freeform input:focus { outline: none; border-color: #fbbf24; }
+  .freeform button { background:#fbbf24; color:#0f172a; border:none; border-radius:8px; padding:0 14px; font-weight:800; cursor:pointer; }
+
+  /* ---- Picker ricco (modale centrato landscape) ---- */
+  .modal-back { position:absolute; inset:0; background:rgba(0,0,0,0.6); display:none; align-items:center; justify-content:center; z-index:55; }
+  .modal-back.open { display:flex; }
+  .modal {
+    width: 760px; max-width: 94%; height: 376px; max-height: 94%;
+    background:#1e293b; border:1px solid #334155; border-radius:16px;
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  .modal .mhead { display:flex; align-items:center; justify-content:space-between; padding:12px 16px 8px; }
+  .modal .mhead .title { font-size:15px; font-weight:800; }
+  .modal .mhead .title small { color:#64748b; font-weight:600; }
+  .modal .mhead .x { color:#94a3b8; font-size:20px; cursor:pointer; padding:0 6px; }
+  .mstick { padding:0 16px 8px; }
+  .searchbar { display:flex; align-items:center; gap:8px; background:#0f172a; border:1px solid #334155; border-radius:10px; padding:8px 12px; }
+  .searchbar:focus-within { border-color:#fbbf24; }
+  .searchbar input { flex:1; background:transparent; border:none; outline:none; color:#e2e8f0; font-size:13px; }
+  .searchbar .ic { color:#64748b; }
+  .facets { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
+  .facet { font-size:11px; font-weight:700; padding:4px 11px; border-radius:999px; background:#0f172a; border:1px solid #334155; color:#94a3b8; cursor:pointer; }
+  .facet.on { background:#fbbf24; color:#0f172a; border-color:#fbbf24; }
+  .recents { display:flex; gap:6px; margin-top:8px; align-items:center; flex-wrap:wrap; }
+  .recents .lbl { font-size:10px; color:#64748b; text-transform:uppercase; letter-spacing:.5px; margin-right:2px; }
+  .rchip { font-size:11px; font-weight:700; padding:4px 10px; border-radius:999px; background:#283449; border:1px solid #475569; color:#cbd5e1; cursor:pointer; }
+  .rchip:hover { border-color:#fbbf24; color:#fbbf24; }
+
+  .mgrid { flex:1; overflow-y:auto; padding:10px 16px 14px; }
+  /* griglia visiva blade */
+  .blade-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+  .pcard { background:#0f172a; border:1px solid #334155; border-radius:10px; padding:8px 6px; text-align:center; cursor:pointer; }
+  .pcard:hover { border-color:#fbbf24; transform:translateY(-1px); }
+  .pcard.sel { border-color:#fbbf24; background:#283449; }
+  .pcard .th { font-size:22px; }
+  .pcard .nm { font-size:11px; font-weight:800; color:#e2e8f0; margin-top:2px; line-height:1.1; }
+  .pcard .ty { font-size:9px; margin-top:2px; padding:1px 6px; border-radius:999px; display:inline-block; }
+  .ty.Attack{ background:rgba(220,38,38,.2); color:#f87171;} .ty.Defense{ background:rgba(37,99,235,.2); color:#60a5fa;}
+  .ty.Stamina{ background:rgba(22,163,74,.2); color:#4ade80;} .ty.Balance{ background:rgba(234,88,12,.2); color:#fb923c;}
+  /* griglia chip token (bit/ratchet) */
+  .token-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:6px; }
+  .tchip { background:#0f172a; border:1px solid #334155; border-radius:9px; padding:9px 4px; text-align:center; cursor:pointer; }
+  .tchip:hover { border-color:#fbbf24; }
+  .tchip.sel { border-color:#fbbf24; background:#283449; }
+  .tchip .code { font-size:15px; font-weight:900; color:#fbbf24; }
+  .tchip .sub { font-size:9px; color:#94a3b8; margin-top:1px; }
+  .empty { color:#64748b; font-size:12px; text-align:center; padding:24px; }
+
+  /* compose: 3 pezzi grandi tappabili */
+  .compose-parts { display:flex; gap:10px; padding:14px 16px; }
+  .cpart { flex:1; background:#0f172a; border:1px solid #334155; border-radius:12px; padding:14px 10px; text-align:center; cursor:pointer; }
+  .cpart:hover { border-color:#fbbf24; }
+  .cpart .k { font-size:10px; color:#64748b; text-transform:uppercase; letter-spacing:.5px; }
+  .cpart .v { font-size:15px; font-weight:800; color:#fbbf24; margin-top:4px; }
+
+  .toast {
+    position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+    background: #0f172a; border: 1px solid #fb923c; color: #fed7aa; padding: 8px 14px;
+    border-radius: 999px; font-size: 12px; display: none; align-items: center; gap: 10px; z-index: 60;
+  }
+  .toast.show { display: flex; }
+  .toast button { background:#fb923c; color:#0f172a; border:none; border-radius:999px; padding:4px 10px; font-weight:800; cursor:pointer; font-size:11px; }
+
+  .hint { max-width: 896px; width:100%; font-size: 12px; color:#64748b; text-align:center; }
+</style>
+</head>
+<body>
+
+  <div class="legend">
+    <h1>Beyblade X Score — selezione combo nell'interfaccia attuale</h1>
+    Sotto ogni nome compare un punto d'aggancio <b>opzionale</b> per la Bey. Lo score funziona anche senza toccarlo (il casual lo ignora). Prova i tre flussi:
+    <div class="steps">
+      <div class="step"><span class="num">1</span><b>Pick da scaffale</b> — tocca «+ Aggiungi Bey»: scegli dalle tue Bey (1 tap). Lo scaffale arriva dal tuo combo builder.</div>
+      <div class="step"><span class="num">2</span><b>Modifica al volo</b> — Bey già assegnata: tocca <b>solo il pezzo</b> che hai cambiato al tavolo (es. il Bit). Variante effimera, salvataggio opzionale.</div>
+      <div class="step"><span class="num">3</span><b>Componi nuova</b> — caso raro: «+ Componi nuova» apre il picker completo. Oppure scrivi un nome libero al volo.</div>
+    </div>
+  </div>
+
+  <div class="phone">
+    <div class="panels">
+      <!-- LEFT PLAYER -->
+      <div class="panel">
+        <div class="head-row">
+          <span class="pname">Marco</span>
+          <span class="sep">·</span>
+          <span class="bey-row" id="bey-row-p1"></span>
+        </div>
+        <div class="fouls"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="play">
+          <div class="btns">
+            <div class="fbtn spin"><span class="wm">SPIN</span><span class="pts">+1</span></div>
+            <div class="fbtn burst"><span class="wm">BURST</span><span class="pts">+2</span></div>
+          </div>
+          <div class="center">
+            <div class="wins"><span class="trophy">🏆</span><span class="wn">0</span></div>
+            <div class="score">2</div>
+          </div>
+          <div class="btns">
+            <div class="fbtn over"><span class="wm">OVER</span><span class="pts">+2</span></div>
+            <div class="fbtn xtreme"><span class="wm">XTREME</span><span class="pts">+3</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"><span class="swap">⇄</span><div class="line"></div></div>
+
+      <!-- RIGHT PLAYER -->
+      <div class="panel">
+        <div class="head-row">
+          <span class="pname">Yuki</span>
+          <span class="sep">·</span>
+          <span class="bey-row" id="bey-row-p2"></span>
+        </div>
+        <div class="fouls"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="play">
+          <div class="btns">
+            <div class="fbtn spin"><span class="wm">SPIN</span><span class="pts">+1</span></div>
+            <div class="fbtn burst"><span class="wm">BURST</span><span class="pts">+2</span></div>
+          </div>
+          <div class="center">
+            <div class="wins"><span class="trophy">🏆</span><span class="wn">0</span></div>
+            <div class="score">1</div>
+          </div>
+          <div class="btns">
+            <div class="fbtn over"><span class="wm">OVER</span><span class="pts">+2</span></div>
+            <div class="fbtn xtreme"><span class="wm">XTREME</span><span class="pts">+3</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM BAR -->
+    <div class="bottom">
+      <div class="bhalf"><span class="pill"><span>🏆</span><span class="gold">4</span></span></div>
+      <span class="countdown"><span style="font-size:12px">▶</span><span>3·2·1</span></span>
+      <div class="bhalf right">
+        <span class="ubtn"><span>↩</span>Undo</span>
+        <span class="ubtn rbtn"><span>↻</span>Reset</span>
+        <span class="ibtn">i</span>
+      </div>
+    </div>
+
+    <!-- BOTTOM SHEET (scaffale / scelta Bey) -->
+    <div class="sheet-back" id="sheet-back">
+      <div class="sheet" id="sheet"></div>
+    </div>
+
+    <!-- MODALE PICKER PEZZO (ricco) -->
+    <div class="modal-back" id="modal-back">
+      <div class="modal" id="modal"></div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+      <span id="toast-msg">Variante attiva per questo match</span>
+      <button id="toast-keep">Tieni nello scaffale</button>
+    </div>
+  </div>
+
+  <div class="hint">Mockup statico — i pulsanti punteggio non incrementano. Serve solo a mostrare l'interazione di selezione/modifica della Bey.</div>
+
+<script>
+  // --- Dati di esempio (parti reali Beyblade X) ---
+  const BLADES = [
+    {n:'Bear Scratch',th:'🐻',ty:'Defense'}, {n:'Cobalt Drake',th:'🐲',ty:'Attack'},
+    {n:'Cobalt Dragoon',th:'🐉',ty:'Balance'}, {n:'Dran Dagger',th:'🗡️',ty:'Attack'},
+    {n:'Dran Sword',th:'⚔️',ty:'Attack'}, {n:'Hells Hammer',th:'🔨',ty:'Defense'},
+    {n:'Hells Scythe',th:'☠️',ty:'Balance'}, {n:'Knight Shield',th:'🛡️',ty:'Defense'},
+    {n:'Leon Claw',th:'🦁',ty:'Balance'}, {n:'Phoenix Wing',th:'🔥',ty:'Stamina'},
+    {n:'Rhino Horn',th:'🦏',ty:'Defense'}, {n:'Shark Edge',th:'🦈',ty:'Attack'},
+    {n:'Sphinx Cowl',th:'🐱',ty:'Defense'}, {n:'Tyranno Beat',th:'🦖',ty:'Attack'},
+    {n:'Unicorn Sting',th:'🦄',ty:'Balance'}, {n:'Viper Tail',th:'🐍',ty:'Defense'},
+    {n:'Weiss Tiger',th:'🐯',ty:'Attack'}, {n:'Whale Wave',th:'🐋',ty:'Stamina'},
+    {n:'Wizard Arrow',th:'🏹',ty:'Stamina'}, {n:'Wizard Rod',th:'🪄',ty:'Stamina'},
+  ];
+  const RATCHETS = ['0-70','1-60','1-80','2-60','3-60','3-80','4-60','4-70','4-80','5-60','5-80','7-60','9-60','9-70','9-80'];
+  const BITS = [
+    {c:'F', n:'Flat'}, {c:'T', n:'Taper'}, {c:'B', n:'Ball'}, {c:'N', n:'Needle'},
+    {c:'GF', n:'Gear Flat'}, {c:'P', n:'Point'}, {c:'O', n:'Orb'}, {c:'A', n:'Accel'},
+    {c:'S', n:'Spike'}, {c:'HN', n:'High Needle'}, {c:'LF', n:'Low Flat'}, {c:'GB', n:'Gear Ball'},
+    {c:'GN', n:'Gear Needle'}, {c:'MN', n:'Metal Needle'}, {c:'DB', n:'Dot Ball'}, {c:'Q', n:'Quake'},
+    {c:'C', n:'Cyclone'}, {c:'UN', n:'Unite'},
+  ];
+  const RECENT = { blade:['Dran Sword','Hells Scythe'], ratchet:['3-60','4-60'], bit:['F','T','B'] };
+  const BLADE_BY_NAME = Object.fromEntries(BLADES.map(b=>[b.n,b]));
+  // Scaffale "Le tue Bey" (verrebbe dal combo builder)
+  const SHELF = [
+    {top:'🗡️', blade:'Dran Sword',   ratchet:'3-60', bit:'F'},
+    {top:'⚔️', blade:'Hells Scythe',  ratchet:'4-60', bit:'T'},
+    {top:'🏹', blade:'Wizard Arrow',  ratchet:'4-80', bit:'B'},
+    {top:'🛡️', blade:'Knight Shield', ratchet:'3-80', bit:'N'},
+    {top:'🔥', blade:'Phoenix Wing',  ratchet:'9-60', bit:'GF'},
+  ];
+
+  // stato per giocatore
+  const state = { p1: null, p2: null };
+
+  const beyRow = { p1: document.getElementById('bey-row-p1'), p2: document.getElementById('bey-row-p2') };
+  const sheetBack = document.getElementById('sheet-back');
+  const sheet = document.getElementById('sheet');
+  const modalBack = document.getElementById('modal-back');
+  const modal = document.getElementById('modal');
+  const toast = document.getElementById('toast');
+
+  function nameOf(pid){ return pid==='p1'?'Marco':'Yuki'; }
+
+  // --- Render del chip sotto il nome ---
+  function renderBey(pid){
+    const b = state[pid];
+    const row = beyRow[pid];
+    if(!b){
+      row.innerHTML = `<span class="bey-add" data-open="${pid}">+ Aggiungi Bey</span>`;
+    } else {
+      row.innerHTML = `
+        <span class="bey-chips" title="Tocca un pezzo per cambiarlo">
+          <span class="part blade" data-edit="${pid}:blade">${b.blade}</span>
+          <span class="part" data-edit="${pid}:ratchet">${b.ratchet}</span>
+          <span class="part" data-edit="${pid}:bit">${b.bit}</span>
+          ${b.variant ? '<span class="bey-variant">★ var</span>' : ''}
+        </span>`;
+    }
+  }
+
+  // --- Bottom sheet: scelta dallo scaffale ---
+  function openShelf(pid){
+    sheet.innerHTML = `
+      <div class="sheet-head">
+        <div class="title">Bey di ${nameOf(pid)} <small>· scegli o crea</small></div>
+        <div class="x" data-close>✕</div>
+      </div>
+      <div class="sheet-sub">Le tue Bey · dal combo builder</div>
+      <div class="shelf">
+        ${SHELF.map((b,i)=>`
+          <div class="bey-card" data-pick="${pid}:${i}">
+            <div class="nm">${b.blade}</div>
+            <div class="pr">${b.ratchet} · ${b.bit}</div>
+          </div>`).join('')}
+        <div class="bey-card new" data-compose="${pid}">
+          <div class="plus">+</div><div class="lbl">Componi nuova</div>
+        </div>
+      </div>
+      <div class="sheet-sub">…oppure un nome al volo</div>
+      <div class="freeform">
+        <input id="ff-input" placeholder="es. «Deck Dran» o «Hells rossa»" maxlength="24">
+        <button data-freeform="${pid}">OK</button>
+      </div>`;
+    sheetBack.classList.add('open');
+  }
+
+  // --- Componi nuova: 3 pezzi grandi, ognuno apre il picker ricco ---
+  let composeDraft = null;
+  function openCompose(pid){
+    composeDraft = { pid, blade:'Dran Sword', ratchet:'3-60', bit:'F' };
+    closeSheet();
+    renderComposeModal();
+    modalBack.classList.add('open');
+  }
+  function renderComposeModal(){
+    modal.innerHTML = `
+      <div class="mhead">
+        <div class="title">Componi nuova Bey <small>· ${nameOf(composeDraft.pid)}</small></div>
+        <div class="x" data-close>✕</div>
+      </div>
+      <div class="compose-parts">
+        <div class="cpart" data-pickpart="blade"><div class="k">Blade</div><div class="v">${composeDraft.blade}</div></div>
+        <div class="cpart" data-pickpart="ratchet"><div class="k">Ratchet</div><div class="v">${composeDraft.ratchet}</div></div>
+        <div class="cpart" data-pickpart="bit"><div class="k">Bit</div><div class="v">${composeDraft.bit}</div></div>
+      </div>
+      <div style="flex:1"></div>
+      <div class="freeform" style="padding:0 16px 16px; justify-content:flex-end">
+        <button data-compose-done style="padding:10px 24px">Conferma Bey</button>
+      </div>`;
+  }
+
+  // --- Picker ricco di UNA parte (usato sia da swap che da compose) ---
+  // mode: 'swap' (applica a state[pid]) | 'compose' (torna a comporre)
+  let picker = { part:null, mode:null, pid:null, search:'', facet:'Tutti' };
+
+  function openPartPicker(part, mode, pid){
+    picker = { part, mode, pid, search:'', facet:'Tutti' };
+    renderPartPicker();
+    modalBack.classList.add('open');
+  }
+
+  function currentVal(){
+    if(picker.mode==='swap') return state[picker.pid][picker.part];
+    return composeDraft[picker.part];
+  }
+
+  function renderPartPicker(){
+    const p = picker.part;
+    const label = p==='blade'?'Blade':p==='ratchet'?'Ratchet':'Bit';
+    const ctx = picker.mode==='swap'
+      ? `cambia su ${state[picker.pid].blade} ${state[picker.pid].ratchet} ${state[picker.pid].bit}`
+      : nameOf(picker.pid);
+    const facets = p==='blade'
+      ? ['Tutti','Attack','Defense','Stamina','Balance'].map(f=>
+          `<span class="facet ${f===picker.facet?'on':''}" data-facet="${f}">${f}</span>`).join('')
+      : '';
+    const recents = (RECENT[p]||[]).map(v=>`<span class="rchip" data-pp="${v}">${v}</span>`).join('');
+    modal.innerHTML = `
+      <div class="mhead">
+        <div class="title">${picker.mode==='swap'?'Cambia':'Scegli'} ${label} <small>· ${ctx}</small></div>
+        <div class="x" data-close>✕</div>
+      </div>
+      <div class="mstick">
+        <div class="searchbar"><span class="ic">🔍</span>
+          <input id="pp-search" placeholder="Cerca ${label.toLowerCase()}…" autocomplete="off">
+        </div>
+        ${facets?`<div class="facets">${facets}</div>`:''}
+        <div class="recents"><span class="lbl">Recenti</span>${recents||'<span class="rchip" style="opacity:.4">—</span>'}</div>
+      </div>
+      <div class="mgrid" id="pp-grid"></div>`;
+    renderGrid();
+    const inp = document.getElementById('pp-search');
+    inp.value = picker.search;
+    inp.addEventListener('input', ()=>{ picker.search = inp.value; renderGrid(); });
+  }
+
+  function renderGrid(){
+    const p = picker.part, q = picker.search.trim().toLowerCase(), cur = currentVal();
+    const grid = document.getElementById('pp-grid');
+    if(p==='blade'){
+      let items = BLADES.filter(b=> b.n.toLowerCase().includes(q));
+      if(picker.facet!=='Tutti') items = items.filter(b=> b.ty===picker.facet);
+      grid.innerHTML = items.length ? `<div class="blade-grid">${items.map(b=>`
+        <div class="pcard ${b.n===cur?'sel':''}" data-pp="${b.n}">
+          <div class="nm">${b.n}</div>
+          <div class="ty ${b.ty}">${b.ty}</div>
+        </div>`).join('')}</div>` : `<div class="empty">Nessun Blade per «${picker.search}»</div>`;
+    } else if(p==='ratchet'){
+      const items = RATCHETS.filter(r=> r.toLowerCase().includes(q));
+      grid.innerHTML = items.length ? `<div class="token-grid">${items.map(r=>`
+        <div class="tchip ${r===cur?'sel':''}" data-pp="${r}"><div class="code">${r}</div></div>`).join('')}</div>`
+        : `<div class="empty">Nessun Ratchet</div>`;
+    } else {
+      const items = BITS.filter(b=> b.c.toLowerCase().includes(q) || b.n.toLowerCase().includes(q));
+      grid.innerHTML = items.length ? `<div class="token-grid">${items.map(b=>`
+        <div class="tchip ${b.c===cur?'sel':''}" data-pp="${b.c}"><div class="code">${b.c}</div><div class="sub">${b.n}</div></div>`).join('')}</div>`
+        : `<div class="empty">Nessun Bit</div>`;
+    }
+  }
+
+  function applyPick(val){
+    if(picker.mode==='compose'){
+      composeDraft[picker.part] = val;
+      renderComposeModal();          // torna a comporre
+    } else {
+      const pid = picker.pid, part = picker.part;
+      const before = state[pid][part];
+      state[pid][part] = val;
+      if(val !== before) state[pid].variant = true;
+      renderBey(pid);
+      closeModal();
+      if(val !== before) showToast(pid);
+    }
+  }
+
+  function closeSheet(){ sheetBack.classList.remove('open'); }
+  function closeModal(){ modalBack.classList.remove('open'); }
+  function showToast(pid){
+    document.getElementById('toast-msg').textContent = 'Variante attiva per questo match';
+    toast.classList.add('show');
+    toast.dataset.pid = pid;
+    clearTimeout(window._tt);
+    window._tt = setTimeout(()=>toast.classList.remove('show'), 4000);
+  }
+
+  // --- Event delegation ---
+  document.addEventListener('click', (e)=>{
+    const t = e.target.closest('[data-open],[data-close],[data-pick],[data-compose],[data-compose-done],[data-pickpart],[data-facet],[data-pp],[data-edit],[data-freeform]');
+    if(!t) {
+      if(e.target === sheetBack) closeSheet();
+      if(e.target === modalBack) closeModal();
+      return;
+    }
+    // apri scaffale
+    if(t.dataset.open){ openShelf(t.dataset.open); return; }
+    // chiudi (sheet o modale)
+    if(t.hasAttribute('data-close')){ closeSheet(); closeModal(); return; }
+    // pick dallo scaffale (1 tap)
+    if(t.dataset.pick){
+      const [pid, idx] = t.dataset.pick.split(':');
+      state[pid] = { ...SHELF[+idx], variant:false };
+      renderBey(pid); closeSheet(); return;
+    }
+    // componi nuova -> modale 3 pezzi
+    if(t.dataset.compose){ openCompose(t.dataset.compose); return; }
+    // nel compose: tocca un pezzo -> picker ricco in modo 'compose'
+    if(t.dataset.pickpart){ openPartPicker(t.dataset.pickpart, 'compose', composeDraft.pid); return; }
+    // conferma compose
+    if(t.hasAttribute('data-compose-done')){
+      state[composeDraft.pid] = { top:'✨', blade:composeDraft.blade, ratchet:composeDraft.ratchet, bit:composeDraft.bit, variant:false };
+      renderBey(composeDraft.pid); closeModal(); return;
+    }
+    // filtro faccetta (blade)
+    if(t.dataset.facet){ picker.facet = t.dataset.facet; renderPartPicker(); return; }
+    // selezione di un pezzo (card/chip/recente)
+    if(t.dataset.pp){ applyPick(t.dataset.pp); return; }
+    // nome libero
+    if(t.dataset.freeform){
+      const pid = t.dataset.freeform;
+      const val = document.getElementById('ff-input').value.trim() || 'Bey senza nome';
+      state[pid] = { top:'🏷️', blade:val, ratchet:'', bit:'', variant:false, freeform:true };
+      renderBey(pid); closeSheet(); return;
+    }
+    // modifica al volo: apri il picker ricco del SOLO pezzo toccato
+    if(t.dataset.edit){
+      const [pid, part] = t.dataset.edit.split(':');
+      if(state[pid] && state[pid].freeform){ openShelf(pid); return; } // freeform -> ricomponi
+      openPartPicker(part, 'swap', pid); return;
+    }
+  });
+
+  // toast: tieni nello scaffale
+  document.getElementById('toast-keep').addEventListener('click', ()=>{
+    const pid = toast.dataset.pid;
+    if(state[pid]){
+      SHELF.push({ top:'⭐', blade:state[pid].blade, ratchet:state[pid].ratchet, bit:state[pid].bit });
+      state[pid].variant = false; renderBey(pid);
+    }
+    document.getElementById('toast-msg').textContent = 'Salvata nello scaffale ✓';
+    document.getElementById('toast-keep').style.display = 'none';
+    setTimeout(()=>{ toast.classList.remove('show'); document.getElementById('toast-keep').style.display=''; }, 1400);
+  });
+
+  // init: P1 parte SENZA Bey (mostra onramp), P2 con una Bey già assegnata (mostra modifica al volo)
+  state.p2 = { ...SHELF[1], variant:false };
+  renderBey('p1');
+  renderBey('p2');
+</script>
+</body>
+</html>

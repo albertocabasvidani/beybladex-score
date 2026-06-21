@@ -15,6 +15,10 @@ import { ReviewPromptModal } from '../modals/ReviewPromptModal';
 import { useGameStore } from '../../store/game-store';
 import { useReviewStore } from '../../store/review-store';
 import { logger } from '../../utils/logger';
+import { STATS_ENABLED, MODE_HOME_ENABLED } from '../../config/featureFlags';
+import { BeySelectorOverlay } from '../../features/stats/components/BeySelectorOverlay';
+import { useStatsStore } from '../../features/stats/statsStore';
+import { useUiStore } from '../../store/uiStore';
 
 export function GameScreen() {
   const { t } = useTranslation();
@@ -28,6 +32,7 @@ export function GameScreen() {
   const totalLanci = useGameStore((state) => state.history.filter((h) => h.type === 'score').length);
   const reminderEnabled = useGameStore((state) => state.sideSwitchReminderEnabled);
   const setSideSwitchReminderEnabled = useGameStore((state) => state.setSideSwitchReminderEnabled);
+  const setActiveTab = useUiStore((state) => state.setActiveTab);
   const canUndoValue = canUndo();
 
   const leftPlayer = isSwapped ? 'player2' : 'player1';
@@ -42,18 +47,42 @@ export function GameScreen() {
 
   // Invito recensione dopo N partite completate (al passaggio winner null -> set)
   const incrementGamesCompleted = useReviewStore((state) => state.incrementGamesCompleted);
+  const recordMatch = useStatsStore((state) => state.recordMatch);
   const prevWinnerRef = useRef(winner);
   useEffect(() => {
     const prev = prevWinnerRef.current;
     prevWinnerRef.current = winner;
     if (!prev && winner) {
       incrementGamesCompleted();
+      // Registra il match per le statistiche per-combo (solo se entrambe le Bey sono assegnate).
+      if (STATS_ENABLED) {
+        const gs = useGameStore.getState();
+        if (gs.winner && gs.player1Bey && gs.player2Bey) {
+          recordMatch({
+            playedAt: Date.now(),
+            winScore: gs.winScore,
+            winner: gs.winner,
+            player1: {
+              bey: gs.player1Bey,
+              score: gs.player1.score,
+              finishCounts: gs.player1.finishCounts,
+              fouls: gs.player1.fouls,
+            },
+            player2: {
+              bey: gs.player2Bey,
+              score: gs.player2.score,
+              finishCounts: gs.player2.finishCounts,
+              fouls: gs.player2.fouls,
+            },
+          });
+        }
+      }
       if (useReviewStore.getState().shouldShowReviewPrompt()) {
         const timer = setTimeout(() => setReviewOpen(true), 1500);
         return () => clearTimeout(timer);
       }
     }
-  }, [winner, incrementGamesCompleted]);
+  }, [winner, incrementGamesCompleted, recordMatch]);
 
   // Promemoria "Avete cambiato lato?" ogni 3 lanci, mostrato a fine animazione dei punti
   const prevAnimationRef = useRef(currentAnimation);
@@ -182,8 +211,26 @@ export function GameScreen() {
           paddingHorizontal: 12,
         }}
       >
-        {/* Left half: trophy */}
-        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+        {/* Left half: home (modalità) + trophy */}
+        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          {/* Home / cambio modalità (solo con le feature avanzate attive) */}
+          {MODE_HOME_ENABLED && (
+            <TouchableOpacity
+              onPress={() => setActiveTab('home')}
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 8,
+                backgroundColor: '#334155',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              accessibilityRole="button"
+              accessibilityLabel="Home"
+            >
+              <Text allowFontScaling={false} style={{ color: '#94a3b8', fontSize: 18 }}>⌂</Text>
+            </TouchableOpacity>
+          )}
           {/* Trophy + win score */}
           <TouchableOpacity
             onPress={() => setSettingsOpen(true)}
@@ -297,6 +344,9 @@ export function GameScreen() {
 
       {/* Victory Overlay - only after animation completes */}
       {winner && !currentAnimation && <VictoryOverlay winnerId={winner} />}
+
+      {/* Bey selector overlay (combo selection) - gated by STATS_ENABLED */}
+      {STATS_ENABLED && <BeySelectorOverlay />}
     </View>
   );
 }

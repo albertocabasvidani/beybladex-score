@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { FinishType, PlayerId, MatchState } from '@beybladex/shared';
+import type { FinishType, PlayerId, MatchState, PartCategory } from '@beybladex/shared';
+import type { SelectedPart } from '../features/builder/stores/slots';
+import { type AssignedBey, beyWithPart } from '../features/stats/bey';
 import {
   createInitialMatchState,
   scorePoint,
@@ -26,6 +28,9 @@ interface GameStore extends MatchState {
   isSwapped: boolean;
   wins: { player1: number; player2: number };
   sideSwitchReminderEnabled: boolean;
+  /** Bey assegnata a ciascun giocatore (selettore combo nello scoreboard). Persistita tra i match. */
+  player1Bey: AssignedBey | null;
+  player2Bey: AssignedBey | null;
 
   // Actions
   score: (playerId: PlayerId, finishType: FinishType) => void;
@@ -41,6 +46,10 @@ interface GameStore extends MatchState {
   swapSides: () => void;
   resetWins: () => void;
   setSideSwitchReminderEnabled: (value: boolean) => void;
+  assignBey: (playerId: PlayerId, bey: AssignedBey) => void;
+  clearBey: (playerId: PlayerId) => void;
+  /** Cambia un solo pezzo della Bey al volo (variante effimera). */
+  swapBeyPart: (playerId: PlayerId, category: PartCategory, part: SelectedPart) => void;
 }
 
 interface PersistedState {
@@ -49,6 +58,8 @@ interface PersistedState {
   wins: { player1: number; player2: number };
   _persistedNames: { player1: string; player2: string };
   sideSwitchReminderEnabled: boolean;
+  player1Bey: AssignedBey | null;
+  player2Bey: AssignedBey | null;
 }
 
 export const useGameStore = create<GameStore>()(
@@ -60,6 +71,8 @@ export const useGameStore = create<GameStore>()(
       isSwapped: false,
       wins: { player1: 0, player2: 0 },
       sideSwitchReminderEnabled: true,
+      player1Bey: null,
+      player2Bey: null,
 
       // Score a point
       score: (playerId, finishType) => {
@@ -286,6 +299,29 @@ export const useGameStore = create<GameStore>()(
         set({ sideSwitchReminderEnabled: value });
       },
 
+      // Assign a Bey (combo) to a player from the shelf / compose / freeform
+      assignBey: (playerId, bey) => {
+        logger.info('Assign bey', { playerId, name: bey.name, comboId: bey.comboId });
+        set(playerId === 'player1' ? { player1Bey: bey } : { player2Bey: bey });
+      },
+
+      // Remove the assigned Bey
+      clearBey: (playerId) => {
+        logger.info('Clear bey', { playerId });
+        set(playerId === 'player1' ? { player1Bey: null } : { player2Bey: null });
+      },
+
+      // Swap a single part of the assigned Bey (ephemeral variant)
+      swapBeyPart: (playerId, category, part) => {
+        const state = get();
+        const current = playerId === 'player1' ? state.player1Bey : state.player2Bey;
+        const base: AssignedBey =
+          current ?? { comboId: null, name: part.name, line: 'bx', parts: {} };
+        const next = beyWithPart(base, category, part);
+        logger.info('Swap bey part', { playerId, category, part: part.name });
+        set(playerId === 'player1' ? { player1Bey: next } : { player2Bey: next });
+      },
+
       // Set max fouls limit
       setMaxFoulsValue: (value) => {
         try {
@@ -313,6 +349,8 @@ export const useGameStore = create<GameStore>()(
           player2: state.player2.name,
         },
         sideSwitchReminderEnabled: state.sideSwitchReminderEnabled,
+        player1Bey: state.player1Bey,
+        player2Bey: state.player2Bey,
       }),
       merge: (persisted, current) => {
         const p = persisted as PersistedState | undefined;
@@ -332,6 +370,8 @@ export const useGameStore = create<GameStore>()(
           },
           sideSwitchReminderEnabled:
             p.sideSwitchReminderEnabled ?? (current as GameStore).sideSwitchReminderEnabled,
+          player1Bey: p.player1Bey ?? (current as GameStore).player1Bey,
+          player2Bey: p.player2Bey ?? (current as GameStore).player2Bey,
         };
       },
     }

@@ -2,11 +2,14 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { asyncStorage } from './async-storage';
 
-export type AppTab = 'scoreboard' | 'builder';
+export type AppTab = 'home' | 'scoreboard' | 'builder' | 'analytics';
 export type BuilderTab = 'parts' | 'builder' | 'decks' | 'collection';
 
 interface UiStore {
-  /** Tab top-level: scoreboard (landscape) o builder (portrait). Gated da BUILDER_ENABLED in App. */
+  /**
+   * Modalità top-level. scoreboard = landscape; home/builder/analytics = portrait. Gated da
+   * MODE_HOME_ENABLED in App (con flag OFF l'app resta sempre sullo scoreboard).
+   */
   activeTab: AppTab;
   /** Tab interna del builder. */
   activeBuilderTab: BuilderTab;
@@ -17,7 +20,7 @@ interface UiStore {
 export const useUiStore = create<UiStore>()(
   persist(
     (set) => ({
-      activeTab: 'scoreboard',
+      activeTab: 'home',
       activeBuilderTab: 'builder',
       setActiveTab: (activeTab) => set({ activeTab }),
       setActiveBuilderTab: (activeBuilderTab) => set({ activeBuilderTab }),

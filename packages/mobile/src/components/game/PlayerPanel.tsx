@@ -6,6 +6,8 @@ import { useGameStore } from '../../store/game-store';
 import { ScoreDisplay } from './ScoreDisplay';
 import { FinishButton } from './FinishButton';
 import { FoulCounter } from './FoulCounter';
+import { STATS_ENABLED } from '../../config/featureFlags';
+import { BeyRow } from '../../features/stats/components/BeyRow';
 
 interface Props {
   playerId: PlayerId;
@@ -66,20 +68,38 @@ export function PlayerPanel({ playerId }: Props) {
           }}
         />
       ) : (
-        <Pressable onPress={handleNamePress}>
-          <Text
-            allowFontScaling={false}
-            style={{
-              color: '#e2e8f0',
-              fontSize: 18,
-              fontWeight: '800',
-              textAlign: 'center',
-              paddingVertical: 2,
-            }}
-          >
-            {displayName}
-          </Text>
-        </Pressable>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+            gap: 6,
+            paddingVertical: 2,
+          }}
+        >
+          <Pressable onPress={handleNamePress}>
+            <Text
+              allowFontScaling={false}
+              style={{
+                color: '#e2e8f0',
+                fontSize: 18,
+                fontWeight: '800',
+                textAlign: 'center',
+              }}
+            >
+              {displayName}
+            </Text>
+          </Pressable>
+          {STATS_ENABLED && (
+            <>
+              <Text allowFontScaling={false} style={{ color: '#475569', fontSize: 14 }}>
+                ·
+              </Text>
+              <BeyRow playerId={playerId} />
+            </>
+          )}
+        </View>
       )}
 
       {/* Foul counter */}

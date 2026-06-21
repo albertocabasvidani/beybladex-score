@@ -41,13 +41,13 @@ export function BuilderShell() {
     <SafeAreaView style={styles.root} edges={['top', 'left', 'right', 'bottom']}>
       <View style={styles.header}>
         <Pressable
-          onPress={() => setActiveTab('scoreboard')}
+          onPress={() => setActiveTab('home')}
           hitSlop={12}
           style={styles.backBtn}
           accessibilityRole="button"
-          accessibilityLabel={t('builder.backToScoreboard')}
+          accessibilityLabel={t('stats.backHome')}
         >
-          <Text style={styles.backText}>‹ {t('builder.backToScoreboard')}</Text>
+          <Text style={styles.backText}>‹ {t('stats.backHome')}</Text>
         </Pressable>
         <Text style={styles.headerTitle}>{t('builder.title')}</Text>
         <View style={styles.backBtn} />

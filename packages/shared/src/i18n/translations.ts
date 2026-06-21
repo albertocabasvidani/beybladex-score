@@ -9,6 +9,68 @@ export const translations = {
       title: 'Beyblade Score',
       rotateDevice: 'Ruota il dispositivo in landscape per giocare'
     },
+    home: {
+      title: 'Beyblade X',
+      chooseMode: 'Scegli una modalità',
+      scoreboard: 'Segnapunti',
+      scoreboardDesc: 'Conta i punti delle battaglie',
+      builder: 'Gestore combo',
+      builderDesc: 'Crea e salva le tue Bey',
+      analytics: 'Analitiche',
+      analyticsDesc: 'Win-rate e statistiche delle combo'
+    },
+    stats: {
+      title: 'Analitiche',
+      backHome: 'Home',
+      tabs: { overview: 'Combo', matchups: 'Matchup', parts: 'Parti' },
+      range: { all: 'Tutto', today: 'Oggi', d7: '7g', d30: '30g' },
+      empty: {
+        title: 'Ancora nessun dato',
+        body: 'Assegna una Bey a ciascun giocatore nel segnapunti: ogni partita verrà registrata qui.',
+        cta: 'Vai al segnapunti',
+        range: 'Nessuna partita in questo periodo'
+      },
+      summary: { games: 'Partite', combos: 'Combo', topCombo: 'Top combo' },
+      sort: { winRate: 'Win-rate', pointDiff: 'Diff. punti', games: 'Partite', recent: 'Recenti' },
+      combo: {
+        winRate: 'win-rate',
+        games_one: '{{count}} partita',
+        games_other: '{{count}} partite',
+        pointDiff: 'Diff. punti',
+        avgDiff: 'Diff. media',
+        points: 'Punti (F-S)',
+        finishMix: 'Composizione finish',
+        finishScored: 'Inflitti',
+        finishConceded: 'Subiti',
+        form: 'Forma',
+        matchups: 'Matchup',
+        noMatchups: 'Nessun matchup registrato',
+        lowSample: 'campione ridotto',
+        notFound: 'Combo',
+        insightConceded: 'Subisci spesso finish {{finish}}: valuta un assetto più adatto.'
+      },
+      matchups: { title: 'Matchup di {{name}}' },
+      parts: { searchPlaceholder: 'Cerca una parte…', noResults: 'Nessuna parte trovata' },
+      bey: {
+        add: 'Aggiungi Bey',
+        change: 'Cambia Bey',
+        remove: 'Rimuovi Bey',
+        sheetTitle: 'Bey di {{name}}',
+        yourBeys: 'Le tue Bey · dal builder',
+        noSavedCombos: 'Nessuna combo salvata nel builder',
+        openBuilder: 'Apri il gestore combo',
+        composeNew: 'Componi nuova',
+        composeTitle: 'Componi nuova Bey',
+        confirm: 'Conferma Bey',
+        freeformHint: '…oppure un nome al volo',
+        freeformPlaceholder: 'es. «Dran rossa»',
+        variantActive: 'Variante attiva per questo match',
+        keepInShelf: 'Tieni nello scaffale'
+      },
+      clearTitle: 'Cancellare le statistiche?',
+      clearBody: 'Tutte le partite registrate verranno eliminate. Operazione irreversibile.',
+      clearConfirm: 'Cancella tutto'
+    },
     player: {
       player1: 'Giocatore 1',
       player2: 'Giocatore 2'
@@ -166,6 +228,68 @@ export const translations = {
     app: {
       title: 'Beyblade Score',
       rotateDevice: 'Rotate your device to landscape to play'
+    },
+    home: {
+      title: 'Beyblade X',
+      chooseMode: 'Choose a mode',
+      scoreboard: 'Scoreboard',
+      scoreboardDesc: 'Track battle points',
+      builder: 'Combo manager',
+      builderDesc: 'Build and save your Beys',
+      analytics: 'Analytics',
+      analyticsDesc: 'Combo win-rate and stats'
+    },
+    stats: {
+      title: 'Analytics',
+      backHome: 'Home',
+      tabs: { overview: 'Combos', matchups: 'Matchups', parts: 'Parts' },
+      range: { all: 'All', today: 'Today', d7: '7d', d30: '30d' },
+      empty: {
+        title: 'No data yet',
+        body: 'Assign a Bey to each player in the scoreboard: every game gets recorded here.',
+        cta: 'Go to scoreboard',
+        range: 'No games in this period'
+      },
+      summary: { games: 'Games', combos: 'Combos', topCombo: 'Top combo' },
+      sort: { winRate: 'Win-rate', pointDiff: 'Point diff', games: 'Games', recent: 'Recent' },
+      combo: {
+        winRate: 'win-rate',
+        games_one: '{{count}} game',
+        games_other: '{{count}} games',
+        pointDiff: 'Point diff',
+        avgDiff: 'Avg diff',
+        points: 'Points (F-A)',
+        finishMix: 'Finish mix',
+        finishScored: 'Scored',
+        finishConceded: 'Conceded',
+        form: 'Form',
+        matchups: 'Matchups',
+        noMatchups: 'No matchups recorded',
+        lowSample: 'low sample',
+        notFound: 'Combo',
+        insightConceded: 'You often concede {{finish}} finishes: consider a sturdier setup.'
+      },
+      matchups: { title: '{{name}} matchups' },
+      parts: { searchPlaceholder: 'Search a part…', noResults: 'No part found' },
+      bey: {
+        add: 'Add Bey',
+        change: 'Change Bey',
+        remove: 'Remove Bey',
+        sheetTitle: "{{name}}'s Bey",
+        yourBeys: 'Your Beys · from the builder',
+        noSavedCombos: 'No combos saved in the builder',
+        openBuilder: 'Open combo manager',
+        composeNew: 'Compose new',
+        composeTitle: 'Compose new Bey',
+        confirm: 'Confirm Bey',
+        freeformHint: '…or a quick name',
+        freeformPlaceholder: 'e.g. "Red Dran"',
+        variantActive: 'Variant active for this match',
+        keepInShelf: 'Keep in shelf'
+      },
+      clearTitle: 'Clear stats?',
+      clearBody: 'All recorded games will be deleted. This cannot be undone.',
+      clearConfirm: 'Clear all'
     },
     player: {
       player1: 'Player 1',
