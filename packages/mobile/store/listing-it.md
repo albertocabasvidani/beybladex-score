@@ -64,6 +64,9 @@ Beyblade X Score è gratuita da scaricare. L'app è supportata da un banner pubb
 ⭐ PERCHÉ I BLADER LA ADORANO
 Creata da un appassionato di Beyblade X per altri blader. Pensata sull'uso reale nei tornei, non un template generico — ogni dettaglio, dal layout landscape alle animazioni dei finish, è tarato per battle rapide e oneste.
 
+🧪 BETA — PROVA LE NOVITÀ IN ANTEPRIMA
+Vuoi un'anteprima? Iscriviti alla beta aperta per provare il Gestore Combo e le Statistiche per combo prima del rilascio, e aiutaci a migliorare l'app con il tuo feedback.
+
 Scarica Beyblade X Score Tracker e lascia che giri!
 
 ## Categoria

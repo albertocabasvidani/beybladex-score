@@ -1,9 +1,9 @@
 ---
 name: combo-stats
 status: active
-updated: 21/06/2026
+updated: 22/06/2026
 health: green
-next-step: "Decidere il rilascio in produzione (oggi STATS_ENABLED = __DEV__); valutare deck 3-on-3 e trend temporale"
+next-step: "Beta (combo builder + stats) in review su Test aperto; a beta approvata pubblicare la riga beta nello Store live e raccogliere feedback"
 blocked-by: null
 current-plan: null
 main-doc: .claude/CLAUDE.md
@@ -18,6 +18,7 @@ Tracking win-rate per combo: assegnando una **Bey** a ciascun giocatore nello sc
 ## Backlog
 
 <!-- Idee, feature, task non avviati. Formato: `- gg/mm/aaaa — testo` -->
+- 22/06/2026 — **A beta approvata su Test aperto**: pubblicare sulla scheda **live** di Play Console (EN + traduzione IT) la riga "🧪 BETA — try new features early / prova le novità in anteprima" già pronta in `packages/mobile/store/listing-{en,it}.md`, per reclutare tester. Rimuoverla quando la beta finisce (feature in produzione per tutti).
 - 21/06/2026 — Decidere il rilascio in produzione: oggi `STATS_ENABLED = __DEV__`, in release l'app resta identica allo scoreboard. Valutare modello free/paid (input gratis, insight a pagamento — cfr. `packages/mobile/mockups/combo-selection-design.md`).
 - 21/06/2026 — Modalità deck 3-on-3 (3 Bey per giocatore, no parti duplicate) sia nella selezione sia nelle analitiche.
 - 21/06/2026 — Trend temporale / sparkline del win-rate cumulato e "forma" estesa nel dettaglio combo.
@@ -35,5 +36,6 @@ Tracking win-rate per combo: assegnando una **Bey** a ciascun giocatore nello sc
 ## Changelog
 
 <!-- Cose completate, dalla più recente. Formato: `- gg/mm/aaaa — testo` -->
+- 22/06/2026 — Beta (combo builder + statistiche) pubblicata sul track **Test aperto** (versionCode 19, inviata in review). Nuovo meccanismo flag a build-time `full-build-aab.sh --beta` (`EXPO_PUBLIC_FEATURES_ON`) al posto di `FORCE_ON`; la Production resta scoreboard puro. Link tester: play.google.com/apps/testing/com.beybladex.score (attivo a review approvata).
 - 21/06/2026 — Intervallo temporale custom (calendario da/a, `RangeCalendar`, senza dipendenze native) + guida rapida alle analitiche (didascalia per-tab + legenda ⓘ `StatsLegendModal`). Review multi-agente del codice nuovo con 3 fix.
 - 21/06/2026 — Feature completa su branch `feat/combo-stats`: selezione Bey nello scoreboard (dal mockup `combo-selection-design.md`), registrazione match idempotente, home selettore modalità con orientamento per-tab, analitiche (leaderboard, dettaglio donut mix finish + win-rate, matchup, ricerca parti, filtri temporali). Modello dati e aggregazioni pure in `src/features/stats/`. Tutto feature-flagged, regressione produzione verificata (nessun impatto).

@@ -42,12 +42,12 @@ bash packages/mobile/scripts/full-build-aab.sh              # AAB Play Store (pu
 **Regole**:
 - Iterazione = `build-apk-fast.sh` (no `--clean`, riusa native cache → minuti). Pulita solo per reset o cambio dipendenze.
 - Ottimizzazioni Gradle in `patch-build-gradle.sh` (riapplicate a ogni build). `configuration-cache` NON abilitabile (incompatibile RN plugin). MAI `build-apk.sh` dopo `expo prebuild --clean` senza `patch-build-gradle.sh`.
-- Upload Play Store SEMPRE track **Production** (MAI Closed testing/Alpha). Review/rejection via Chrome DevTools su Play Console.
+- Upload Play Store: release **pubbliche** → track **Production**; build **beta** delle feature flag (`full-build-aab.sh --beta`) → track **Test aperto** (i tester si iscrivono via link, gli altri restano su Production). Tutti i track condividono lo spazio `versionCode`: la beta deve avere `versionCode` > di quello in Production. Review/rejection via Chrome DevTools su Play Console.
 - **versionCode bruciato anche dopo Discard draft**: bumpare SEMPRE a N+1 in `app.json` prima di re-buildare (sennò *"Version code N has already been used"*).
 
 ## Moduli avanzati (feature-flagged, `src/config/featureFlags.ts`)
 
-Tutti gated da `__DEV__` → OFF in release: in produzione l'app è identica al vecchio scoreboard. La costante `FORCE_ON` forza i flag ON per testarli in una build release — **tenere `false` al rilascio**.
+Tutti gated da `__DEV__` → OFF in release: in produzione l'app è identica al vecchio scoreboard. Per una build **beta** (track Test aperto) usare `full-build-aab.sh --beta`: esporta `EXPO_PUBLIC_FEATURES_ON=1` (inlinato da babel-preset-expo) che accende i flag solo in quell'AAB. La build Production normale (`full-build-aab.sh` senza flag) li lascia OFF — niente più costante da azzerare a mano.
 
 - **Combo Builder** (`BUILDER_ENABLED`): tab builder combo/deck data-driven, dati parti bundled offline, radar stats. Architettura → `packages/mobile/docs/combo-builder.md`.
 - **Combo Stats** (`STATS_ENABLED` + home `MODE_HOME_ENABLED`): selezione Bey nello scoreboard, registrazione match, home selettore modalità, analitiche. Architettura → `packages/mobile/docs/combo-stats.md`.

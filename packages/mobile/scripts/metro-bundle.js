@@ -64,11 +64,19 @@ async function bundle() {
     '@beybladex/shared': path.resolve(workspaceRoot, 'packages/shared/src'),
   };
 
+  // Le build con flag inlinato a build-time (es. --beta → EXPO_PUBLIC_FEATURES_ON) devono
+  // ignorare la cache transform di Metro, altrimenti il valore resta quello del run precedente.
+  if (process.env.METRO_RESET_CACHE === '1') {
+    config.resetCache = true;
+  }
+
   console.log('[metro-bundle] Project root:', projectRoot);
   console.log('[metro-bundle] Entry:', entryFile);
   console.log('[metro-bundle] Output:', bundleOutput);
   console.log('[metro-bundle] Platform:', platform);
   console.log('[metro-bundle] Dev:', dev);
+  console.log('[metro-bundle] EXPO_PUBLIC_FEATURES_ON:', process.env.EXPO_PUBLIC_FEATURES_ON || '(unset)');
+  console.log('[metro-bundle] Reset cache:', config.resetCache === true);
 
   const buildOptions = {
     entry: entryFile,

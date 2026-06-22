@@ -1,6 +1,6 @@
 # Statistiche per combo — architettura
 
-Feature nascosta (branch `feat/combo-stats`). Win-rate per combo: assegnando una **Bey** a ciascun giocatore nello scoreboard, ogni partita conclusa diventa un record analizzabile. **Gate `STATS_ENABLED = __DEV__`** + home `MODE_HOME_ENABLED = BUILDER_ENABLED || STATS_ENABLED` (`src/config/featureFlags.ts`). La costante `FORCE_ON` forza i flag ON per testare in una build release — **tenere `false` al rilascio**. In produzione l'app è identica al vecchio scoreboard (nessuna Bey, nessuna home, nessuna registrazione; regressione verificata). Tracking in `projects/combo-stats.md`; mockup UX in `mockups/combo-selection-design.md`.
+Feature nascosta (branch `feat/combo-stats`). Win-rate per combo: assegnando una **Bey** a ciascun giocatore nello scoreboard, ogni partita conclusa diventa un record analizzabile. **Gate `STATS_ENABLED = __DEV__`** + home `MODE_HOME_ENABLED = BUILDER_ENABLED || STATS_ENABLED` (`src/config/featureFlags.ts`). Per una build beta (track Test aperto) i flag si accendono con `full-build-aab.sh --beta` (`EXPO_PUBLIC_FEATURES_ON=1`); la build Production li lascia OFF. In produzione l'app è identica al vecchio scoreboard (nessuna Bey, nessuna home, nessuna registrazione; regressione verificata). Tracking in `projects/combo-stats.md`; mockup UX in `mockups/combo-selection-design.md`.
 
 ## Modello dati (`src/features/stats/`)
 

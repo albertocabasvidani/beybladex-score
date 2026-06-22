@@ -9,7 +9,8 @@
 #   - Release signing with upload.keystore
 #
 # USAGE:
-#   bash packages/mobile/scripts/full-build-aab.sh
+#   bash packages/mobile/scripts/full-build-aab.sh           # Production (feature avanzate OFF)
+#   bash packages/mobile/scripts/full-build-aab.sh --beta    # Test aperto (feature avanzate ON)
 #
 # OUTPUT:
 #   C:/projects/beybladex/packages/mobile/beybladex-mobile.aab
@@ -32,6 +33,25 @@ BUILD_SCRIPTS="$BUILD_PROJECT/scripts"
 echo "============================================"
 echo "  Beyblade X Score - Full AAB Build"
 echo "============================================"
+echo ""
+
+# ---- Parse args: --beta abilita le feature avanzate (combo builder + stats) ----
+BETA=0
+for arg in "$@"; do
+    case "$arg" in
+        --beta) BETA=1 ;;
+    esac
+done
+
+if [ "$BETA" = "1" ]; then
+    export EXPO_PUBLIC_FEATURES_ON=1
+    export METRO_RESET_CACHE=1
+    echo "  >>> BUILD BETA: feature avanzate ON (combo builder + statistiche)"
+    echo "  >>> Destinazione: track TEST APERTO (mai Production)"
+else
+    unset EXPO_PUBLIC_FEATURES_ON || true
+    echo "  >>> BUILD PRODUCTION: feature avanzate OFF (scoreboard puro)"
+fi
 echo ""
 
 # ---- STEP 0: Stop Gradle daemons to prevent lock conflicts ----

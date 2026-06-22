@@ -6,22 +6,24 @@
  * allo scoreboard attuale: nessun tab, nessuna home, nessun cambio di orientamento, nessun
  * selettore Bey, nessuna registrazione statistiche.
  *
- * Per testare le feature in una build release temporanea, forzare `true` qui.
+ * Per una build beta (track Test aperto su Play Store) usare `full-build-aab.sh --beta`:
+ * attiva le feature solo in quell'AAB via EXPO_PUBLIC_FEATURES_ON, senza toccare la Production.
  */
 
-// TEMP test override — abilita le feature avanzate anche in release per testarle sull'emulatore.
-// Riportare a `false` prima del rilascio (le feature devono restare nascoste in produzione).
-const FORCE_ON = false;
+// Attivato a build-time SOLO dalle build beta: `full-build-aab.sh --beta` esporta
+// EXPO_PUBLIC_FEATURES_ON=1, che babel-preset-expo inlina qui. Senza il flag --beta la variabile
+// è assente → in Production i gate restano legati al solo __DEV__ (feature nascoste).
+const FEATURES_ON: boolean = process.env.EXPO_PUBLIC_FEATURES_ON === '1';
 
 /** Combo Builder (tab parti/builder/deck/collezione). */
-export const BUILDER_ENABLED: boolean = __DEV__ || FORCE_ON;
+export const BUILDER_ENABLED: boolean = __DEV__ || FEATURES_ON;
 
 /**
  * Statistiche per combo: selettore Bey nello scoreboard, registrazione dei match e schermate
  * analitiche. Gate separato dal builder, ma di fatto sono nate insieme (la selezione Bey pesca
  * dallo "scaffale" del builder).
  */
-export const STATS_ENABLED: boolean = __DEV__ || FORCE_ON;
+export const STATS_ENABLED: boolean = __DEV__ || FEATURES_ON;
 
 /**
  * Home con selettore di modalità (Segnapunti / Gestore combo / Analitiche). Mostrata solo se è
