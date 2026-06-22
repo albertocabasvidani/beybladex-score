@@ -1,9 +1,9 @@
 ---
 name: scoreboard
 status: active
-updated: 21/06/2026
+updated: 22/06/2026
 health: green
-next-step: "Sostituire ID test AdMob/RevenueCat con quelli reali prima del prossimo rilascio"
+next-step: "v20 (banner invito beta) in review su Production; resta da sostituire gli ID test AdMob/RevenueCat con quelli reali"
 blocked-by: null
 current-plan: null
 main-doc: .claude/CLAUDE.md
@@ -23,6 +23,7 @@ L'app segnapunti vera e propria (web + mobile) e la logica di gioco condivisa in
 
 - 08/04/2026 — ID test AdMob (App ID, ad unit) e RevenueCat API key sono ancora placeholder/test: sostituirli con quelli reali prima del rilascio (`src/config/ads.ts`, `src/store/purchases-store.ts`).
 - 10/06/2026 — expo-audio inietta in autolinking la permission sensibile `RECORD_AUDIO` (più `MODIFY_AUDIO_SETTINGS`, `FOREGROUND_SERVICE*`) anche se l'app fa solo playback: da rimuovere via config del plugin se Play Console ne chiede la motivazione.
+- 22/06/2026 — Play Console segnala API edge-to-edge deprecate (Android 15): le chiamate vengono dalle dipendenze (React Native core `StatusBarModule`/`WindowUtilKt`, lib `react-native-edge-to-edge` di zoontek, AdMob `gms.ads`), NON dal codice app (che usa già `SystemBars`). Non bloccante (solo deprecazione, API ancora funzionanti). Risolvibile solo aggiornando RN/edge-to-edge/AdMob quando migreranno via dalle API deprecate; richiede regressione completa.
 
 ## In progress
 
@@ -31,6 +32,7 @@ L'app segnapunti vera e propria (web + mobile) e la logica di gioco condivisa in
 ## Changelog
 
 <!-- Cose completate, dalla più recente. Formato: `- gg/mm/aaaa — testo` -->
+- 22/06/2026 — Banner in-app (modale bloccante, una sola volta dopo 20 partite completate) che invita gli utenti al beta-testing della beta combo; toggle `BETA_INVITE_ENABLED` (off a beta finita). Pubblicato in Production v20 (full rollout, in review). Riga "beta" anche nelle descrizioni Store (`listing-{en,it}.md`).
 - 21/06/2026 — Promemoria "cambia lato" ogni 3 lanci (banner auto-dismiss, disattivabile da messaggio o impostazioni) + localizzazione completa UI it/en (audit stringhe hardcoded) e nomi giocatore localizzati (v18, in review).
 - 19/06/2026 — ASO: listing Play Store ottimizzato (best practice 2026), screenshot marketing, custom listing Beyblade.
 - 10/06/2026 — Countdown vocale 3-2-1 + modali bilingui (v17).
