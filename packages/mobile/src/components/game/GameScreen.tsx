@@ -12,10 +12,11 @@ import { CreditsModal } from '../modals/CreditsModal';
 import { GuideModal } from '../modals/GuideModal';
 import { ReleaseNoteModal } from '../modals/ReleaseNoteModal';
 import { ReviewPromptModal } from '../modals/ReviewPromptModal';
+import { BetaInviteBanner } from './BetaInviteBanner';
 import { useGameStore } from '../../store/game-store';
 import { useReviewStore } from '../../store/review-store';
 import { logger } from '../../utils/logger';
-import { STATS_ENABLED, MODE_HOME_ENABLED } from '../../config/featureFlags';
+import { STATS_ENABLED, MODE_HOME_ENABLED, BETA_INVITE_ENABLED } from '../../config/featureFlags';
 import { BeySelectorOverlay } from '../../features/stats/components/BeySelectorOverlay';
 import { useStatsStore } from '../../features/stats/statsStore';
 import { useUiStore } from '../../store/uiStore';
@@ -43,10 +44,12 @@ export function GameScreen() {
   const [guideOpen, setGuideOpen] = useState(false);
   const [releaseNoteOpen, setReleaseNoteOpen] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [betaInviteOpen, setBetaInviteOpen] = useState(false);
   const [reminderVisible, setReminderVisible] = useState(false);
 
   // Invito recensione dopo N partite completate (al passaggio winner null -> set)
   const incrementGamesCompleted = useReviewStore((state) => state.incrementGamesCompleted);
+  const markBetaInviteDismissed = useReviewStore((state) => state.markBetaInviteDismissed);
   const recordMatch = useStatsStore((state) => state.recordMatch);
   const prevWinnerRef = useRef(winner);
   useEffect(() => {
@@ -79,6 +82,10 @@ export function GameScreen() {
       }
       if (useReviewStore.getState().shouldShowReviewPrompt()) {
         const timer = setTimeout(() => setReviewOpen(true), 1500);
+        return () => clearTimeout(timer);
+      }
+      if (BETA_INVITE_ENABLED && useReviewStore.getState().shouldShowBetaInvite()) {
+        const timer = setTimeout(() => setBetaInviteOpen(true), 1500);
         return () => clearTimeout(timer);
       }
     }
@@ -143,6 +150,7 @@ export function GameScreen() {
   useEffect(() => {
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
       if (reminderVisible) { setReminderVisible(false); return true; }
+      if (betaInviteOpen) { markBetaInviteDismissed(); setBetaInviteOpen(false); return true; }
       if (reviewOpen) { setReviewOpen(false); return true; }
       if (creditsOpen) { setCreditsOpen(false); return true; }
       if (guideOpen) { setGuideOpen(false); return true; }
@@ -151,7 +159,7 @@ export function GameScreen() {
       return true; // Block back when no modal open (don't exit app)
     });
     return () => sub.remove();
-  }, [settingsOpen, creditsOpen, guideOpen, releaseNoteOpen, reviewOpen, reminderVisible]);
+  }, [settingsOpen, creditsOpen, guideOpen, releaseNoteOpen, reviewOpen, betaInviteOpen, reminderVisible, markBetaInviteDismissed]);
 
   // Safety valve: force-clear stuck animations after 6 seconds
   useEffect(() => {
@@ -341,6 +349,12 @@ export function GameScreen() {
           }}
         />
       )}
+
+      {/* Modal invito al beta-testing (bloccante, una sola volta) - dopo N partite completate */}
+      <BetaInviteBanner
+        visible={betaInviteOpen}
+        onClose={() => { markBetaInviteDismissed(); setBetaInviteOpen(false); }}
+      />
 
       {/* Victory Overlay - only after animation completes */}
       {winner && !currentAnimation && <VictoryOverlay winnerId={winner} />}

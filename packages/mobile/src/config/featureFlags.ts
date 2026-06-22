@@ -30,3 +30,10 @@ export const STATS_ENABLED: boolean = __DEV__ || FEATURES_ON;
  * attiva almeno una delle feature avanzate; altrimenti l'app entra dritta nello scoreboard.
  */
 export const MODE_HOME_ENABLED: boolean = BUILDER_ENABLED || STATS_ENABLED;
+
+/**
+ * Banner in-app che invita gli utenti al beta-testing dopo un po' di utilizzo.
+ * NON è gated da __DEV__: deve girare nella build di produzione per reclutare tester.
+ * Mettere a `false` quando la beta si chiude (feature in produzione per tutti).
+ */
+export const BETA_INVITE_ENABLED: boolean = true;

@@ -5,6 +5,9 @@ import { asyncStorage } from './async-storage';
 // Numero di partite completate dopo cui invitare l'utente a lasciare una recensione
 export const REVIEW_PROMPT_THRESHOLD = 10;
 
+// Numero di partite completate dopo cui mostrare il banner di invito al beta-testing
+export const BETA_INVITE_THRESHOLD = 20;
+
 interface ReviewStore {
   gamesCompleted: number;
   reviewPromptShown: boolean;
@@ -12,6 +15,10 @@ interface ReviewStore {
   markReviewPromptShown: () => void;
   /** true quando va mostrato l'invito alla recensione (soglia raggiunta e mai mostrato) */
   shouldShowReviewPrompt: () => boolean;
+  betaInviteDismissed: boolean;
+  markBetaInviteDismissed: () => void;
+  /** true quando va mostrato il banner beta (soglia raggiunta e mai chiuso) */
+  shouldShowBetaInvite: () => boolean;
 }
 
 export const useReviewStore = create<ReviewStore>()(
@@ -19,6 +26,7 @@ export const useReviewStore = create<ReviewStore>()(
     (set, get) => ({
       gamesCompleted: 0,
       reviewPromptShown: false,
+      betaInviteDismissed: false,
 
       incrementGamesCompleted: () =>
         set((state) => ({ gamesCompleted: state.gamesCompleted + 1 })),
@@ -29,6 +37,13 @@ export const useReviewStore = create<ReviewStore>()(
         const { gamesCompleted, reviewPromptShown } = get();
         return !reviewPromptShown && gamesCompleted >= REVIEW_PROMPT_THRESHOLD;
       },
+
+      markBetaInviteDismissed: () => set({ betaInviteDismissed: true }),
+
+      shouldShowBetaInvite: () => {
+        const { gamesCompleted, betaInviteDismissed } = get();
+        return !betaInviteDismissed && gamesCompleted >= BETA_INVITE_THRESHOLD;
+      },
     }),
     {
       name: 'review-store',
@@ -36,6 +51,7 @@ export const useReviewStore = create<ReviewStore>()(
       partialize: (state) => ({
         gamesCompleted: state.gamesCompleted,
         reviewPromptShown: state.reviewPromptShown,
+        betaInviteDismissed: state.betaInviteDismissed,
       }),
     },
   ),

@@ -161,6 +161,12 @@ export const translations = {
       rate: 'Lascia una recensione',
       later: 'Più tardi'
     },
+    beta: {
+      title: 'Prova le novità in anteprima',
+      message: 'Iscriviti alla beta per provare Gestore Combo e Statistiche prima di tutti.',
+      join: 'Partecipa',
+      ok: 'OK'
+    },
     sideSwitch: {
       message: 'Avete cambiato lato?',
       dontShowAgain: 'Non mostrare più',
@@ -405,6 +411,12 @@ export const translations = {
       message: 'If the app is useful to you, a quick review on the Play Store helps us a lot. It only takes a few seconds.',
       rate: 'Rate the app',
       later: 'Maybe later'
+    },
+    beta: {
+      title: 'Try new features early',
+      message: 'Join the beta to try the Combo Builder and Stats before everyone else.',
+      join: 'Join',
+      ok: 'OK'
     },
     sideSwitch: {
       message: 'Did you switch sides?',
