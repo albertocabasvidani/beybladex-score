@@ -58,6 +58,7 @@ Tutti gated da `__DEV__` → OFF in release: in produzione l'app è identica al 
 Dettagli in `packages/mobile/docs/scoreboard-features.md`.
 - **Gotcha critici che rompono la release in silenzio**: audio/asset bundled (metro `saveAssets`, cache incrementale degli mp3, URI `android.resource://`). Leggere il doc PRIMA di toccare audio/asset o `scripts/metro-bundle.js`.
 - **i18n**: tutte le stringhe UI via i18next (`t()`), zero hardcoded; chiavi in `packages/shared/src/i18n/translations.ts` (it+en), il web usa JSON separati. A ogni release con novità bumpare `hasSeenReleaseNote_v{N}` in `GameScreen.tsx`.
+- **Banner invito beta** (`BETA_INVITE_ENABLED` in `featureFlags.ts`, toggle di **produzione** NON gated da `__DEV__`): modale bloccante una-tantum dopo 20 partite completate (`BETA_INVITE_THRESHOLD`/`shouldShowBetaInvite` nel `review-store`, riusa il contatore `gamesCompleted`) che invita al Test aperto via `BetaInviteBanner.tsx`. Mettere a `false` a beta conclusa (e togliere la riga beta dai `store/listing-{en,it}.md`).
 
 ## Monetizzazione (AdMob + RevenueCat)
 
