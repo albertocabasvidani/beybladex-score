@@ -14,6 +14,10 @@ Pulsante pill "▶ 3·2·1" al centro della bottom bar: `CountdownButton.tsx` + 
 
 Banner non bloccante "Avete cambiato lato?" (`src/components/game/SideSwitchReminder.tsx`) mostrato ogni 3 **lanci** a fine animazione punti, auto-dismiss ~4s, tap per chiudere, link "Non mostrare più". Flag `sideSwitchReminderEnabled` (default ON, persistito in `game-store.ts`); toggle in `SettingsModal`. Trigger in `GameScreen.tsx`: alla transizione `currentAnimation` non-null→null, se `totalLanci % 3 === 0` e non c'è `winner` (sennò vince la `VictoryOverlay`). Conteggio lanci = `history.filter(h => h.type === 'score').length` (un "lancio" = un round con assegnazione punti; mai "battaglia").
 
+## Banner invito beta
+
+Flag `BETA_INVITE_ENABLED` in `featureFlags.ts`: toggle di **produzione**, NON gated da `__DEV__` (a differenza degli altri moduli feature-flagged). Modale bloccante una-tantum (`BetaInviteBanner.tsx`) che, dopo 20 partite completate, invita al Test aperto. Soglia `BETA_INVITE_THRESHOLD` e logica `shouldShowBetaInvite` nel `review-store`, che riusa il contatore `gamesCompleted`. A beta conclusa: mettere il flag a `false` e togliere la riga beta dai `store/listing-{en,it}.md`.
+
 ## i18n
 
 Tutte le stringhe UI mobile passano per i18next (`t('chiave')`), zero hardcoded — verificato con audit. Chiavi in `packages/shared/src/i18n/translations.ts` (it+en); il web usa JSON separati in `packages/web/src/i18n/locales/`. Nomi default giocatore localizzati: `DEFAULT_PLAYER_NAMES`/`isDefaultPlayerName` in shared → `PlayerPanel`/`VictoryOverlay` mostrano `player.player1/2` finché il nome è ancora il default (l'editor parte vuoto con placeholder). `ErrorBoundary` è class component → usa `i18n.t` diretto, non l'hook. Release note in-app: a ogni release con novità, bumpare la chiave `hasSeenReleaseNote_v{N}` in `GameScreen.tsx` e aggiornare i testi `releaseNote.*`.

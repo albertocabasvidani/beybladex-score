@@ -24,7 +24,7 @@ Tracking di backlog/issue/changelog in `projects/` (vedi `projects/INDEX.md`).
 
 - **Web**: `cd packages/web`, poi `npm run dev` → http://localhost:5173
 - **Mobile (emulatore, PREFERITO)**: guida completa in `packages/mobile/BUILD-GUIDE.md`, troubleshooting in `packages/mobile/EMULATOR-GUIDE.md`.
-  - **REGOLA CRITICA — ABI emulatore**: la build standard è solo `arm64-v8a` e **CRASHA sull'emulatore x86_64** (`SoLoaderDSONotFoundError`). Per l'emulatore servono build con x86_64 (flag `--emulator`).
+  - **ABI emulatore**: la build standard è solo `arm64-v8a` e crasha sull'emulatore x86_64 (`SoLoaderDSONotFoundError`). Per l'emulatore servono build con x86_64 (flag `--emulator`).
   - Tutti i comandi adb vanno in script `.sh` (evita permission multiple).
 - **Mobile (device fisico)**: build EAS da https://expo.dev/accounts/albertocv/projects/beybladex-score-mobile/builds → "Install".
 
@@ -37,12 +37,15 @@ bash packages/mobile/scripts/build-apk-fast.sh --emulator   # iterazione veloce,
 bash packages/mobile/scripts/build-apk-fast.sh --device     # iterazione veloce, arm64-v8a
 bash packages/mobile/scripts/full-build-apk.sh --emulator   # build pulita (reset / cambio dipendenze)
 bash packages/mobile/scripts/full-build-aab.sh              # AAB Play Store (pulita, tutte le ABI, firma upload)
+bash packages/mobile/scripts/release-pair.sh                # coppia coerente: Production (N+1) + beta (N+2), stesso commit
+bash packages/mobile/scripts/release-pair.sh --beta-only    # solo beta (N+1), Production intatta
 ```
 
 **Regole**:
 - Iterazione = `build-apk-fast.sh` (no `--clean`, riusa native cache → minuti). Pulita solo per reset o cambio dipendenze.
 - Ottimizzazioni Gradle in `patch-build-gradle.sh` (riapplicate a ogni build). `configuration-cache` NON abilitabile (incompatibile RN plugin). MAI `build-apk.sh` dopo `expo prebuild --clean` senza `patch-build-gradle.sh`.
-- Upload Play Store: release **pubbliche** → track **Production**; build **beta** delle feature flag (`full-build-aab.sh --beta`) → track **Test aperto** (i tester si iscrivono via link, gli altri restano su Production). Tutti i track condividono lo spazio `versionCode`: la beta deve avere `versionCode` > di quello in Production. Review/rejection via Chrome DevTools su Play Console.
+- Upload Play Store: release **pubbliche** → track **Production**; build **beta** delle feature flag → track **Test aperto** (i tester si iscrivono via link, gli altri restano su Production). Review/rejection via Chrome DevTools su Play Console.
+- **Coerenza Production ↔ Test aperto**: lo stesso commit produce entrambi gli AAB (con/senza `--beta`; le feature combo sono gated → OFF in Production), quindi si lavora su un solo branch (`master`) — niente branch beta separato. I track condividono lo spazio `versionCode` e un tester del Test aperto riceve il `versionCode` più alto a cui ha accesso, **inclusa la Production**: la beta deve restare **sempre sopra** la Production, altrimenti i tester scivolano su Production e perdono le combo. Per non sbagliare usare `release-pair.sh` (coppia `N+1`/`N+2` dallo stesso commit, aggiorna `app.json` da sé); `--beta-only` rinfresca solo la beta lasciando intatta la Production.
 - **versionCode bruciato anche dopo Discard draft**: bumpare SEMPRE a N+1 in `app.json` prima di re-buildare (sennò *"Version code N has already been used"*).
 
 ## Moduli avanzati (feature-flagged, `src/config/featureFlags.ts`)
@@ -58,7 +61,7 @@ Tutti gated da `__DEV__` → OFF in release: in produzione l'app è identica al 
 Dettagli in `packages/mobile/docs/scoreboard-features.md`.
 - **Gotcha critici che rompono la release in silenzio**: audio/asset bundled (metro `saveAssets`, cache incrementale degli mp3, URI `android.resource://`). Leggere il doc PRIMA di toccare audio/asset o `scripts/metro-bundle.js`.
 - **i18n**: tutte le stringhe UI via i18next (`t()`), zero hardcoded; chiavi in `packages/shared/src/i18n/translations.ts` (it+en), il web usa JSON separati. A ogni release con novità bumpare `hasSeenReleaseNote_v{N}` in `GameScreen.tsx`.
-- **Banner invito beta** (`BETA_INVITE_ENABLED` in `featureFlags.ts`, toggle di **produzione** NON gated da `__DEV__`): modale bloccante una-tantum dopo 20 partite completate (`BETA_INVITE_THRESHOLD`/`shouldShowBetaInvite` nel `review-store`, riusa il contatore `gamesCompleted`) che invita al Test aperto via `BetaInviteBanner.tsx`. Mettere a `false` a beta conclusa (e togliere la riga beta dai `store/listing-{en,it}.md`).
+- **Banner invito beta** (`BETA_INVITE_ENABLED` in `featureFlags.ts`): toggle di **produzione** NON gated da `__DEV__`, invita al Test aperto dopo 20 partite. Dettagli e cleanup a beta conclusa in `packages/mobile/docs/scoreboard-features.md`.
 
 ## Monetizzazione (AdMob + RevenueCat)
 
