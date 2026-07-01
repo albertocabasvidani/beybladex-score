@@ -68,44 +68,29 @@ export function PlayerPanel({ playerId }: Props) {
           }}
         />
       ) : (
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexWrap: 'wrap',
-            gap: 6,
-            paddingVertical: 2,
-          }}
-        >
-          <Pressable onPress={handleNamePress}>
-            <Text
-              allowFontScaling={false}
-              style={{
-                color: '#e2e8f0',
-                fontSize: 18,
-                fontWeight: '800',
-                textAlign: 'center',
-              }}
-            >
-              {displayName}
-            </Text>
-          </Pressable>
-          {STATS_ENABLED && (
-            <>
-              <Text allowFontScaling={false} style={{ color: '#475569', fontSize: 14 }}>
-                ·
-              </Text>
-              <BeyRow playerId={playerId} />
-            </>
-          )}
+        <Pressable onPress={handleNamePress} style={{ paddingVertical: 2 }}>
+          <Text
+            allowFontScaling={false}
+            style={{
+              color: '#e2e8f0',
+              fontSize: 18,
+              fontWeight: '800',
+              textAlign: 'center',
+            }}
+          >
+            {displayName}
+          </Text>
+        </Pressable>
+      )}
+
+      {/* Selezione combo (Bey) - riga dedicata, ingrandita */}
+      {STATS_ENABLED && (
+        <View style={{ paddingTop: 4, paddingBottom: 2, alignItems: 'center' }}>
+          <BeyRow playerId={playerId} />
         </View>
       )}
 
-      {/* Foul counter */}
-      <FoulCounter playerId={playerId} />
-
-      {/* Layout: [Spin/Burst] - SCORE - [Over/Xtreme] */}
+      {/* Layout: [Spin/Burst] - SCORE+FALLI - [Over/Xtreme] */}
       <View
         style={{
           flex: 1,
@@ -121,9 +106,12 @@ export function PlayerPanel({ playerId }: Props) {
           <FinishButton playerId={playerId} finishType="burst" />
         </View>
 
-        {/* Center score */}
-        <View style={{ flex: 3, justifyContent: 'center', alignItems: 'center' }}>
-          <ScoreDisplay playerId={playerId} />
+        {/* Center: punteggio centrato + falli in basso (allineati al fondo dei tasti) */}
+        <View style={{ flex: 3, alignItems: 'center' }}>
+          <View style={{ flex: 1, justifyContent: 'center' }}>
+            <ScoreDisplay playerId={playerId} />
+          </View>
+          <FoulCounter playerId={playerId} />
         </View>
 
         {/* Right buttons */}

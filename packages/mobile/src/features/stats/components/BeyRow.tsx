@@ -76,7 +76,7 @@ export function BeyRow({ playerId }: { playerId: PlayerId }) {
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: 3 },
+  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: 5 },
   addPill: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -85,16 +85,16 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed',
     borderColor: '#475569',
     borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 2,
+    paddingHorizontal: 16,
+    paddingVertical: 7,
   },
-  addText: { color: '#94a3b8', fontSize: 11, fontWeight: '700' },
+  addText: { color: '#94a3b8', fontSize: 14, fontWeight: '700' },
   chip: {
-    fontSize: 11,
+    fontSize: 14,
     fontWeight: '700',
-    paddingHorizontal: 7,
-    paddingVertical: 2,
-    borderRadius: 6,
+    paddingHorizontal: 11,
+    paddingVertical: 6,
+    borderRadius: 8,
     backgroundColor: '#1e293b',
     borderWidth: 1,
     borderColor: '#334155',
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   chipBlade: { color: '#fbbf24', borderColor: '#475569' },
-  variant: { fontSize: 11, color: '#fb923c', fontWeight: '800', marginLeft: 1 },
-  more: { paddingHorizontal: 4 },
-  moreText: { color: '#64748b', fontSize: 16, fontWeight: '900', lineHeight: 16 },
+  variant: { fontSize: 14, color: '#fb923c', fontWeight: '800', marginLeft: 1 },
+  more: { paddingHorizontal: 6, paddingVertical: 2 },
+  moreText: { color: '#64748b', fontSize: 20, fontWeight: '900', lineHeight: 20 },
 });

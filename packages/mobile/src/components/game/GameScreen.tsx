@@ -218,7 +218,7 @@ export function GameScreen() {
           alignItems: 'center',
           paddingTop: 10,
           paddingBottom: 6,
-          paddingHorizontal: 12,
+          paddingHorizontal: 20,
         }}
       >
         {/* Left half: home (modalità) + trophy */}
