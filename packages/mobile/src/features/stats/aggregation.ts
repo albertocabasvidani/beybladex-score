@@ -39,6 +39,17 @@ export function filterByRange(
   return records.filter((r) => r.playedAt >= cutoff);
 }
 
+/**
+ * Tiene i `limit` match più recenti (per `playedAt`). Gating della versione gratuita delle
+ * analitiche: il free vede solo gli ultimi N match, il Pro tutti. Non muta l'input; l'ordine del
+ * risultato è irrilevante per le aggregazioni a valle (che riordinano da sé).
+ */
+export function limitToRecent(records: MatchRecord[], limit: number): MatchRecord[] {
+  if (limit <= 0) return [];
+  if (records.length <= limit) return records;
+  return [...records].sort((a, b) => b.playedAt - a.playedAt).slice(0, limit);
+}
+
 function emptyFinish(): Record<FinishType, number> {
   return { spin: 0, burst: 0, over: 0, xtreme: 0 };
 }

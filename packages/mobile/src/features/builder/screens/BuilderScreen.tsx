@@ -16,6 +16,9 @@ import {
 } from '../stores';
 import { palette } from '../theme';
 import { CONTENT_PADDING } from '../responsive';
+import { useHasFullAccess } from '../../../store/access-store';
+import { usePaywallStore } from '../../../store/paywall-store';
+import { FREE_COMBO_LIMIT } from '../../../config/monetization';
 
 function Slot({
   label,
@@ -83,6 +86,10 @@ export function BuilderScreen() {
   const updateCombo = useComboStore((s) => s.updateCombo);
   const deleteCombo = useComboStore((s) => s.deleteCombo);
 
+  const fullAccess = useHasFullAccess();
+  const showPaywall = usePaywallStore((s) => s.show);
+  const comboLimitReached = !fullAccess && combos.length >= FREE_COMBO_LIMIT;
+
   const [picker, setPicker] = useState<PickerCategory | null>(null);
   const [name, setName] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -111,8 +118,18 @@ export function BuilderScreen() {
       .filter(Boolean)
       .join(' ');
     const finalName = name.trim() || defaultName;
-    if (editingId) updateCombo(editingId, finalName, line, parts);
-    else saveCombo(finalName, line, parts);
+    if (editingId) {
+      updateCombo(editingId, finalName, line, parts);
+      resetForm();
+      return;
+    }
+    // Gate morbido: modificare le combo esistenti è sempre libero; oltre il limite free il
+    // salvataggio di una NUOVA combo apre il paywall (la consultazione parti/radar resta gratis).
+    if (comboLimitReached) {
+      showPaywall('combo');
+      return;
+    }
+    saveCombo(finalName, line, parts);
     resetForm();
   };
 
@@ -200,6 +217,11 @@ export function BuilderScreen() {
       </View>
 
       <Text style={styles.sectionTitle}>{t('builder.combo.saved', { count: combos.length })}</Text>
+      {comboLimitReached ? (
+        <Pressable onPress={() => showPaywall('combo')} style={styles.limitHint} accessibilityRole="button">
+          <Text style={styles.limitHintText}>🔒 {t('builder.combo.limitReached', { limit: FREE_COMBO_LIMIT })}</Text>
+        </Pressable>
+      ) : null}
       {combos.length === 0 ? (
         <Text style={styles.empty}>{t('builder.combo.empty')}</Text>
       ) : (
@@ -286,6 +308,16 @@ const styles = StyleSheet.create({
   },
   clearBtnText: { color: '#8888AA', fontWeight: '700' },
   sectionTitle: { color: palette.text, fontSize: 16, fontWeight: '800', marginBottom: 8 },
+  limitHint: {
+    backgroundColor: '#1c1810',
+    borderColor: '#F5C451',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginBottom: 10,
+  },
+  limitHintText: { color: '#F5C451', fontSize: 12, fontWeight: '700', textAlign: 'center' },
   empty: { color: '#8888AA', textAlign: 'center', marginTop: 8 },
   comboRow: {
     flexDirection: 'row',

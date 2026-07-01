@@ -16,8 +16,9 @@ import { useTranslation } from 'react-i18next';
 import { isDefaultPlayerName, type PlayerId } from '@beybladex/shared';
 import { useGameStore } from '../../store/game-store';
 import { usePurchasesStore } from '../../store/purchases-store';
+import { usePaywallStore } from '../../store/paywall-store';
 import { BannerAdView } from '../ads/banner-ad';
-import { BANNER_HEIGHT, isAdsRemoved } from '../../config/ads';
+import { BANNER_HEIGHT } from '../../config/ads';
 
 const CONFETTI_COLORS = ['#ef4444', '#22c55e', '#3b82f6', '#f59e0b', '#a855f7'];
 
@@ -176,11 +177,11 @@ export function VictoryOverlay({ winnerId }: Props) {
     : player.name;
   const reset = useGameStore((state) => state.reset);
   const wins = useGameStore((state) => state.wins[winnerId]);
-  const purchaseRemoveAds = usePurchasesStore((state) => state.purchaseRemoveAds);
-  const adsRemoved = usePurchasesStore((state) => state.adsRemoved);
+  const isPro = usePurchasesStore((state) => state.isPro);
+  const showPaywall = usePaywallStore((state) => state.show);
 
   const { height } = useWindowDimensions();
-  const showAds = !adsRemoved;
+  const showAds = !isPro;
   const bannerSpace = showAds ? BANNER_HEIGHT : 0;
   const available = height - bannerSpace;
 
@@ -277,7 +278,7 @@ export function VictoryOverlay({ winnerId }: Props) {
       {showAds && (
         <View style={{ alignItems: 'center', paddingBottom: 4 }}>
           <BannerAdView />
-          <Pressable onPress={purchaseRemoveAds} style={{ marginTop: 4 }}>
+          <Pressable onPress={() => showPaywall('ads')} style={{ marginTop: 4 }}>
             <Text
               style={{
                 color: '#64748b',
@@ -285,7 +286,7 @@ export function VictoryOverlay({ winnerId }: Props) {
                 textDecorationLine: 'underline',
               }}
             >
-              {t('ads.remove')}
+              {t('paywall.goPro')}
             </Text>
           </Pressable>
         </View>

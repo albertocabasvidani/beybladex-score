@@ -18,6 +18,7 @@ import { HomeScreen } from './components/home/HomeScreen';
 import { usePartsStore } from './store/partsStore';
 import { hydratePartsFromCache, refreshPartsInBackground } from './services/parts-remote';
 import { NewPartsModal } from './components/modals/NewPartsModal';
+import { PaywallModal } from './components/paywall/PaywallModal';
 import { useTranslation } from 'react-i18next';
 import './i18n/config';
 
@@ -158,6 +159,7 @@ export default function App() {
       <SafeAreaProvider>
         <AppContent />
         <NewPartsModal />
+        <PaywallModal />
       </SafeAreaProvider>
     </ErrorBoundary>
   );

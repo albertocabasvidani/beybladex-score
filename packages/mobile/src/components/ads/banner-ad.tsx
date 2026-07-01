@@ -3,7 +3,8 @@ import {
   BannerAd as RNBannerAd,
   BannerAdSize,
 } from 'react-native-google-mobile-ads';
-import { AD_UNIT_IDS, BANNER_HEIGHT, isAdsRemoved } from '../../config/ads';
+import { AD_UNIT_IDS, BANNER_HEIGHT } from '../../config/ads';
+import { usePurchasesStore } from '../../store/purchases-store';
 import { logger } from '../../utils/logger';
 
 interface Props {
@@ -11,7 +12,9 @@ interface Props {
 }
 
 export function BannerAdView({ style }: Props) {
-  if (isAdsRemoved()) return null;
+  // Reattivo: alla conferma dell'acquisto Pro il banner sparisce senza rimontare il parent.
+  const isPro = usePurchasesStore((s) => s.isPro);
+  if (isPro) return null;
 
   return (
     <View style={[{ height: BANNER_HEIGHT, alignItems: 'center', justifyContent: 'center' }, style]}>

@@ -13,6 +13,9 @@ import {
 } from '../stores';
 import { palette } from '../theme';
 import { CONTENT_PADDING } from '../responsive';
+import { useHasFullAccess } from '../../../store/access-store';
+import { usePaywallStore } from '../../../store/paywall-store';
+import { FREE_DECK_LIMIT } from '../../../config/monetization';
 
 const DATASET_COLORS = ['#FF3A4F', '#3ABFFF', '#2EE6A8'];
 const DECK_SIZE = 3;
@@ -50,6 +53,10 @@ export function DecksScreen() {
   const deleteDeck = useDeckStore((s) => s.deleteDeck);
   const combos = useComboStore((s) => s.combos);
 
+  const fullAccess = useHasFullAccess();
+  const showPaywall = usePaywallStore((s) => s.show);
+  const deckLimitReached = !fullAccess && decks.length >= FREE_DECK_LIMIT;
+
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [name, setName] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -76,6 +83,11 @@ export function DecksScreen() {
   const onSave = () => {
     if (selectedCombos.length !== DECK_SIZE) return;
     const finalName = name.trim() || t('builder.deck.defaultName', { n: decks.length + 1 });
+    // Modificare un deck esistente è libero; creare un NUOVO deck oltre il limite free apre il paywall.
+    if (!editingId && deckLimitReached) {
+      showPaywall('deck');
+      return;
+    }
     const error = editingId
       ? updateDeck(editingId, finalName, selectedCombos)
       : saveDeck(finalName, selectedCombos);
@@ -115,6 +127,11 @@ export function DecksScreen() {
     <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <Text style={styles.sectionTitle}>{t('builder.deck.new', { count: selectedCombos.length, size: DECK_SIZE })}</Text>
       <Text style={styles.hint}>{t('builder.deck.wboHint')}</Text>
+      {deckLimitReached ? (
+        <Pressable onPress={() => showPaywall('deck')} style={styles.limitHint} accessibilityRole="button">
+          <Text style={styles.limitHintText}>🔒 {t('builder.deck.limitReached', { limit: FREE_DECK_LIMIT })}</Text>
+        </Pressable>
+      ) : null}
 
       {combos.length === 0 ? (
         <Text style={styles.empty}>{t('builder.deck.needCombos')}</Text>
@@ -208,6 +225,16 @@ const styles = StyleSheet.create({
   content: { padding: CONTENT_PADDING, paddingBottom: 32 },
   sectionTitle: { color: palette.text, fontSize: 16, fontWeight: '800', marginBottom: 4, marginTop: 8 },
   hint: { color: '#8888AA', fontSize: 12, marginBottom: 10 },
+  limitHint: {
+    backgroundColor: '#1c1810',
+    borderColor: '#F5C451',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginBottom: 10,
+  },
+  limitHintText: { color: '#F5C451', fontSize: 12, fontWeight: '700', textAlign: 'center' },
   empty: { color: '#8888AA', textAlign: 'center', marginVertical: 12 },
   comboRow: {
     flexDirection: 'row',

@@ -39,6 +39,14 @@ export const MODE_HOME_ENABLED: boolean = BUILDER_ENABLED || STATS_ENABLED;
 export const BETA_INVITE_ENABLED: boolean = true;
 
 /**
+ * Monetizzazione "Pro": gating funzionale (limite storico analitiche, limite salvataggi combo/deck),
+ * banner + rewarded nelle sezioni avanzate, paywall. NON gated da __DEV__ (come BETA_INVITE_ENABLED):
+ * deve girare in Production/beta. Con `false` l'app si comporta come oggi (tutto sbloccato, nessun
+ * paywall né ads nelle sezioni) — utile per debug e per la regressione del segnapunti.
+ */
+export const MONETIZATION_ENABLED: boolean = true;
+
+/**
  * Aggiornamento parti a runtime: l'app scarica il `parts.json` fresco, lo mette in cache offline e
  * lo applica al riavvio successivo (senza pubblicare una release). Gira SOLO dove le combo sono
  * attive: in una build Production scoreboard-only resta OFF → nessuna chiamata di rete.

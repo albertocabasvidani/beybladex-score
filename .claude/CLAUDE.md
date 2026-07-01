@@ -67,10 +67,14 @@ Dettagli in `packages/mobile/docs/scoreboard-features.md`.
 
 ## Monetizzazione (AdMob + RevenueCat)
 
-Dettagli e procedure di verifica in `packages/mobile/docs/monetization.md`. **Regole critiche**:
+Dettagli e procedure in `packages/mobile/docs/monetization.md`. Modello: **un unico entitlement `pro`** sblocca *analitiche complete + salvataggi combo/deck illimitati + niente pubblicità*, venduto con due prodotti (Lifetime one-time + Annuale) mappati sullo stesso entitlement. Il **segnapunti resta gratis** (nessun gate/ad).
+
+- **Gate** attivo via flag `MONETIZATION_ENABLED` (`featureFlags.ts`, produzione, NON `__DEV__`). Accesso completo = `hasFullAccess()`/`useHasFullAccess()` in `store/access-store.ts` (Pro OPPURE sblocco rewarded di sessione OPPURE flag OFF). Limiti free in `config/monetization.ts` (`FREE_MATCH_LIMIT`=25, `FREE_COMBO_LIMIT`=5, `FREE_DECK_LIMIT`=1).
+- **Analitiche**: free vede solo gli ultimi `FREE_MATCH_LIMIT` match (`limitToRecent` in `aggregation.ts`) + teaser/card gate. **Combo Builder**: salvataggio oltre il limite → paywall (consultazione parti/radar sempre libera).
+- **Ads**: banner adattivo in builder/analitiche (mai nel segnapunti; sparisce col Pro) + rewarded "assaggio" (`components/ads/rewarded.ts`, sblocca lo storico per la sessione). Paywall unico: `components/paywall/PaywallModal.tsx` (montato in `App.tsx`, aperto via `store/paywall-store.ts`).
 - Plugin AdMob in `app.json`: parametri **camelCase** (`androidAppId`, non snake_case).
 - Il manifest **deve** contenere `com.google.android.gms.permission.AD_ID` (in `app.json` → `android.permissions`); verificarlo nell'AAB con bundletool, NON col grep. Senza → Play Console blocca la pubblicazione.
-- ID AdMob/RevenueCat ancora di test/placeholder (sostituzione tracciata come known issue in `projects/scoreboard.md`).
+- **Setup esterno richiesto** (senza → paywall vuoto/ad non riempiti): su Play Console creare i prodotti `pro_lifetime` + `pro_annual` e mapparli all'entitlement `pro` in un Offering RevenueCat; creare l'ad unit **Rewarded** reale su AdMob (placeholder in `config/ads.ts`). API key RevenueCat da verificare (known issue in `projects/scoreboard.md`).
 
 ## Play Store & ASO
 

@@ -22,6 +22,11 @@ export const translations = {
     stats: {
       title: 'Analitiche',
       backHome: 'Home',
+      gate: {
+        teaser: 'Vedi {{visible}} di {{total}} match — sblocca lo storico completo',
+        cta: 'Sblocca con Pro',
+        watchAd: 'Guarda un video'
+      },
       tabs: { overview: 'Combo', matchups: 'Matchup', parts: 'Parti' },
       range: { all: 'Tutto', today: 'Oggi', d7: '7g', d30: '30g', custom: 'Personalizzato' },
       empty: {
@@ -151,6 +156,32 @@ export const translations = {
     ads: {
       remove: 'Rimuovi pubblicità'
     },
+    paywall: {
+      title: 'Passa a Pro',
+      goPro: 'Passa a Pro',
+      loading: 'Caricamento offerte…',
+      sub: {
+        analytics: 'Sblocca tutto il tuo storico e le statistiche avanzate.',
+        combo: 'Salva combo e deck illimitati.',
+        deck: 'Crea deck illimitati e confrontali.',
+        ads: 'Togli le pubblicità e sblocca tutte le funzioni Pro.',
+        generic: 'Sblocca tutte le funzioni Pro.'
+      },
+      feature: {
+        history: 'Storico completo dei match + trend nel tempo',
+        charts: 'Statistiche avanzate: win-rate per bey, combo e parte',
+        combos: 'Combo e deck salvati illimitati',
+        noAds: 'Niente pubblicità'
+      },
+      buyLifetime: 'Sblocca per sempre · {{price}}',
+      buyAnnual: 'Abbonamento annuale · {{price}}',
+      buyGeneric: 'Sblocca Pro · {{price}}',
+      lifetimeNote: 'Pagamento unico, nessun rinnovo',
+      annualNote: 'Si rinnova ogni anno, disdici quando vuoi',
+      restore: 'Ripristina acquisti',
+      notNow: 'Non ora',
+      legal: 'Il pagamento è gestito da Google Play. Puoi ripristinare l\'acquisto su qualsiasi tuo dispositivo.'
+    },
     error: {
       title: 'Qualcosa è andato storto',
       restart: 'Riavvia'
@@ -233,7 +264,8 @@ export const translations = {
         noRadar: 'Stats non disponibili',
         noRadarHint: 'Le statistiche compariranno quando saranno presenti nel database parti.',
         deleteTitle: 'Elimina combo',
-        deleteMsg: 'Eliminare "{{name}}"?'
+        deleteMsg: 'Eliminare "{{name}}"?',
+        limitReached: 'Limite gratuito raggiunto ({{limit}} combo) — Passa a Pro'
       },
       deck: {
         new: 'Nuovo deck ({{count}}/{{size}})',
@@ -250,7 +282,8 @@ export const translations = {
         deleteMsg: 'Eliminare "{{name}}"?',
         duplicateTitle: 'Parti duplicate',
         duplicateMsg: '{{kind}} "{{name}}" usata in più combo del deck.',
-        defaultName: 'Deck {{n}}'
+        defaultName: 'Deck {{n}}',
+        limitReached: 'Limite gratuito raggiunto ({{limit}} deck) — Passa a Pro'
       },
       collection: { counter: '{{owned}}/{{total}} possedute' }
     },
@@ -281,6 +314,11 @@ export const translations = {
     stats: {
       title: 'Analytics',
       backHome: 'Home',
+      gate: {
+        teaser: 'Showing {{visible}} of {{total}} matches — unlock your full history',
+        cta: 'Unlock with Pro',
+        watchAd: 'Watch a video'
+      },
       tabs: { overview: 'Combos', matchups: 'Matchups', parts: 'Parts' },
       range: { all: 'All', today: 'Today', d7: '7d', d30: '30d', custom: 'Custom' },
       empty: {
@@ -410,6 +448,32 @@ export const translations = {
     ads: {
       remove: 'Remove ads'
     },
+    paywall: {
+      title: 'Go Pro',
+      goPro: 'Go Pro',
+      loading: 'Loading offers…',
+      sub: {
+        analytics: 'Unlock your full history and advanced stats.',
+        combo: 'Save unlimited combos and decks.',
+        deck: 'Build unlimited decks and compare them.',
+        ads: 'Remove ads and unlock all Pro features.',
+        generic: 'Unlock all Pro features.'
+      },
+      feature: {
+        history: 'Full match history + trends over time',
+        charts: 'Advanced stats: win-rate by bey, combo and part',
+        combos: 'Unlimited saved combos and decks',
+        noAds: 'No ads'
+      },
+      buyLifetime: 'Unlock forever · {{price}}',
+      buyAnnual: 'Yearly subscription · {{price}}',
+      buyGeneric: 'Unlock Pro · {{price}}',
+      lifetimeNote: 'One-time payment, no renewal',
+      annualNote: 'Renews yearly, cancel anytime',
+      restore: 'Restore purchases',
+      notNow: 'Not now',
+      legal: 'Payment is handled by Google Play. You can restore your purchase on any of your devices.'
+    },
     error: {
       title: 'Something went wrong',
       restart: 'Restart'
@@ -492,7 +556,8 @@ export const translations = {
         noRadar: 'Stats unavailable',
         noRadarHint: 'Stats will appear once they are present in the parts database.',
         deleteTitle: 'Delete combo',
-        deleteMsg: 'Delete "{{name}}"?'
+        deleteMsg: 'Delete "{{name}}"?',
+        limitReached: 'Free limit reached ({{limit}} combos) — Go Pro'
       },
       deck: {
         new: 'New deck ({{count}}/{{size}})',
@@ -509,7 +574,8 @@ export const translations = {
         deleteMsg: 'Delete "{{name}}"?',
         duplicateTitle: 'Duplicate parts',
         duplicateMsg: '{{kind}} "{{name}}" used in more than one combo of the deck.',
-        defaultName: 'Deck {{n}}'
+        defaultName: 'Deck {{n}}',
+        limitReached: 'Free limit reached ({{limit}} decks) — Go Pro'
       },
       collection: { counter: '{{owned}}/{{total}} owned' }
     },

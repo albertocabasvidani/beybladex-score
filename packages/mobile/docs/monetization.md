@@ -1,7 +1,14 @@
 # Monetizzazione (AdMob + RevenueCat) — dettagli e verifiche
 
-- **AdMob**: banner nella `VictoryOverlay`, SDK `react-native-google-mobile-ads`. Config in `src/config/ads.ts` (ad unit IDs, `isAdsRemoved()`).
-- **RevenueCat**: acquisto one-time "rimuovi pubblicità", SDK `react-native-purchases`. Store acquisti in `src/store/purchases-store.ts`.
+- **Modello**: un unico entitlement `pro` (RevenueCat) sblocca *analitiche complete + salvataggi combo/deck illimitati + niente pubblicità*, venduto con due prodotti (Lifetime one-time + Annuale) mappati sullo stesso entitlement. Il segnapunti resta sempre gratis (nessun gate/ad).
+- **AdMob**: banner adattivo in Combo Builder e Analitiche (mai nel segnapunti) + banner nella `VictoryOverlay`; rewarded "assaggio" (`src/components/ads/rewarded.ts`). SDK `react-native-google-mobile-ads`. Config in `src/config/ads.ts` (ad unit IDs banner+rewarded, `isPro()`). Il banner sparisce col Pro.
+- **RevenueCat**: `src/store/purchases-store.ts` (`isPro`, `loadOfferings`, `purchasePackage`, `restorePurchases`; entitlement `pro`). Paywall unico in `src/components/paywall/PaywallModal.tsx` (montato in `App.tsx`, aperto via `src/store/paywall-store.ts`).
+
+## Gating (versione gratuita)
+
+- Flag `MONETIZATION_ENABLED` in `src/config/featureFlags.ts` (produzione, NON `__DEV__`; `false` = tutto sbloccato, nessun ad/paywall — utile per debug e regressione segnapunti). Accesso completo: `hasFullAccess()`/`useHasFullAccess()` in `src/store/access-store.ts` = Pro OPPURE sblocco rewarded di sessione (non persistito) OPPURE flag OFF.
+- Limiti free in `src/config/monetization.ts`: `FREE_MATCH_LIMIT` (25 match visibili in Analitiche, via `limitToRecent` in `features/stats/aggregation.ts`), `FREE_COMBO_LIMIT` (5), `FREE_DECK_LIMIT` (1). Oltre il limite: teaser + card gate (Analitiche, con "Guarda un video" rewarded e "Sblocca con Pro") o paywall al salvataggio (Builder/Decks). Consultazione parti/radar sempre libera; l'editing di combo/deck esistenti non consuma limite.
+- **Setup esterno richiesto**: su Play Console creare i prodotti `pro_lifetime` + `pro_annual` e mapparli all'entitlement `pro` in un Offering RevenueCat; creare l'ad unit **Rewarded** reale su AdMob (placeholder in `config/ads.ts`). Senza Offering il paywall resta sullo stato "caricamento offerte" (nessun package).
 
 ## ID test (sostituzione tracciata come known issue in `projects/scoreboard.md`)
 

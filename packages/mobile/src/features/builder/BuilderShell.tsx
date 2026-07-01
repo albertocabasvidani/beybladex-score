@@ -7,6 +7,8 @@ import { PartsScreen } from './screens/PartsScreen';
 import { BuilderScreen } from './screens/BuilderScreen';
 import { DecksScreen } from './screens/DecksScreen';
 import { CollectionScreen } from './screens/CollectionScreen';
+import { BannerAdView } from '../../components/ads/banner-ad';
+import { MONETIZATION_ENABLED } from '../../config/featureFlags';
 
 const TABS: { key: BuilderTab; icon: string }[] = [
   { key: 'parts', icon: '🧩' },
@@ -65,6 +67,8 @@ export function BuilderShell() {
       </View>
 
       <View style={styles.content}>{renderScreen(activeBuilderTab)}</View>
+
+      {MONETIZATION_ENABLED ? <BannerAdView /> : null}
 
       <View style={styles.tabBar}>
         {TABS.map((tab) => {
