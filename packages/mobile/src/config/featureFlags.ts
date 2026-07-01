@@ -37,3 +37,19 @@ export const MODE_HOME_ENABLED: boolean = BUILDER_ENABLED || STATS_ENABLED;
  * Mettere a `false` quando la beta si chiude (feature in produzione per tutti).
  */
 export const BETA_INVITE_ENABLED: boolean = true;
+
+/**
+ * Aggiornamento parti a runtime: l'app scarica il `parts.json` fresco, lo mette in cache offline e
+ * lo applica al riavvio successivo (senza pubblicare una release). Gira SOLO dove le combo sono
+ * attive: in una build Production scoreboard-only resta OFF → nessuna chiamata di rete.
+ */
+export const REMOTE_PARTS_ENABLED: boolean = BUILDER_ENABLED || STATS_ENABLED;
+
+/**
+ * URL del `parts.json` canonico — stessa fonte di `scripts/sync-parts.js` (branch master del combo
+ * finder, aggiornato ogni mattina dalla pipeline). Override via `EXPO_PUBLIC_PARTS_URL` per testare
+ * con un file/gist più fresco senza toccare il codice.
+ */
+export const REMOTE_PARTS_URL: string =
+  process.env.EXPO_PUBLIC_PARTS_URL ||
+  'https://raw.githubusercontent.com/albertocabasvidani/beyblade-x-combo-finder/master/data/parts.json';

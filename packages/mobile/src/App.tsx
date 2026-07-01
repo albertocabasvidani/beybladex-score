@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useWindowDimensions, AppState } from 'react-native';
+import { useWindowDimensions, AppState, View, ActivityIndicator, Text } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { useKeepAwake } from 'expo-keep-awake';
@@ -11,10 +11,14 @@ import mobileAds, { MaxAdContentRating } from 'react-native-google-mobile-ads';
 import { logger } from './utils/logger';
 import { usePurchasesStore } from './store/purchases-store';
 import { useUiStore, type AppTab } from './store/uiStore';
-import { BUILDER_ENABLED, STATS_ENABLED, MODE_HOME_ENABLED } from './config/featureFlags';
+import { BUILDER_ENABLED, STATS_ENABLED, MODE_HOME_ENABLED, REMOTE_PARTS_ENABLED } from './config/featureFlags';
 import { BuilderShell } from './features/builder/BuilderShell';
 import { StatsShell } from './features/stats/StatsShell';
 import { HomeScreen } from './components/home/HomeScreen';
+import { usePartsStore } from './store/partsStore';
+import { hydratePartsFromCache, refreshPartsInBackground } from './services/parts-remote';
+import { NewPartsModal } from './components/modals/NewPartsModal';
+import { useTranslation } from 'react-i18next';
 import './i18n/config';
 
 // Global error handler for uncaught JS errors
@@ -41,10 +45,23 @@ mobileAds()
 
 usePurchasesStore.getState().init();
 
+// Aggiornamento parti a runtime (solo build con combo attive): idrata dalla cache — che si applica
+// da questo avvio — e poi rinfresca in background per il prossimo. Con REMOTE_PARTS_ENABLED OFF lo
+// store va subito 'ready' (registry = bundle), così i tab non aspettano nulla in produzione.
+if (REMOTE_PARTS_ENABLED) {
+  hydratePartsFromCache()
+    .then(() => refreshPartsInBackground())
+    .catch(() => usePartsStore.getState().setReady([]));
+} else {
+  usePartsStore.getState().setReady([]);
+}
+
 function AppContent() {
   useKeepAwake();
+  const { t } = useTranslation();
 
   const activeTab = useUiStore((s) => s.activeTab);
+  const partsStatus = usePartsStore((s) => s.status);
   // Con i flag OFF l'app resta SEMPRE sullo scoreboard: nessuna home, nessun cambio orientamento/UI.
   let effectiveTab: AppTab = MODE_HOME_ENABLED ? activeTab : 'scoreboard';
   if (effectiveTab === 'builder' && !BUILDER_ENABLED) effectiveTab = 'home';
@@ -82,6 +99,20 @@ function AppContent() {
       <>
         <SystemBars hidden={{ statusBar: false }} />
         <HomeScreen />
+      </>
+    );
+  }
+
+  // I tab combo consumano il registry parti: attendere che l'idratazione della cache sia completa
+  // (decine di ms) evita il flash bundle→cache. Con i flag OFF partsStatus è già 'ready'.
+  if ((effectiveTab === 'builder' || effectiveTab === 'analytics') && partsStatus !== 'ready') {
+    return (
+      <>
+        <SystemBars hidden={{ statusBar: false }} />
+        <View style={{ flex: 1, backgroundColor: '#0f172a', justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#fbbf24" />
+          <Text style={{ color: '#94a3b8', marginTop: 12, fontSize: 14 }}>{t('parts.loading')}</Text>
+        </View>
       </>
     );
   }
@@ -126,6 +157,7 @@ export default function App() {
     <ErrorBoundary>
       <SafeAreaProvider>
         <AppContent />
+        <NewPartsModal />
       </SafeAreaProvider>
     </ErrorBoundary>
   );

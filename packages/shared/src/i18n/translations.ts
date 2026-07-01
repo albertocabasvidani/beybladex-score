@@ -253,6 +253,14 @@ export const translations = {
         defaultName: 'Deck {{n}}'
       },
       collection: { counter: '{{owned}}/{{total}} possedute' }
+    },
+    parts: {
+      updated: {
+        title: 'Nuove parti disponibili',
+        body: 'Aggiunte al catalogo:',
+        ok: 'Ok'
+      },
+      loading: 'Caricamento parti...'
     }
   },
   en: {
@@ -504,6 +512,14 @@ export const translations = {
         defaultName: 'Deck {{n}}'
       },
       collection: { counter: '{{owned}}/{{total}} owned' }
+    },
+    parts: {
+      updated: {
+        title: 'New parts available',
+        body: 'Added to the catalog:',
+        ok: 'Ok'
+      },
+      loading: 'Loading parts...'
     }
   }
 } as const;

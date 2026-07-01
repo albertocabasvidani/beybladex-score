@@ -21,7 +21,10 @@ import type {
   ComboLine,
 } from './types';
 
-const registry = bundled as unknown as PartsRegistry;
+// `let` (non `const`): a runtime il mobile può sostituirlo con un dataset più fresco scaricato e
+// validato (vedi setRegistry). Tutti i getter leggono questo binding, quindi lo swap è trasparente.
+// Il web non chiama mai setRegistry → resta sul bundle.
+let registry = bundled as unknown as PartsRegistry;
 
 export function getRegistry(): PartsRegistry {
   return registry;
@@ -114,6 +117,11 @@ export function getPartById(id: string): PartWithCategory | undefined {
   return index().get(id);
 }
 
+/** Tutte le parti con la `category` annessa. Usato per il diff/naming degli aggiornamenti dataset. */
+export function getAllParts(): PartWithCategory[] {
+  return Array.from(index().values());
+}
+
 /**
  * Linea di un blade BX/UX dato l'id. Serve a derivare la `line` di una combo "standard" al
  * salvataggio (il blade scelto sa se è BX o UX). Fallback 'bx' se l'id non si risolve.
@@ -188,4 +196,16 @@ export function getComboStatMax(line: ComboLine = 'bx'): PartStats {
   };
   _comboMaxByLine[line] = clamped;
   return clamped;
+}
+
+/**
+ * Sostituisce il dataset attivo (usato a runtime dal mobile dopo aver scaricato e VALIDATO un
+ * `parts.json` più fresco) e azzera tutte le cache memoizzate, così i getter ricalcolano sul nuovo
+ * registry. Idempotente. Il web non lo chiama → resta sul bundle importato staticamente.
+ */
+export function setRegistry(next: PartsRegistry): void {
+  registry = next;
+  _index = null;
+  _catMax.clear();
+  (Object.keys(_comboMaxByLine) as ComboLine[]).forEach((k) => delete _comboMaxByLine[k]);
 }
