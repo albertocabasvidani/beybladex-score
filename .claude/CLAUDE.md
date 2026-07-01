@@ -74,7 +74,7 @@ Dettagli e procedure in `packages/mobile/docs/monetization.md`. Modello: **un un
 - **Ads**: banner adattivo in builder/analitiche (mai nel segnapunti; sparisce col Pro) + rewarded "assaggio" (`components/ads/rewarded.ts`, sblocca lo storico per la sessione). Paywall unico: `components/paywall/PaywallModal.tsx` (montato in `App.tsx`, aperto via `store/paywall-store.ts`).
 - Plugin AdMob in `app.json`: parametri **camelCase** (`androidAppId`, non snake_case).
 - Il manifest **deve** contenere `com.google.android.gms.permission.AD_ID` (in `app.json` → `android.permissions`); verificarlo nell'AAB con bundletool, NON col grep. Senza → Play Console blocca la pubblicazione.
-- **Setup esterno richiesto** (senza → paywall vuoto/ad non riempiti): su Play Console creare i prodotti `pro_lifetime` + `pro_annual` e mapparli all'entitlement `pro` in un Offering RevenueCat; creare l'ad unit **Rewarded** reale su AdMob (placeholder in `config/ads.ts`). API key RevenueCat da verificare (known issue in `projects/scoreboard.md`).
+- **Config store (creata)**: Play Console prodotti `pro_lifetime` (one-time €34,99) + `pro_annual` / base plan `annual` (annuale €9,99), attivi. RevenueCat: entrambi mappati sull'entitlement `pro`, offering `default` con package `$rc_lifetime`→`pro_lifetime` e `$rc_annual`→`pro_annual:annual`. AdMob ad unit: banner `ca-app-pub-7303361297226779/4762021095`, rewarded `ca-app-pub-7303361297226779/4661237648` (in `config/ads.ts`).
 
 ## Play Store & ASO
 

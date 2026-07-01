@@ -8,7 +8,7 @@
 
 - Flag `MONETIZATION_ENABLED` in `src/config/featureFlags.ts` (produzione, NON `__DEV__`; `false` = tutto sbloccato, nessun ad/paywall — utile per debug e regressione segnapunti). Accesso completo: `hasFullAccess()`/`useHasFullAccess()` in `src/store/access-store.ts` = Pro OPPURE sblocco rewarded di sessione (non persistito) OPPURE flag OFF.
 - Limiti free in `src/config/monetization.ts`: `FREE_MATCH_LIMIT` (25 match visibili in Analitiche, via `limitToRecent` in `features/stats/aggregation.ts`), `FREE_COMBO_LIMIT` (5), `FREE_DECK_LIMIT` (1). Oltre il limite: teaser + card gate (Analitiche, con "Guarda un video" rewarded e "Sblocca con Pro") o paywall al salvataggio (Builder/Decks). Consultazione parti/radar sempre libera; l'editing di combo/deck esistenti non consuma limite.
-- **Setup esterno richiesto**: su Play Console creare i prodotti `pro_lifetime` + `pro_annual` e mapparli all'entitlement `pro` in un Offering RevenueCat; creare l'ad unit **Rewarded** reale su AdMob (placeholder in `config/ads.ts`). Senza Offering il paywall resta sullo stato "caricamento offerte" (nessun package).
+- **Config store (creata 01/07/2026)**: Play Console prodotti `pro_lifetime` (one-time, €34,99) e `pro_annual` con base plan `annual` (annuale auto-rinnovo, €9,99), entrambi attivi. RevenueCat: prodotti importati e mappati sull'entitlement `pro`; offering `default` con package `$rc_lifetime`→`pro_lifetime` e `$rc_annual`→`pro_annual:annual`. AdMob: banner `.../4762021095`, rewarded `.../4661237648`. Il vecchio prodotto RevenueCat `remove_ads` è obsoleto ("Not found").
 
 ## ID test (sostituzione tracciata come known issue in `projects/scoreboard.md`)
 
