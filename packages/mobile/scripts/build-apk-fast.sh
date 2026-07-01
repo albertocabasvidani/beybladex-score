@@ -21,6 +21,13 @@
 #   bash packages/mobile/scripts/build-apk-fast.sh --emulator   # x86_64 (emulatore)
 #   bash packages/mobile/scripts/build-apk-fast.sh --device     # arm64-v8a (telefono)
 #   bash packages/mobile/scripts/build-apk-fast.sh --device --deps   # + yarn install
+#   bash packages/mobile/scripts/build-apk-fast.sh --device --beta   # feature avanzate ON (test su device)
+#
+# NOTA --beta: accende le feature nascoste (combo builder + statistiche) via
+#   EXPO_PUBLIC_FEATURES_ON=1 anche in una build release/APK, come fa full-build-aab.sh --beta.
+#   Serve per testare Analitiche/Builder su telefono senza passare dal Play Store.
+#   L'APK e' firmato con la upload key (non con l'app-signing di Google): se sul device c'e'
+#   gia' la versione dal Play Store, disinstallarla prima (adb uninstall) o l'install fallisce.
 #
 # OUTPUT:
 #   C:/projects/beybladex/packages/mobile/beybladex-mobile.apk
@@ -29,13 +36,23 @@ set -e
 
 export BUILD_FOR_EMULATOR=0
 RUN_DEPS=0
+BETA=0
 for arg in "$@"; do
     case "$arg" in
         --emulator) export BUILD_FOR_EMULATOR=1 ;;
         --device)   export BUILD_FOR_EMULATOR=0 ;;
         --deps)     RUN_DEPS=1 ;;
+        --beta)     BETA=1 ;;
     esac
 done
+
+if [ "$BETA" = "1" ]; then
+    export EXPO_PUBLIC_FEATURES_ON=1
+    export METRO_RESET_CACHE=1
+    echo "  >>> BUILD BETA: feature avanzate ON (combo builder + statistiche)"
+else
+    unset EXPO_PUBLIC_FEATURES_ON || true
+fi
 
 export JAVA_HOME="C:/Program Files/Android/Android Studio/jbr"
 export ANDROID_HOME="C:/Users/cinqu/AppData/Local/Android/Sdk"

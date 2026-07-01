@@ -35,6 +35,7 @@ Ricette complete in `packages/mobile/BUILD-RECIPES.md`; dettagli/troubleshooting
 ```bash
 bash packages/mobile/scripts/build-apk-fast.sh --emulator   # iterazione veloce, x86_64
 bash packages/mobile/scripts/build-apk-fast.sh --device     # iterazione veloce, arm64-v8a
+bash packages/mobile/scripts/build-apk-fast.sh --device --beta  # + feature avanzate ON (test combo/stats su telefono via adb)
 bash packages/mobile/scripts/full-build-apk.sh --emulator   # build pulita (reset / cambio dipendenze)
 bash packages/mobile/scripts/full-build-aab.sh              # AAB Play Store (pulita, tutte le ABI, firma upload)
 bash packages/mobile/scripts/release-pair.sh                # coppia coerente: Production (N+1) + beta (N+2), stesso commit
@@ -43,6 +44,7 @@ bash packages/mobile/scripts/release-pair.sh --beta-only    # solo beta (N+1), P
 
 **Regole**:
 - Iterazione = `build-apk-fast.sh` (no `--clean`, riusa native cache → minuti). Pulita solo per reset o cambio dipendenze.
+- Test **combo/stats su telefono** senza Play Store: `build-apk-fast.sh --device --beta` (accende `EXPO_PUBLIC_FEATURES_ON=1` anche in APK release). L'APK è firmato con la upload key, non con l'app-signing di Google: se sul device c'è la versione dal Play Store va **disinstallata prima** (`adb uninstall com.beybladex.score`, cancella i dati locali) o l'install fallisce per firma diversa.
 - Ottimizzazioni Gradle in `patch-build-gradle.sh` (riapplicate a ogni build). `configuration-cache` NON abilitabile (incompatibile RN plugin). MAI `build-apk.sh` dopo `expo prebuild --clean` senza `patch-build-gradle.sh`.
 - Upload Play Store: release **pubbliche** → track **Production**; build **beta** delle feature flag → track **Test aperto** (i tester si iscrivono via link, gli altri restano su Production). Review/rejection via Chrome DevTools su Play Console.
 - **Coerenza Production ↔ Test aperto**: lo stesso commit produce entrambi gli AAB (con/senza `--beta`; le feature combo sono gated → OFF in Production), quindi si lavora su un solo branch (`master`) — niente branch beta separato. I track condividono lo spazio `versionCode` e un tester del Test aperto riceve il `versionCode` più alto a cui ha accesso, **inclusa la Production**: la beta deve restare **sempre sopra** la Production, altrimenti i tester scivolano su Production e perdono le combo. Per non sbagliare usare `release-pair.sh` (coppia `N+1`/`N+2` dallo stesso commit, aggiorna `app.json` da sé); `--beta-only` rinfresca solo la beta lasciando intatta la Production.

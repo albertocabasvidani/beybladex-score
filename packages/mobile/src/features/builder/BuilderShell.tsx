@@ -1,4 +1,5 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { useEffect } from 'react';
+import { View, Text, Pressable, BackHandler, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useUiStore, type BuilderTab } from '../../store/uiStore';
@@ -36,6 +37,16 @@ export function BuilderShell() {
   const activeBuilderTab = useUiStore((s) => s.activeBuilderTab);
   const setActiveBuilderTab = useUiStore((s) => s.setActiveBuilderTab);
   const setActiveTab = useUiStore((s) => s.setActiveTab);
+
+  // Tasto indietro Android: torna alla home. I picker interni sono Modal RN con onRequestClose,
+  // che intercettano il back da soli quando aperti (prima di questo listener).
+  useEffect(() => {
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      setActiveTab('home');
+      return true;
+    });
+    return () => sub.remove();
+  }, [setActiveTab]);
 
   return (
     <SafeAreaView style={styles.root} edges={['top', 'left', 'right', 'bottom']}>

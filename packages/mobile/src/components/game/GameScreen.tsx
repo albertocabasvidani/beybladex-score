@@ -156,10 +156,12 @@ export function GameScreen() {
       if (guideOpen) { setGuideOpen(false); return true; }
       if (settingsOpen) { setSettingsOpen(false); return true; }
       if (releaseNoteOpen) { setReleaseNoteOpen(false); return true; }
-      return true; // Block back when no modal open (don't exit app)
+      // Nessun modal aperto: con la home attiva (beta) torna alla home, altrimenti blocca (produzione: nessuna home, non uscire).
+      if (MODE_HOME_ENABLED) { setActiveTab('home'); return true; }
+      return true;
     });
     return () => sub.remove();
-  }, [settingsOpen, creditsOpen, guideOpen, releaseNoteOpen, reviewOpen, betaInviteOpen, reminderVisible, markBetaInviteDismissed]);
+  }, [settingsOpen, creditsOpen, guideOpen, releaseNoteOpen, reviewOpen, betaInviteOpen, reminderVisible, markBetaInviteDismissed, setActiveTab]);
 
   // Safety valve: force-clear stuck animations after 6 seconds
   useEffect(() => {

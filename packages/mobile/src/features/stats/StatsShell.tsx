@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { View, Text, Pressable, Alert, StyleSheet } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { View, Text, Pressable, Alert, BackHandler, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useUiStore } from '../../store/uiStore';
@@ -40,6 +40,18 @@ export function StatsShell() {
     () => filterByRange(records, range, Date.now(), customRange),
     [records, range, customRange]
   );
+
+  // Tasto indietro Android: chiude gli overlay aperti (top-most prima), altrimenti torna alla home.
+  useEffect(() => {
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (showLegend) { setShowLegend(false); return true; }
+      if (showCalendar) { setShowCalendar(false); return true; }
+      if (selected) { setSelected(null); return true; }
+      setActiveTab('home');
+      return true;
+    });
+    return () => sub.remove();
+  }, [showLegend, showCalendar, selected, setActiveTab]);
 
   const confirmClear = () => {
     Alert.alert(t('stats.clearTitle'), t('stats.clearBody'), [

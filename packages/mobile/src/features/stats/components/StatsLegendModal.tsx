@@ -1,10 +1,12 @@
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { sp } from '../statsTheme';
 
 /** Guida rapida: cosa fa ciascuna tab + legenda della notazione (record, diff, campione ridotto). */
 export function StatsLegendModal({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
 
   const tabs = [
     { icon: '📋', name: t('stats.tabs.overview'), desc: t('stats.legend.tabOverview') },
@@ -14,14 +16,14 @@ export function StatsLegendModal({ onClose }: { onClose: () => void }) {
 
   return (
     <View style={styles.overlay}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 14 }]}>
         <Text style={styles.title}>{t('stats.legend.title')}</Text>
         <Pressable onPress={onClose} hitSlop={12} accessibilityRole="button">
           <Text style={styles.close}>✕</Text>
         </Pressable>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: 32 + insets.bottom }]} showsVerticalScrollIndicator={false}>
         <Text style={styles.sectionTitle}>{t('stats.legend.tabsTitle')}</Text>
         {tabs.map((tab) => (
           <View key={tab.name} style={styles.row}>

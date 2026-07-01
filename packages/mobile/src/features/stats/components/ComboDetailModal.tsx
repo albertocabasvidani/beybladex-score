@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { FINISH_INFO, FINISH_ORDER } from '@beybladex/shared';
 import type { MatchRecord } from '../statsStore';
@@ -23,6 +24,7 @@ export function ComboDetailModal({
   onClose: () => void;
 }) {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const combo = useMemo(
     () => aggregateCombos(records).find((c) => c.key === comboKey),
     [records, comboKey]
@@ -39,7 +41,7 @@ export function ComboDetailModal({
 
   return (
     <View style={styles.overlay}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 14 }]}>
         <View style={styles.headerText}>
           <Text style={styles.title} numberOfLines={1}>
             {combo?.name ?? t('stats.combo.notFound')}
@@ -60,7 +62,7 @@ export function ComboDetailModal({
           <Text style={styles.dim}>{t('stats.empty.range')}</Text>
         </View>
       ) : (
-        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={[styles.content, { paddingBottom: 32 + insets.bottom }]} showsVerticalScrollIndicator={false}>
           {/* Hero: donut mix finish + win-rate */}
           <View style={styles.hero}>
             <FinishDonut
